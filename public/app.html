@@ -1322,9 +1322,10 @@ TWITTER
       }
     });
     if(!html) html = '<div class="res-card"><div class="res-body">'+txt.replace(/\n/g,'<br>')+'</div></div>';
+    html += regenBtn('genRepurpose', 'Regenerate');
     document.getElementById('rep-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('rep-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('rep-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genRepurpose', 'Try Again'); }
   setBtn('rep-btn', false, '<span>🔁</span> Multiply My Content');
 }
 
