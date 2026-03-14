@@ -968,7 +968,7 @@ async function genCaption(){
   setBtn('cap-btn', false, '<span>⚡</span> Build My Post');
 }
 
-async function genHook(){if(!canGen())return;const scr=document.getElementById('s-hook');const p=aplat(scr),st=atones(scr)||'Curiosity';const d=document.getElementById('hook-in').value.trim();if(!d){alert('Describe your video!');return;}setBtn('hook-btn',true,'<span>🎣</span> Write My Hooks');document.getElementById('hook-out').innerHTML='';try{const txt=await ai(`Trending ${p} hook expert. Write 6 scroll-stopping opening hooks for: "${d}"\nStyle: ${st}\nFirst words spoken — must hook in 3 seconds. Short and punchy.\nFormat ONLY as:\nITEM1\n[hook]\nITEM2\n[hook]\nITEM3\n[hook]\nITEM4\n[hook]\nITEM5\n[hook]\nITEM6\n[hook]`);const hooks = txt.split(/ITEM\d+\n/).filter(x=>x.trim()).slice(0,6);
+async function genHook(){if(!canGen())return;const scr=document.getElementById('s-hook');const p=aplat(scr),st=atones(scr)||'Curiosity';const d=document.getElementById('hook-in').value.trim();if(!d){alert('Describe your video!');return;}setBtn('hook-btn',true,'<span>🎣</span> Write My Hooks');document.getElementById('hook-out').innerHTML='';try{const txt=await ai(`Trending ${p} hook expert. Write 6 scroll-stopping opening hooks for: "${d}"\nStyle: ${st}\nFirst words spoken — must hook in 3 seconds. Short and punchy.\nFormat ONLY as:\nITEM1\n[hook]\nITEM2\n[hook]\nITEM3\n[hook]\nITEM4\n[hook]\nITEM5\n[hook]\nITEM6\n[hook]`);const hooks = txt.split(/ITEM\s*\[?\d+\]?\s*\n/).filter(x=>x.trim()).slice(0,6);
 const out = document.getElementById('hook-out');
 let html = '';
 hooks.forEach((hook, i) => {
