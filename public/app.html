@@ -277,8 +277,8 @@ setTimeout(dismissSplash, 3500);
       <div class="ppills"><div class="ppill on" data-v="Facebook" onclick="pp(this)">Facebook</div><div class="ppill" data-v="Instagram" onclick="pp(this)">Instagram</div><div class="ppill" data-v="TikTok" onclick="pp(this)">TikTok</div><div class="ppill" data-v="YouTube" onclick="pp(this)">YouTube</div><div class="ppill" data-v="LinkedIn" onclick="pp(this)">LinkedIn</div><div class="ppill" data-v="Twitter" onclick="pp(this)">Twitter</div></div>
       <div class="field"><span class="sl">Describe your post</span><textarea id="cap-in" rows="3" placeholder="e.g. sharing my journey building something from scratch, real behind the scenes..."></textarea></div>
       <div class="row2">
-        <div class="field"><span class="sl">Creator name (optional)</span><input type="text" id="cap-creator" placeholder="e.g. Shatica, T..."></div>
-        <div class="field"><span class="sl">Brand name (optional)</span><input type="text" id="cap-brand-name" placeholder="e.g. Whose Tea TV..."></div>
+        <div class="field"><span class="sl">Creator name (optional)</span><input type="text" id="cap-creator" placeholder="e.g. your name or handle..."></div>
+        <div class="field"><span class="sl">Brand name (optional)</span><input type="text" id="cap-brand-name" placeholder="e.g. your brand name..."></div>
       </div>
       <div class="field"><span class="sl">Goal of this post</span>
         <div class="ppills" id="cap-goal-row">
@@ -294,7 +294,7 @@ setTimeout(dismissSplash, 3500);
           <span class="sl" style="margin-bottom:0">Include product mention?</span>
           <label style="display:flex;align-items:center;gap:6px;cursor:pointer"><input type="checkbox" id="cap-prod-toggle" onchange="document.getElementById('cap-prod-field').style.display=this.checked?'block':'none'"><span style="font-size:0.78rem;color:var(--muted2)">Yes</span></label>
         </div>
-        <div id="cap-prod-field" style="display:none"><input type="text" id="cap-prod-desc" placeholder="e.g. Infinite Storefront handmade soaps — ifssoap.com"></div>
+        <div id="cap-prod-field" style="display:none"><input type="text" id="cap-prod-desc" placeholder="e.g. handmade candles — myshop.com"></div>
       </div>
       <div class="field"><span class="sl">Tone</span><div class="chips"><div class="chip on" onclick="tc(this)">Casual</div><div class="chip" onclick="tc(this)">Inspiring</div><div class="chip" onclick="tc(this)">Funny</div><div class="chip" onclick="tc(this)">Real Talk</div><div class="chip" onclick="tc(this)">Educational</div></div></div>
       <div class="row2"><div class="field"><span class="sl">Hashtags</span><select id="cap-ht"><option value="yes">Include hashtags</option><option value="no">No hashtags</option></select></div><div class="field"><span class="sl">Count</span><select id="cap-ct"><option value="3">3 options</option><option value="5">5 options</option></select></div></div>
@@ -643,7 +643,7 @@ setTimeout(dismissSplash, 3500);
       </div>
       <div style="margin-bottom:10px">
         <span class="sl">Your name / Creator name (optional)</span>
-        <input type="text" id="profile-name" placeholder="e.g. Shatica, T, Whose Tea TV..." oninput="saveVoiceProfile()">
+        <input type="text" id="profile-name" placeholder="e.g. your name or brand..." oninput="saveVoiceProfile()">
       </div>
       <div style="margin-bottom:10px">
         <span class="sl">Your niche (optional)</span>
@@ -651,7 +651,7 @@ setTimeout(dismissSplash, 3500);
       </div>
       <div style="margin-bottom:10px">
         <span class="sl">Your brand or product (optional)</span>
-        <input type="text" id="profile-brand" placeholder="e.g. Infinite Storefront handmade soaps — ifssoap.com..." oninput="saveVoiceProfile()">
+        <input type="text" id="profile-brand" placeholder="e.g. handmade candles — myshop.com" oninput="saveVoiceProfile()">
       </div>
       <button onclick="saveVoiceProfile();alert('Voice Profile saved! ✅')" style="width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--purple),var(--cyan));color:#fff;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:0.88rem;cursor:pointer">💾 Save My Voice Profile</button>
       <button onclick="clearVoiceProfile()" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-family:'Plus Jakarta Sans',sans-serif;font-size:0.78rem;cursor:pointer;margin-top:8px">Reset Voice Profile</button>
@@ -725,7 +725,7 @@ setTimeout(dismissSplash, 3500);
       <div class="card" style="border-color:rgba(255,214,0,0.3);background:rgba(255,214,0,0.04)">
         <span class="sl" style="color:var(--yellow)">Tell me about you</span>
         <div class="field"><input type="text" id="cal-niche" placeholder="Your niche e.g. real talk creator, mom life, mindset..."></div>
-        <div class="field"><input type="text" id="cal-brand" placeholder="Your name or brand e.g. Whose Tea TV, T, Shatica..."></div>
+        <div class="field"><input type="text" id="cal-brand" placeholder="Your name or brand..."></div>
         <div class="field">
           <span class="sl">Primary platform</span>
           <div class="ppills" id="cal-prow">
@@ -764,7 +764,7 @@ setTimeout(dismissSplash, 3500);
         </div>
         <div class="field">
           <span class="sl">Your product (optional)</span>
-          <input type="text" id="cal-product" placeholder="e.g. Infinite Storefront handmade soaps — ifssoap.com">
+          <input type="text" id="cal-product" placeholder="e.g. handmade candles — myshop.com">
         </div>
       </div>
 
