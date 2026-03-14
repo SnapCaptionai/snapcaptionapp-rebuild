@@ -960,7 +960,12 @@ async function genCaption(){
       html += '<button class="rbtn" style="opacity:0.4;cursor:not-allowed;font-size:0.68rem">🎵 TikTok (Soon)</button>';
       html += '</div></div>';
     });
-    out.innerHTML = html || '<div class="res-card" style="color:#ff5c5c">No results — try again</div>';
+    if(!html) {
+      // Fallback: show full AI output as a single result
+      html = '<div class="res-card" style="margin-bottom:14px"><div class="res-tag">✦ Your Post · ' + p + '</div><div class="res-body">' + txt.replace(/\n/g,'<br>') + '</div>';
+      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,\'' + encodeURIComponent(txt) + '\')">📋 Copy</button><button class="btn-sm" onclick="doSave(this,\'' + encodeURIComponent(txt) + '\',\'' + p + '\')">⭐ Save</button></div></div>';
+    }
+    out.innerHTML = html;
     rec();
   }catch(e){
     document.getElementById('cap-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">⚠️ ' + (e.message || 'Error — try again') + '</div>';
