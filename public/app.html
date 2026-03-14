@@ -811,6 +811,8 @@ rHome(); rLim();
 function go(id){
   // Close upgrade modal
   closeSheet();
+  // Hide standout result panel
+  const sr = document.getElementById('standoutResult'); if(sr) sr.style.display = 'none';
   // Hide global loader
   hideLoader();
   // Reset WTP wizard
