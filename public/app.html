@@ -188,17 +188,51 @@ select option{background:var(--card2);}
 <div class="screen active" id="s-home">
   <div class="sp">
     <div id="voice-badge-home"></div>
-    <!-- Quick Create -->
-    <div class="card" style="border-color:rgba(255,45,120,0.3);background:rgba(255,45,120,0.04);margin-bottom:16px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.04em;margin-bottom:4px">Turn One Idea Into Content</div>
-      <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:12px">Type anything — or leave blank for a surprise 🎲</div>
-      <textarea id="quick-idea" rows="2" placeholder="What's your idea? (optional — just tap Generate!)"></textarea>
-      <button class="btn-gen" style="margin-top:10px" id="quick-btn" onclick="quickCreate()"><span>⚡</span> Create Standout Content</button>
+
+    <!-- Main Question -->
+    <div style="text-align:center;margin-bottom:20px;padding:8px 0">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.04em;line-height:1.1">What do you want to<br>post today?</div>
+    </div>
+
+    <!-- 4 Main Buttons -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px">
+      <div class="ttile" style="--tg:rgba(255,45,120,0.15)" onclick="go('caption')"><span class="ttile-icon">✍️</span><div class="ttile-name">Write a Post</div><div class="ttile-desc">Ready in seconds</div></div>
+      <div class="ttile" style="--tg:rgba(0,212,255,0.12)" onclick="go('script')"><span class="ttile-icon">🎬</span><div class="ttile-name">Make a Video Script</div><div class="ttile-desc">Full word-for-word</div></div>
+      <div class="ttile" style="--tg:rgba(255,214,0,0.12)" onclick="go('ideas')"><span class="ttile-icon">💡</span><div class="ttile-name">Get Post Ideas</div><div class="ttile-desc">Never run dry</div></div>
+      <div class="ttile" style="--tg:rgba(255,122,0,0.2)" onclick="go('calendar')"><span class="ttile-icon">🗓️</span><div class="ttile-name">Plan My Week</div><div class="ttile-desc">30 days of content</div></div>
+    </div>
+
+    <!-- Quick Post -->
+    <div class="card" style="border-color:rgba(255,45,120,0.3);background:rgba(255,45,120,0.04);margin-bottom:14px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em;margin-bottom:4px">⚡ Quick Post</div>
+      <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:10px">What happened today? We'll turn it into 3 ready posts.</div>
+      <textarea id="quick-idea" rows="2" placeholder="e.g. Had a great meeting with a new client today..."></textarea>
+      <button class="btn-gen" style="margin-top:10px" id="quick-btn" onclick="quickCreate()"><span>⚡</span> Create 3 Posts</button>
       <div id="standoutResult" style="display:none;position:relative;margin-top:12px">
         <button id="closeResult" onclick="document.getElementById('standoutResult').style.display='none'" style="position:absolute;right:0;top:0;background:none;border:none;color:var(--muted2);font-size:1.2rem;cursor:pointer;padding:4px 8px;z-index:1">✕</button>
         <div id="quick-out"></div>
       </div>
     </div>
+
+    <!-- Batch Mode -->
+    <div class="card" style="border-color:rgba(155,92,255,0.3);background:rgba(155,92,255,0.04);margin-bottom:14px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em;margin-bottom:4px">🚀 Batch Mode</div>
+      <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:10px">One idea → 8 different posts. Create a week of content in seconds.</div>
+      <textarea id="batch-idea" rows="2" placeholder="e.g. The importance of showing up every day"></textarea>
+      <button class="btn-gen" style="margin-top:10px;background:linear-gradient(135deg,#9b5cff,#ff2d78)" id="batch-btn" onclick="genBatch()"><span>🚀</span> Create 8 Posts</button>
+      <div id="batch-out" style="margin-top:12px"></div>
+    </div>
+
+    <!-- Save an Idea -->
+    <div class="card" style="border-color:rgba(0,255,133,0.2);background:rgba(0,255,133,0.03);margin-bottom:14px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.04em;margin-bottom:4px">💭 Save an Idea</div>
+      <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:10px">Quick — write it down before you forget.</div>
+      <div style="display:flex;gap:8px">
+        <textarea id="idea-capture" rows="1" placeholder="Type your idea..." style="flex:1"></textarea>
+        <button onclick="saveQuickIdea()" style="padding:8px 16px;border-radius:10px;border:none;background:rgba(0,255,133,0.15);color:var(--green);font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:0.8rem;cursor:pointer;white-space:nowrap">Save</button>
+      </div>
+    </div>
+
     <!-- Stats -->
     <div class="hero-card">
       <div style="font-size:0.9rem;font-weight:700;margin-bottom:4px">Your Dashboard 🎬</div>
@@ -210,22 +244,21 @@ select option{background:var(--card2);}
       </div>
     </div>
     <div id="streak-home"></div>
+
     <!-- Limit bar -->
     <div class="lim-wrap" id="lim-wrap">
       <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted2)"><span>Daily uses</span><span id="lim-text">5 of 5 left</span></div>
       <div class="lim-bar-bg"><div class="lim-bar" id="lim-bar" style="width:100%"></div></div>
     </div>
-    <span class="sl">✦ All Tools</span>
+
+    <!-- More Tools -->
+    <span class="sl">✦ More Tools</span>
     <div class="tool-grid">
-      <div class="ttile" style="--tg:rgba(255,214,0,0.15);grid-column:1/-1" onclick="go('wtp')"><span class="ttile-icon">🤔</span><div class="ttile-name">What Should I Post Today?</div><div class="ttile-desc">Stuck? Answer 3 questions → get full content</div><div class="new-badge">NEW</div></div>
-      <div class="ttile" style="--tg:rgba(255,45,120,0.15)" onclick="go('caption')"><span class="ttile-icon">✍️</span><div class="ttile-name">Post Builder</div><div class="ttile-desc">Any platform, any vibe</div></div>
+      <div class="ttile" style="--tg:rgba(255,214,0,0.15);grid-column:1/-1" onclick="go('wtp')"><span class="ttile-icon">🤔</span><div class="ttile-name">What Should I Post Today?</div><div class="ttile-desc">Answer 3 questions → get a full post</div></div>
       <div class="ttile" style="--tg:rgba(255,122,0,0.15)" onclick="go('hook')"><span class="ttile-icon">🎣</span><div class="ttile-name">Scroll-Stopping Hooks</div><div class="ttile-desc">Stop the scroll</div></div>
-      <div class="ttile" style="--tg:rgba(0,212,255,0.12)" onclick="go('script')"><span class="ttile-icon">🎬</span><div class="ttile-name">Script Writer</div><div class="ttile-desc">Full video scripts</div></div>
       <div class="ttile" style="--tg:rgba(155,92,255,0.12)" onclick="go('hashtag')"><span class="ttile-icon">#️⃣</span><div class="ttile-name">Hashtag Generator</div><div class="ttile-desc">Get discovered</div></div>
       <div class="ttile" style="--tg:rgba(0,255,133,0.12)" onclick="go('repurpose')"><span class="ttile-icon">🔁</span><div class="ttile-name">Content Multiplier</div><div class="ttile-desc">1 idea → 6 platforms</div></div>
-      <div class="ttile" style="--tg:rgba(255,214,0,0.12)" onclick="go('ideas')"><span class="ttile-icon">💡</span><div class="ttile-name">Idea Generator</div><div class="ttile-desc">Never run dry</div></div>
       <div class="ttile" style="--tg:rgba(0,212,255,0.12)" onclick="go('bio')"><span class="ttile-icon">👤</span><div class="ttile-name">Bio Writer</div><div class="ttile-desc">A bio that gets follows</div></div>
-      <div class="ttile" style="--tg:rgba(255,122,0,0.2);grid-column:1/-1;border-color:rgba(255,122,0,0.3)" onclick="go('calendar')"><span class="ttile-icon">🗓️</span><div class="ttile-name">30-Day Content Calendar <span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:0.7rem;margin-left:6px">★ POPULAR</span></div><div class="ttile-desc">Your topics → 30 days of ready-to-post content</div></div>
     </div>
   </div>
 </div>
@@ -298,7 +331,11 @@ select option{background:var(--card2);}
       <div class="field"><span class="sl">Describe your post (optional)</span><textarea id="cap-in" rows="3" placeholder="Leave blank and we'll generate something great for you..."></textarea></div>
       <div class="row2">
         <div><span class="sl">Goal</span><select id="cap-goal"><option>Grow Followers</option><option>Start Conversation</option><option>Sell Product</option><option>Tell Story</option><option>Teach Something</option></select></div>
+        <div><span class="sl">Length</span><select id="cap-length"><option value="short">Short (1–2 sentences)</option><option value="medium" selected>Medium (1 paragraph)</option><option value="long">Long (story style)</option></select></div>
+      </div>
+      <div class="row2">
         <div><span class="sl">Hashtags</span><select id="cap-ht"><option value="yes">Include</option><option value="no">No hashtags</option></select></div>
+        <div></div>
       </div>
       <span class="sl">Tone</span>
       <div class="chips" id="cap-tone">
@@ -833,7 +870,8 @@ function go(id){
 
 function resetAllBtns(){
   const btnMap = {
-    'quick-btn': '<span>⚡</span> Create Standout Content',
+    'quick-btn': '<span>⚡</span> Create 3 Posts',
+    'batch-btn': '<span>🚀</span> Create 8 Posts',
     'cap-btn': '<span>✍️</span> Build My Post',
     'hook-btn': '<span>🎣</span> Write My Hooks',
     'scr-btn': '<span>🎬</span> Write My Script',
@@ -952,10 +990,10 @@ function regenBtn(genName, label){
 function refineHTML(text, context){
   const enc = JSON.stringify(text);
   return `<div class="refine-row">
-    <button class="rbtn" onclick="refinePost(this,'shorter',${enc})">✂️ Shorter</button>
-    <button class="rbtn" onclick="refinePost(this,'rewrite',${enc})">🔄 Rewrite</button>
-    <button class="rbtn" onclick="refinePost(this,'dramatic',${enc})">🔥 More Dramatic</button>
-    <button class="rbtn human" onclick="refinePost(this,'human',${enc})">💬 More Human</button>
+    <button class="rbtn" onclick="refinePost(this,'shorter',${enc})">✂️ Shorten</button>
+    <button class="rbtn" onclick="refinePost(this,'rewrite',${enc})">🔄 Try another version</button>
+    <button class="rbtn" onclick="refinePost(this,'dramatic',${enc})">🔥 Make it more bold</button>
+    <button class="rbtn human" onclick="refinePost(this,'human',${enc})">💬 Make it more natural</button>
   </div>`;
 }
 
@@ -981,51 +1019,118 @@ async function refinePost(btn, mode, text){
   btn.textContent = orig; btn.disabled = false;
 }
 
+// ═══ CLEAN COPY (no labels) ═══
+function cleanCopyText(hook, cap, cta, ht){
+  let parts = [];
+  if(hook) parts.push(hook);
+  if(cap) parts.push(cap);
+  if(cta) parts.push(cta);
+  if(ht) parts.push(ht);
+  return parts.join('\n\n');
+}
+
 // ═══ QUICK CREATE ═══
 async function quickCreate(){
   if(!canGen()) return;
   const idea = document.getElementById('quick-idea').value.trim();
-  setBtn('quick-btn', true, '<span>⚡</span> Create Standout Content');
+  setBtn('quick-btn', true, '<span>⚡</span> Create 3 Posts');
   document.getElementById('standoutResult').style.display = 'block';
   document.getElementById('quick-out').innerHTML = '';
   const topic = idea || 'a helpful tip for people who post on social media';
-  const prompt = `Create a complete social media post package for: "${topic}"
+  const prompt = `Create 3 different complete social media posts for: "${topic}"
 
-Format EXACTLY as:
-HOOK
-[1-2 scroll-stopping opening lines]
-
-CAPTION
-[3-5 sentence caption body, conversational and real]
-
-CTA
-[One strong call to action]
-
-HASHTAGS
-[10 relevant hashtags]
+For each, format EXACTLY as:
+ITEM[number]
+HOOK: [1-2 scroll-stopping opening lines]
+CAPTION: [3-5 sentence caption body, conversational and real. Use clear sentences with proper punctuation. Avoid run-on sentences. Break longer thoughts into shorter sentences. Limit paragraphs to 2-4 sentences.]
+CTA: [One strong call to action question]
+HASHTAGS: [8-10 relevant hashtags]
+---
 
 Write naturally. Real human voice. No corporate speak.`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
-      return m ? m[1].trim() : '';
-    };
-    const hook = get('HOOK'); const cap = get('CAPTION'); const cta = get('CTA'); const ht = get('HASHTAGS');
-    const full = (hook?'HOOK:\n'+hook+'\n\n':'')+(cap?'CAPTION:\n'+cap+'\n\n':'')+(cta?'CTA:\n'+cta+'\n\n':'')+(ht?'HASHTAGS:\n'+ht:'');
-    let html = '<div class="res-card" style="margin-top:12px"><div class="res-tag">✦ Your Standout Post</div>';
-    if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook.replace(/\n/g,'<br>')+'</div></div>';
-    if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
-    if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta.replace(/\n/g,'<br>')+'</div></div>';
-    if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
-    html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(full)+')">📋 Copy All</button><button class="btn-sm" onclick="doSave('+JSON.stringify(full)+',' + JSON.stringify('Quick Post')+')">⭐ Save</button></div>';
-    html += refineHTML(full);
-    html += '</div>';
+    const blocks = txt.split(/ITEM\s*\[?\d+\]?/i).filter(b => b.trim());
+    let html = '';
+    (blocks.length ? blocks : [txt]).slice(0,3).forEach((block, i) => {
+      const lines = block.split('\n');
+      const getField = (key) => { const l = lines.find(x => x.toUpperCase().startsWith(key.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
+      const hook = getField('HOOK'); const cap = getField('CAPTION'); const cta = getField('CTA'); const ht = getField('HASHTAGS');
+      const copyText = cleanCopyText(hook, cap, cta, ht);
+      html += '<div class="res-card" style="margin-top:8px"><div class="res-tag">✦ Post Option '+(i+1)+'</div>';
+      if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook.replace(/\n/g,'<br>')+'</div></div>';
+      if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
+      if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta.replace(/\n/g,'<br>')+'</div></div>';
+      if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
+      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+',' + JSON.stringify('Quick Post')+')">⭐ Save</button></div>';
+      html += refineHTML(copyText);
+      html += '</div>';
+    });
     html += regenBtn('quickCreate', 'Regenerate');
     document.getElementById('quick-out').innerHTML = html;
     rec();
   }catch(e){
     document.getElementById('quick-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: ' + e.message + '</div>' + regenBtn('quickCreate', 'Try Again');
   }
-  setBtn('quick-btn', false, '<span>⚡</span> Create Standout Content');
+  setBtn('quick-btn', false, '<span>⚡</span> Create 3 Posts');
+}
+
+// ═══ BATCH MODE ═══
+async function genBatch(){
+  if(!canGen()) return;
+  const idea = document.getElementById('batch-idea').value.trim();
+  if(!idea){ alert('Type an idea first!'); return; }
+  setBtn('batch-btn', true, '<span>🚀</span> Create 8 Posts');
+  document.getElementById('batch-out').innerHTML = '';
+  const prompt = `Create 8 completely different social media posts all based on this one idea: "${idea}"
+
+Each post should take a different angle — motivational, storytelling, question, tip, bold statement, personal, educational, controversial.
+
+For each, format EXACTLY as:
+ITEM[number]
+HOOK: [1-2 scroll-stopping lines]
+CAPTION: [2-4 sentence caption. Use clear sentences with proper punctuation. Avoid run-on sentences.]
+CTA: [call to action]
+HASHTAGS: [5-8 hashtags]
+---
+
+Write naturally like a real person. No corporate speak. Each post should feel completely different from the others.`;
+  try{
+    const txt = await ai(prompt, QUALITY_MODEL);
+    const blocks = txt.split(/ITEM\s*\[?\d+\]?/i).filter(b => b.trim());
+    let html = '';
+    (blocks.length ? blocks : [txt]).slice(0,8).forEach((block, i) => {
+      const lines = block.split('\n');
+      const getField = (key) => { const l = lines.find(x => x.toUpperCase().startsWith(key.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
+      const hook = getField('HOOK'); const cap = getField('CAPTION'); const cta = getField('CTA'); const ht = getField('HASHTAGS');
+      const copyText = cleanCopyText(hook, cap, cta, ht);
+      html += '<div class="res-card"><div class="res-tag">✦ Post '+(i+1)+' of 8</div>';
+      if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook+'</div></div>';
+      if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
+      if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta+'</div></div>';
+      if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
+      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+',\'Batch Post\')">⭐ Save</button></div>';
+      html += '</div>';
+    });
+    html += regenBtn('genBatch', 'Regenerate All 8');
+    document.getElementById('batch-out').innerHTML = html;
+    rec();
+  }catch(e){ document.getElementById('batch-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genBatch', 'Try Again'); }
+  setBtn('batch-btn', false, '<span>🚀</span> Create 8 Posts');
+}
+
+// ═══ IDEA CAPTURE ═══
+function saveQuickIdea(){
+  const input = document.getElementById('idea-capture');
+  const text = input.value.trim();
+  if(!text) return;
+  doSave(text, 'Idea 💭');
+  input.value = '';
+  // Brief confirmation
+  const btn = input.nextElementSibling;
+  const orig = btn.textContent;
+  btn.textContent = '✅ Saved!';
+  setTimeout(() => btn.textContent = orig, 1500);
 }
 
 // ═══ WHAT SHOULD I POST ═══
@@ -1069,14 +1174,14 @@ HASHTAGS
     const txt = await ai(prompt, FAST_MODEL);
     const get = (key) => { const m = txt.match(new RegExp(key+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:HOOK|CAPTION|CTA|HASHTAGS)|$)','i')); return m ? m[1].trim() : ''; };
     const hook = get('HOOK'); const cap = get('CAPTION'); const cta = get('CTA'); const ht = get('HASHTAGS');
-    const full = hook+'\n\n'+cap+'\n\n'+cta+'\n\n'+ht;
+    const copyText = cleanCopyText(hook, cap, cta, ht);
     let html = '<div class="res-card"><div class="res-tag">✦ Your Post — '+wtpState.type+'</div>';
     if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook.replace(/\n/g,'<br>')+'</div></div>';
     if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
     if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta+'</div></div>';
     if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
-    html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(full)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(full)+',' + JSON.stringify('WTP Post')+')">⭐ Save</button><button class="btn-sm" onclick="resetWTP()">🔄 Start Over</button></div>';
-    html += refineHTML(full);
+    html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+',' + JSON.stringify('WTP Post')+')">⭐ Save</button><button class="btn-sm" onclick="resetWTP()">🔄 Start Over</button></div>';
+    html += refineHTML(copyText);
     html += '</div>';
     html += regenBtn('genWTP', 'Regenerate');
     document.getElementById('wtp-out').innerHTML = html;
@@ -1100,33 +1205,47 @@ async function genCaption(){
   const d = document.getElementById('cap-in').value.trim() || 'a helpful tip for ' + p + ' users';
   const goal = document.getElementById('cap-goal').value;
   const ht = document.getElementById('cap-ht').value === 'yes';
+  const capLen = document.getElementById('cap-length').value;
+  const lenInstructions = {
+    short: 'CAPTION: [1-2 clear, punchy sentences. Keep it tight.]',
+    medium: 'CAPTION: [One full paragraph, 3-5 sentences. Use clear sentences with proper punctuation. Avoid run-on sentences. Break longer thoughts into shorter sentences.]',
+    long: 'CAPTION: [Story-style caption, 2-3 short paragraphs. Tell a mini story. Use clear sentences. Limit paragraphs to 2-4 sentences. No run-on sentences.]'
+  };
   setBtn('cap-btn', true, '<span>✍️</span> Build My Post');
   document.getElementById('cap-out').innerHTML = '';
   const prompt = `Expert ${p} copywriter. Write 3 complete post packages for: "${d}"
 Goal: ${goal} | Tone: ${tone}
 
+IMPORTANT WRITING RULES:
+- Use clear sentences with proper punctuation.
+- Avoid long run-on sentences.
+- Break longer thoughts into shorter sentences.
+- Limit paragraphs to 2-4 sentences.
+- The caption should read naturally but remain grammatically clear.
+
 For each write EXACTLY:
 ITEM[number]
-HOOK: [scroll-stopping opener]
-CAPTION: [3-5 sentence body]
-CTA: [call to action]
+HOOK: [scroll-stopping opener, 1-2 sentences]
+${lenInstructions[capLen]}
+CTA: [call to action question]
 ${ht?'HASHTAGS: [8-10 hashtags]':''}
 ---`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
+    const blocks = txt.split(/ITEM\s*\[?\d+\]?/i).filter(b => b.trim());
     let html = '';
     (blocks.length ? blocks : [txt]).slice(0,3).forEach((block, i) => {
       const lines = block.split('\n');
       const getField = (key) => { const l = lines.find(x => x.toUpperCase().startsWith(key.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
       const hook = getField('HOOK'); const cap = getField('CAPTION'); const cta = getField('CTA'); const htags = getField('HASHTAGS');
-      const full = (hook?hook+'\n\n':'')+(cap?cap+'\n\n':'')+(cta?cta+'\n\n':'')+(htags?htags:'');
+      const copyText = cleanCopyText(hook, cap, cta, htags);
       html += '<div class="res-card"><div class="res-tag">✦ Option '+(i+1)+' · '+p+'</div>';
       if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook+'</div></div>';
       if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
       if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta+'</div></div>';
       if(htags) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+htags+'</div></div>';
-      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(full)+')">📋 Copy</button><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(htags)+')">📋 Hashtags</button><button class="btn-sm" onclick="doSave('+JSON.stringify(full)+','+JSON.stringify(p)+')">⭐ Save</button></div>';
-      html += refineHTML(full);
+      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button>'+(htags?'<button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(htags)+')">📋 Hashtags</button>':'')+'<button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+','+JSON.stringify(p)+')">⭐ Save</button></div>';
+      html += refineHTML(copyText);
       html += '</div>';
     });
     if(!html) html = '<div class="res-card"><div class="res-body">'+txt.replace(/\n/g,'<br>')+'</div></div>';
@@ -1173,7 +1292,7 @@ HOOK6
       html += '<div class="hook-score">🎯 Scroll Stop Score: '+score+'/10</div>';
       html += '<div class="res-body" style="font-weight:600;color:var(--text)">'+h+'</div>';
       html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(h)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(h)+','+JSON.stringify(p+' Hook')+')">⭐ Save</button><button class="btn-sm" onclick="sendToScript('+JSON.stringify(h)+')">🎬 Use For Script</button></div>';
-      html += '<div class="refine-row"><button class="rbtn" onclick="refinePost(this,\'shorter\','+JSON.stringify(h)+')">✂️ Shorter</button><button class="rbtn" onclick="refinePost(this,\'dramatic\','+JSON.stringify(h)+')">🔥 Dramatic</button><button class="rbtn" onclick="refinePost(this,\'human\','+JSON.stringify(h)+')">💬 More Human</button></div>';
+      html += '<div class="refine-row"><button class="rbtn" onclick="refinePost(this,\'shorter\','+JSON.stringify(h)+')">✂️ Shorten</button><button class="rbtn" onclick="refinePost(this,\'dramatic\','+JSON.stringify(h)+')">🔥 Make it more bold</button><button class="rbtn" onclick="refinePost(this,\'human\','+JSON.stringify(h)+')">💬 Make it more natural</button></div>';
       html += '</div>';
     });
     html += regenBtn('genHooks', 'Regenerate');
