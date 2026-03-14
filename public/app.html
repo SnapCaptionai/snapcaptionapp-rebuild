@@ -1162,9 +1162,10 @@ HOOK6
       html += '<div class="refine-row"><button class="rbtn" onclick="refinePost(this,\'shorter\','+JSON.stringify(h)+')">✂️ Shorter</button><button class="rbtn" onclick="refinePost(this,\'dramatic\','+JSON.stringify(h)+')">🔥 Dramatic</button><button class="rbtn" onclick="refinePost(this,\'human\','+JSON.stringify(h)+')">💬 More Human</button></div>';
       html += '</div>';
     });
+    html += regenBtn('genHooks', 'Regenerate');
     document.getElementById('hook-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('hook-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('hook-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genHooks', 'Try Again'); }
   setBtn('hook-btn', false, '<span>🎣</span> Write My Hooks');
 }
 
