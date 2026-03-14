@@ -838,13 +838,13 @@ function rHome(){
 }
 
 function rLim(){
-  const rem = Math.max(0, FREE_LIMIT - uses);
+  const limit = creatorMode ? 200 : FREE_LIMIT;
+  const rem = Math.max(0, limit - uses);
   const bar = document.getElementById('lim-bar');
   const txt = document.getElementById('lim-text');
   const wrap = document.getElementById('lim-wrap');
-  if(creatorMode && wrap){ wrap.style.display = 'none'; return; }
-  if(bar) bar.style.width = (rem/FREE_LIMIT*100) + '%';
-  if(txt) txt.textContent = rem + ' of ' + FREE_LIMIT + ' left today';
+  if(bar) bar.style.width = (rem/limit*100) + '%';
+  if(txt) txt.textContent = rem + ' of ' + limit + ' left today';
 }
 
 rHome(); rLim();
