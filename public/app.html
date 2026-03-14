@@ -1285,6 +1285,7 @@ HOOK6
     const txt = await ai(prompt, FAST_MODEL);
     const scores = [9,8,10,7,9,8];
     let html = '';
+    const hooks = txt.split(/HOOK\d+/i).filter(h => h.trim());
     (hooks.length ? hooks : [txt]).forEach((hook, i) => {
       const h = hook.trim();
       const score = scores[i] || 8;
