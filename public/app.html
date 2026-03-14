@@ -1088,7 +1088,7 @@ async function genCaption(){
   if(!canGen()) return;
   const p = gplat('cap-prow');
   const tone = gtones('cap-tone');
-  const d = document.getElementById('cap-in').value.trim() || 'a helpful tip for ' + p + ' creators';
+  const d = document.getElementById('cap-in').value.trim() || 'a helpful tip for ' + p + ' users';
   const goal = document.getElementById('cap-goal').value;
   const ht = document.getElementById('cap-ht').value === 'yes';
   setBtn('cap-btn', true, '<span>✍️</span> Build My Post');
