@@ -825,7 +825,10 @@ setTimeout(dismissSplash, 3500);
       <!-- Step 2 -->
       <div id="wtp-step2" style="display:none">
         <div class="card" style="border-color:rgba(0,212,255,0.25)">
-          <span class="sl" style="color:var(--cyan)">Step 2 of 3 — What kind of creator are you?</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span class="sl" style="color:var(--cyan);margin-bottom:0">Step 2 of 3 — What kind of creator are you?</span>
+            <button class="btn-sm" onclick="document.getElementById('wtp-step2').style.display='none';document.getElementById('wtp-step1').style.display='block'">← Back</button>
+          </div>
           <div style="display:flex;flex-direction:column;gap:10px" id="wtp-creator">
             <div class="wtp-opt" onclick="wtpSelect('creator',this,'Small Business Owner')">🏪 Small Business Owner</div>
             <div class="wtp-opt" onclick="wtpSelect('creator',this,'Coach or Educator')">🎓 Coach or Educator</div>
@@ -839,7 +842,10 @@ setTimeout(dismissSplash, 3500);
       <!-- Step 3 -->
       <div id="wtp-step3" style="display:none">
         <div class="card" style="border-color:rgba(155,92,255,0.25)">
-          <span class="sl" style="color:var(--purple)">Step 3 of 3 — What tone feels right today?</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span class="sl" style="color:var(--purple);margin-bottom:0">Step 3 of 3 — What tone feels right today?</span>
+            <button class="btn-sm" onclick="document.getElementById('wtp-step3').style.display='none';document.getElementById('wtp-step2').style.display='block'">← Back</button>
+          </div>
           <div style="display:flex;flex-direction:column;gap:10px" id="wtp-tone">
             <div class="wtp-opt" onclick="wtpSelect('tone',this,'Inspirational')">✨ Inspirational</div>
             <div class="wtp-opt" onclick="wtpSelect('tone',this,'Real Talk')">💯 Real Talk</div>
@@ -1839,16 +1845,18 @@ function wtpSelect(field, el, value){
   el.classList.add('selected');
   wtpState[field] = value;
 
-  // Auto advance to next step
+  // Auto advance: hide current step, show next
   setTimeout(() => {
     if(field === 'type'){
+      document.getElementById('wtp-step1').style.display = 'none';
       document.getElementById('wtp-step2').style.display = 'block';
       document.getElementById('wtp-step2').scrollIntoView({behavior:'smooth', block:'start'});
     } else if(field === 'creator'){
+      document.getElementById('wtp-step2').style.display = 'none';
       document.getElementById('wtp-step3').style.display = 'block';
       document.getElementById('wtp-step3').scrollIntoView({behavior:'smooth', block:'start'});
     }
-  }, 200);
+  }, 300);
 }
 
 async function genWhatToPost(){
