@@ -1367,7 +1367,7 @@ async function genBio(){
   if(!canGen()) return;
   const p = gplat('bio-prow');
   const inc = gtones('bio-inc');
-  const d = document.getElementById('bio-in').value.trim() || 'a content creator sharing tips and inspiration';
+  const d = document.getElementById('bio-in').value.trim() || 'someone who shares tips and inspiration online';
   setBtn('bio-btn', true, '<span>👤</span> Write My Bio');
   document.getElementById('bio-out').innerHTML = '';
   const prompt = `Write 3 different ${p} bios for: "${d}"
