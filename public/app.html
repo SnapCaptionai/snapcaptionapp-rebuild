@@ -869,11 +869,11 @@ function setBtn(id, loading, label){
 // ═══ VOICE CONTEXT ═══
 function getVoiceContext(){
   let ctx = '';
-  if(voiceProfile.tone) ctx += 'Creator tone: ' + voiceProfile.tone + '. ';
+  if(voiceProfile.tone) ctx += 'Tone: ' + voiceProfile.tone + '. ';
   if(voiceProfile.desc) ctx += 'Voice style: ' + voiceProfile.desc + '. ';
-  if(profile.name) ctx += 'Creator name: ' + profile.name + '. ';
+  if(profile.name) ctx += 'Name: ' + profile.name + '. ';
   if(profile.brand) ctx += 'Brand: ' + profile.brand + '. ';
-  if(profile.niche) ctx += 'Niche: ' + profile.niche + '. ';
+  if(profile.niche) ctx += 'Posts about: ' + profile.niche + '. ';
   return ctx;
 }
 
