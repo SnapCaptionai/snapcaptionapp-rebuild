@@ -1107,19 +1107,34 @@ function closeSheet(){document.getElementById('modal').classList.remove('open');
 function closeModal(e){if(e.target===document.getElementById('modal'))closeSheet();}
 function selPlan(el){document.querySelectorAll('.plan').forEach(p=>p.classList.remove('hot'));el.classList.add('hot');}
 
-// ═══ CREATOR MODE ═══
+// ═══ BACKEND CONFIG ═══
+// Injected directly — no postMessage bridge needed
 let SUPABASE_URL = '';
 let SUPABASE_ANON_KEY = '';
 
-// Get config from parent React app
+// Try to get config from parent via postMessage (fallback)
 window.addEventListener('message', function(e) {
   if (e.data && e.data.type === 'SUPABASE_CONFIG') {
     SUPABASE_URL = e.data.url;
     SUPABASE_ANON_KEY = e.data.key;
+    console.log('[SnapCaption] Config received from parent');
   }
 });
-// Request config on load
-window.parent.postMessage({ type: 'GET_SUPABASE_CONFIG' }, '*');
+
+// Also try reading from meta tags injected by parent
+(function initConfig() {
+  // Request from parent
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ type: 'GET_SUPABASE_CONFIG' }, '*');
+    // Retry a few times in case parent isn't ready
+    let retries = 0;
+    const interval = setInterval(() => {
+      if (SUPABASE_URL || retries >= 10) { clearInterval(interval); return; }
+      window.parent.postMessage({ type: 'GET_SUPABASE_CONFIG' }, '*');
+      retries++;
+    }, 500);
+  }
+})();
 
 async function checkCreatorCode(){
   const input = document.getElementById('creator-code-input').value.trim();
