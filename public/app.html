@@ -969,7 +969,7 @@ async function refinePost(btn, mode, text){
     human: 'Rewrite this to sound more natural and conversational — less AI, more human. Use contractions, short sentences, and real talk:\n\n'+text
   };
   try{
-    const result = await ai(prompts[mode]);
+    const result = await ai(prompts[mode], FAST_MODEL);
     // Find the parent result card and update
     const card = btn.closest('.res-card') || btn.closest('.sblock');
     if(card){
