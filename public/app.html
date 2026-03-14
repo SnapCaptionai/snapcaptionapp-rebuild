@@ -989,10 +989,10 @@ function regenBtn(genName, label){
 function refineHTML(text, context){
   const enc = JSON.stringify(text);
   return `<div class="refine-row">
-    <button class="rbtn" onclick="refinePost(this,'shorter',${enc})">✂️ Shorter</button>
-    <button class="rbtn" onclick="refinePost(this,'rewrite',${enc})">🔄 Rewrite</button>
-    <button class="rbtn" onclick="refinePost(this,'dramatic',${enc})">🔥 More Dramatic</button>
-    <button class="rbtn human" onclick="refinePost(this,'human',${enc})">💬 More Human</button>
+    <button class="rbtn" onclick="refinePost(this,'shorter',${enc})">✂️ Shorten</button>
+    <button class="rbtn" onclick="refinePost(this,'rewrite',${enc})">🔄 Try another version</button>
+    <button class="rbtn" onclick="refinePost(this,'dramatic',${enc})">🔥 Make it more bold</button>
+    <button class="rbtn human" onclick="refinePost(this,'human',${enc})">💬 Make it more natural</button>
   </div>`;
 }
 
