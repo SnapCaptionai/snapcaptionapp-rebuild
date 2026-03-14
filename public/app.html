@@ -1552,7 +1552,7 @@ function renderCalendar(){
 async function remixDay(idx){
   const d = calendarData[idx]; if(!d) return;
   try{
-    const txt = await ai('Remix this content with a completely new angle, hook, and story. Same theme, brand new content.\n\nTheme: '+d.theme+'\nOriginal hook: '+d.hook+'\nPlatform: '+d.platform+'\n\nHOOK: [new hook]\nCAPTION: [new caption]\nHASHTAGS: [hashtags]');
+    const txt = await ai('Remix this content with a completely new angle, hook, and story. Same theme, brand new content.\n\nTheme: '+d.theme+'\nOriginal hook: '+d.hook+'\nPlatform: '+d.platform+'\n\nHOOK: [new hook]\nCAPTION: [new caption]\nHASHTAGS: [hashtags]', FAST_MODEL);
     const lines = txt.split('\n');
     const get = (k) => { const l = lines.find(x => x.toUpperCase().startsWith(k.toUpperCase()+':')); return l?l.substring(l.indexOf(':')+1).trim():''; };
     calendarData[idx].hook = get('HOOK')||d.hook;
