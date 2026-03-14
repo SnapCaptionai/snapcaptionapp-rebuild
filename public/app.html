@@ -1201,41 +1201,53 @@ async function genScript(){
   setBtn('scr-btn', true, '<span>🎬</span> Write My Script');
   document.getElementById('scr-out').innerHTML = '';
 
-  const prodSection = product ? `\n\nPRODUCT MENTION (mid-video, natural and conversational):\n[Mention: "${product}"${link?' — send them to: '+link:''}. Make it feel like a recommendation to a friend, not an ad.]` : '';
+  const prodSection = product ? `\n\nPRODUCT MENTION\nNaturally mention "${product}"${link?' — direct viewers to: '+link:''}. Make it feel like a genuine recommendation, not an ad. Weave it into the conversation between Section 2 and Section 3.` : '';
 
   const mainInstructions = isReal ?
-    `Use this EXACT repeating structure 4-5 times:\nREALIZATION [number]\n[One bold truth]\nEXPLANATION\n[Why this is true — 2-3 sentences]\nEXAMPLE\n[Real relatable story that proves it]${prodSection}` :
-    `Write the main content naturally with [VISUAL CUE] notes.${prodSection}`;
+    `Use this EXACT repeating structure 4-5 times:\nREALIZATION [number]\n[One bold truth — full sentence]\nEXPLANATION\n[Why this is true — a full paragraph, 3-5 sentences]\nEXAMPLE\n[A real, relatable story that proves it — 3-5 sentences]${prodSection}` :
+    `SECTION 1 — MAIN IDEA OR PROBLEM
+[1-2 full paragraphs. Explain the core idea or problem in depth. Use real examples. This should be 100-150 words.]
 
-  const prompt = `Write a complete word-for-word ${len} ${p} video script.
-Topic: "${topic}"
+SECTION 2 — EXPLANATION OR EXAMPLE
+[1-2 full paragraphs. Go deeper with a story, analogy, or step-by-step breakdown. Make it vivid and specific. 100-150 words.]
+
+SECTION 3 — PRACTICAL INSIGHT OR TAKEAWAY
+[1-2 full paragraphs. Give actionable advice or a meaningful takeaway the viewer can use today. 100-150 words.]${prodSection}`;
+
+  const prompt = `Write a complete word-for-word ${len} ${p} video script about: "${topic}"
 Tone: ${tone} | Style: ${style}
+
+IMPORTANT: This must be a FULL speaking script of 500-700 words — enough for 4-5 minutes of real video. Write in complete sentences and full paragraphs. Do NOT use bullet points or short fragments. Write exactly how someone would speak on camera.
 
 Format EXACTLY:
 
 HOOK
-[1-2 lines — bold truth, stops the scroll, no "in this video"]
+[2-3 bold sentences that stop the scroll. No "in this video" or "today we're going to talk about".]
 
 INTRO
-[2-3 sentences setting up what they'll learn]
+[1 full paragraph (4-6 sentences) setting up the topic. Explain why the viewer should care. Build curiosity.]
 
 MAIN CONTENT
 ${mainInstructions}
 
 OUTRO
-[Wrap up with one final truth that sticks]
+[1 full paragraph (3-5 sentences) wrapping up with a final truth or insight that sticks with the viewer.]
 
 CALL TO ACTION
-[Natural CTA — follow, save, share]
+[Natural CTA — ask them to follow, comment, share, or save. 2-3 sentences.]
 
-Write how a real human talks. Short sentences. Contractions. Mark [PAUSE] where needed.`;
+Write like a real person talks on camera. Use contractions. Short punchy sentences mixed with longer ones. Mark [PAUSE] where the speaker should pause for effect. The total script MUST be 500-700 words minimum.`;
 
   try{
     const txt = await ai(prompt);
+    const sectionKeys = 'HOOK|INTRO|MAIN CONTENT|SECTION 1|SECTION 2|SECTION 3|PRODUCT MENTION|OUTRO|CALL TO ACTION|REALIZATION';
     const secs = [
       {k:'HOOK',l:'🎣 HOOK',c:'var(--pink)'},
       {k:'INTRO',l:'👋 INTRO',c:'var(--orange)'},
       {k:'MAIN CONTENT',l:'🎯 MAIN CONTENT',c:'var(--cyan)'},
+      {k:'SECTION 1',l:'🎯 SECTION 1 — MAIN IDEA',c:'var(--cyan)'},
+      {k:'SECTION 2',l:'💡 SECTION 2 — EXPLANATION',c:'var(--yellow)'},
+      {k:'SECTION 3',l:'🔑 SECTION 3 — TAKEAWAY',c:'var(--green)'},
       {k:'PRODUCT MENTION',l:'🛍️ PRODUCT MENTION',c:'#ffb400'},
       {k:'OUTRO',l:'✨ OUTRO',c:'var(--purple)'},
       {k:'CALL TO ACTION',l:'📣 CALL TO ACTION',c:'var(--green)'}
@@ -1243,7 +1255,8 @@ Write how a real human talks. Short sentences. Contractions. Mark [PAUSE] where 
     let found = 0;
     let html = '<div class="res-card"><div class="res-tag">✦ Your '+len+' '+p+' Script</div>';
     secs.forEach(s => {
-      const pat = new RegExp(s.k+'[:\\s]*\\n([\\s\\S]*?)(?=\\n{0,3}(?:HOOK|INTRO|MAIN CONTENT|PRODUCT MENTION|OUTRO|CALL TO ACTION|REALIZATION)|$)','i');
+      const escapedKey = s.k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const pat = new RegExp(escapedKey+'[^\\n]*\\n([\\s\\S]*?)(?=\\n{0,3}(?:'+sectionKeys+')|$)','i');
       const m = txt.match(pat);
       if(m && m[1].trim()){
         found++;
