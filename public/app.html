@@ -917,8 +917,7 @@ async function genCaption(){
   if(!canGen()) return;
   const scr = document.getElementById('s-caption');
   const p = aplat(scr), t = atones(scr)||'Casual';
-  const d = document.getElementById('cap-in').value.trim();
-  if(!d){alert('Describe your post!'); return;}
+  const d = document.getElementById('cap-in').value.trim() || 'an engaging social media post that connects with my audience';
   const ht = document.getElementById('cap-ht').value;
   const ct = document.getElementById('cap-ct').value;
   const creator = document.getElementById('cap-creator')?.value.trim() || voiceProfile?.name || '';
