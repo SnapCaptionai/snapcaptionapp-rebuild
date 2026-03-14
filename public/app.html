@@ -1381,7 +1381,8 @@ Write like a real person talks on camera. Use contractions. Short punchy sentenc
     let html = '<div class="res-card"><div class="res-tag">✦ Your '+len+' '+p+' Script</div>';
     secs.forEach(s => {
       const escapedKey = s.k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const pat = new RegExp(escapedKey+'[^\\n]*\\n([\\s\\S]*?)(?=\\n{0,3}(?:'+sectionKeys+')|$)','i');
+      const allKeys = secs.map(x => x.k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+      const pat = new RegExp(escapedKey+'[^\\n]*\\n([\\s\\S]*?)(?=\\n{0,3}(?:'+allKeys+')|$)','i');
       const m = txt.match(pat);
       if(m && m[1].trim()){
         found++;
