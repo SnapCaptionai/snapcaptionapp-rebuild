@@ -1241,9 +1241,10 @@ Write how a real human talks. Short sentences. Contractions. Mark [PAUSE] where 
     html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(txt)+')">📋 Copy Script</button><button class="btn-sm" onclick="doSave('+JSON.stringify(txt)+','+JSON.stringify(p+' Script')+')">⭐ Save</button></div>';
     html += refineHTML(txt);
     html += '</div>';
+    html += regenBtn('genScript', 'Regenerate');
     document.getElementById('scr-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('scr-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('scr-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genScript', 'Try Again'); }
   setBtn('scr-btn', false, '<span>🎬</span> Write My Script');
 }
 
