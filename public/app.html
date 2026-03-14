@@ -1292,7 +1292,7 @@ HOOK6
       html += '<div class="hook-score">🎯 Scroll Stop Score: '+score+'/10</div>';
       html += '<div class="res-body" style="font-weight:600;color:var(--text)">'+h+'</div>';
       html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(h)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(h)+','+JSON.stringify(p+' Hook')+')">⭐ Save</button><button class="btn-sm" onclick="sendToScript('+JSON.stringify(h)+')">🎬 Use For Script</button></div>';
-      html += '<div class="refine-row"><button class="rbtn" onclick="refinePost(this,\'shorter\','+JSON.stringify(h)+')">✂️ Shorter</button><button class="rbtn" onclick="refinePost(this,\'dramatic\','+JSON.stringify(h)+')">🔥 Dramatic</button><button class="rbtn" onclick="refinePost(this,\'human\','+JSON.stringify(h)+')">💬 More Human</button></div>';
+      html += '<div class="refine-row"><button class="rbtn" onclick="refinePost(this,\'shorter\','+JSON.stringify(h)+')">✂️ Shorten</button><button class="rbtn" onclick="refinePost(this,\'dramatic\','+JSON.stringify(h)+')">🔥 Make it more bold</button><button class="rbtn" onclick="refinePost(this,\'human\','+JSON.stringify(h)+')">💬 Make it more natural</button></div>';
       html += '</div>';
     });
     html += regenBtn('genHooks', 'Regenerate');
