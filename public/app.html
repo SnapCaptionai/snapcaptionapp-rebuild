@@ -1458,6 +1458,8 @@ TWITTER
 [Twitter/X version]`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
+    let html = '';
+    platforms.forEach(plat => {
       const m = txt.match(new RegExp(plat+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:FACEBOOK|INSTAGRAM|TIKTOK|YOUTUBE|LINKEDIN|TWITTER)|$)','i'));
       if(m && m[1].trim()){
         const ver = m[1].trim();
