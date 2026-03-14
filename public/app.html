@@ -1062,9 +1062,10 @@ HASHTAGS
     html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(full)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(full)+',' + JSON.stringify('WTP Post')+')">⭐ Save</button><button class="btn-sm" onclick="resetWTP()">🔄 Start Over</button></div>';
     html += refineHTML(full);
     html += '</div>';
+    html += regenBtn('genWTP', 'Regenerate');
     document.getElementById('wtp-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('wtp-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('wtp-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genWTP', 'Try Again'); }
 }
 
 function resetWTP(){
