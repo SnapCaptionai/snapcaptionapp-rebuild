@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>SnapCaption – AI Creator Studio</title>
+<title>SnapCaption – AI Social Media Studio</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -198,7 +198,7 @@ select option{background:var(--card2);}
     </div>
     <!-- Stats -->
     <div class="hero-card">
-      <div style="font-size:0.9rem;font-weight:700;margin-bottom:4px">Your Creator Dashboard 🎬</div>
+      <div style="font-size:0.9rem;font-weight:700;margin-bottom:4px">Your Dashboard 🎬</div>
       <div style="font-size:0.72rem;color:var(--muted2)">Keep showing up. Every post counts.</div>
       <div class="stats-row">
         <div class="stat"><div class="stat-n" id="h-gen">0</div><div class="stat-l">Generated</div></div>
@@ -221,8 +221,8 @@ select option{background:var(--card2);}
       <div class="ttile" style="--tg:rgba(155,92,255,0.12)" onclick="go('hashtag')"><span class="ttile-icon">#️⃣</span><div class="ttile-name">Hashtag Generator</div><div class="ttile-desc">Get discovered</div></div>
       <div class="ttile" style="--tg:rgba(0,255,133,0.12)" onclick="go('repurpose')"><span class="ttile-icon">🔁</span><div class="ttile-name">Content Multiplier</div><div class="ttile-desc">1 idea → 6 platforms</div></div>
       <div class="ttile" style="--tg:rgba(255,214,0,0.12)" onclick="go('ideas')"><span class="ttile-icon">💡</span><div class="ttile-name">Idea Generator</div><div class="ttile-desc">Never run dry</div></div>
-      <div class="ttile" style="--tg:rgba(0,212,255,0.12)" onclick="go('bio')"><span class="ttile-icon">👤</span><div class="ttile-name">Bio Writer</div><div class="ttile-desc">Profile that converts</div></div>
-      <div class="ttile" style="--tg:rgba(255,122,0,0.2);grid-column:1/-1;border-color:rgba(255,122,0,0.3)" onclick="go('calendar')"><span class="ttile-icon">🗓️</span><div class="ttile-name">30-Day Content Calendar <span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:0.7rem;margin-left:6px">★ CREATOR FAVORITE</span></div><div class="ttile-desc">Your niche → 30 days of fire content, tracked & remixed</div></div>
+      <div class="ttile" style="--tg:rgba(0,212,255,0.12)" onclick="go('bio')"><span class="ttile-icon">👤</span><div class="ttile-name">Bio Writer</div><div class="ttile-desc">A bio that gets follows</div></div>
+      <div class="ttile" style="--tg:rgba(255,122,0,0.2);grid-column:1/-1;border-color:rgba(255,122,0,0.3)" onclick="go('calendar')"><span class="ttile-icon">🗓️</span><div class="ttile-name">30-Day Content Calendar <span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:0.7rem;margin-left:6px">★ POPULAR</span></div><div class="ttile-desc">Your topics → 30 days of ready-to-post content</div></div>
     </div>
   </div>
 </div>
@@ -250,13 +250,14 @@ select option{background:var(--card2);}
     <!-- Step 2 -->
     <div class="wtp-step" id="wtp-2">
       <div class="card">
-        <span class="sl" style="color:var(--orange)">Step 2 of 3 — What kind of creator are you?</span>
+        <span class="sl" style="color:var(--orange)">Step 2 of 3 — How do you usually share online?</span>
         <div id="wtp-creator-opts">
           <div class="wtp-option" onclick="wtpPick('creator',this,'Small Business Owner')">🏪 Small Business Owner</div>
           <div class="wtp-option" onclick="wtpPick('creator',this,'Coach or Educator')">🎓 Coach or Educator</div>
           <div class="wtp-option" onclick="wtpPick('creator',this,'Content Creator')">📱 Content Creator</div>
           <div class="wtp-option" onclick="wtpPick('creator',this,'Artist or Maker')">🎨 Artist or Maker</div>
           <div class="wtp-option" onclick="wtpPick('creator',this,'Entrepreneur')">💼 Entrepreneur</div>
+          <div class="wtp-option" onclick="wtpPick('creator',this,'Individual')">🙋 Individual</div>
         </div>
       </div>
     </div>
@@ -415,9 +416,9 @@ select option{background:var(--card2);}
 <div class="screen" id="s-ideas">
   <div class="sp">
     <div class="pt">Idea Generator 💡</div>
-    <div class="ps">10 fresh content ideas for your niche.</div>
+    <div class="ps">10 fresh post ideas based on what you like to share.</div>
     <div class="card">
-      <div class="field"><span class="sl">Your niche (optional)</span><input type="text" id="id-niche" placeholder="e.g. fitness, small business, parenting..."></div>
+      <div class="field"><span class="sl">What do you post about? (optional)</span><input type="text" id="id-niche" placeholder="e.g. fitness, cooking, personal growth, small business..."></div>
       <div class="row2">
         <div><span class="sl">Platform</span><select id="id-plat"><option>Any Platform</option><option>TikTok</option><option>Facebook</option><option>Instagram</option><option>YouTube</option></select></div>
         <div><span class="sl">Format</span><select id="id-fmt"><option>Mixed</option><option>Short Video</option><option>Long Video</option><option>Post/Caption</option></select></div>
@@ -432,7 +433,7 @@ select option{background:var(--card2);}
 <div class="screen" id="s-bio">
   <div class="sp">
     <div class="pt">Bio Writer 👤</div>
-    <div class="ps">A profile that makes people hit Follow.</div>
+    <div class="ps">A profile bio that makes people want to follow you.</div>
     <div class="card">
       <span class="sl">Platform</span>
       <div class="ppills" id="bio-prow">
@@ -460,11 +461,11 @@ select option{background:var(--card2);}
 <div class="screen" id="s-calendar">
   <div class="sp">
     <div class="pt">30-Day Calendar 🗓️</div>
-    <div class="ps">Your niche. Your schedule. 30 days of fire — tracked and remixed.</div>
+    <div class="ps">Your topics. Your schedule. 30 days of ready-to-post content.</div>
     <div id="cal-setup">
       <div class="card" style="border-color:rgba(255,214,0,0.25)">
         <span class="sl" style="color:var(--yellow)">Set up your calendar</span>
-        <div class="field"><input type="text" id="cal-niche" placeholder="Your niche (optional)"></div>
+        <div class="field"><input type="text" id="cal-niche" placeholder="What do you post about? (optional)"></div>
         <div class="field"><input type="text" id="cal-brand" placeholder="Your name or brand (optional)"></div>
         <div class="field">
           <span class="sl">Platform</span>
@@ -542,9 +543,9 @@ select option{background:var(--card2);}
     <!-- Profile -->
     <div class="card">
       <span class="sl">👤 Your Profile</span>
-      <div class="field"><input type="text" id="prof-name" placeholder="Your creator name (optional)" oninput="saveProfile()"></div>
-      <div class="field"><input type="text" id="prof-brand" placeholder="Your brand name (optional)" oninput="saveProfile()"></div>
-      <div class="field"><input type="text" id="prof-niche" placeholder="Your niche (optional)" oninput="saveProfile()"></div>
+      <div class="field"><input type="text" id="prof-name" placeholder="Your name (optional)" oninput="saveProfile()"></div>
+      <div class="field"><input type="text" id="prof-brand" placeholder="Your brand or page name (optional)" oninput="saveProfile()"></div>
+      <div class="field"><input type="text" id="prof-niche" placeholder="What do you post about? (optional)" oninput="saveProfile()"></div>
     </div>
     <!-- AI Engine -->
     <div class="card">
@@ -868,11 +869,11 @@ function setBtn(id, loading, label){
 // ═══ VOICE CONTEXT ═══
 function getVoiceContext(){
   let ctx = '';
-  if(voiceProfile.tone) ctx += 'Creator tone: ' + voiceProfile.tone + '. ';
+  if(voiceProfile.tone) ctx += 'Tone: ' + voiceProfile.tone + '. ';
   if(voiceProfile.desc) ctx += 'Voice style: ' + voiceProfile.desc + '. ';
-  if(profile.name) ctx += 'Creator name: ' + profile.name + '. ';
+  if(profile.name) ctx += 'Name: ' + profile.name + '. ';
   if(profile.brand) ctx += 'Brand: ' + profile.brand + '. ';
-  if(profile.niche) ctx += 'Niche: ' + profile.niche + '. ';
+  if(profile.niche) ctx += 'Posts about: ' + profile.niche + '. ';
   return ctx;
 }
 
@@ -976,7 +977,7 @@ async function quickCreate(){
   const idea = document.getElementById('quick-idea').value.trim();
   setBtn('quick-btn', true, '<span>⚡</span> Create Standout Content');
   document.getElementById('quick-out').innerHTML = '';
-  const topic = idea || 'a helpful tip for content creators today';
+  const topic = idea || 'a helpful tip for people who post on social media';
   const prompt = `Create a complete social media post package for: "${topic}"
 
 Format EXACTLY as:
@@ -1033,9 +1034,15 @@ function wtpPick(field, el, val){
 async function genWTP(){
   if(!canGen()) return;
   document.getElementById('wtp-out').innerHTML = '<div class="res-card" style="text-align:center;padding:20px"><div class="spin" style="margin:0 auto"></div><div style="margin-top:10px;font-size:0.8rem;color:var(--muted2)">Creating your post...</div></div>';
-  const prompt = `Create a complete social media post for a ${wtpState.creator||'content creator'}.
+  const userType = wtpState.creator || 'someone who posts on social media';
+  const isIndividual = userType === 'Individual';
+  const typeContext = isIndividual
+    ? 'an everyday social media user sharing personal reflections, life updates, motivational posts, or conversation starters'
+    : 'a ' + userType;
+  const prompt = `Create a complete social media post for ${typeContext}.
 Post type: ${wtpState.type||'helpful tip'}
 Tone: ${wtpState.tone||'Real Talk'}
+${isIndividual ? 'This is for a regular person — NOT a business or brand. Keep it personal, relatable, and genuine.' : ''}
 
 Format EXACTLY as:
 HOOK
@@ -1081,7 +1088,7 @@ async function genCaption(){
   if(!canGen()) return;
   const p = gplat('cap-prow');
   const tone = gtones('cap-tone');
-  const d = document.getElementById('cap-in').value.trim() || 'a helpful tip for ' + p + ' creators';
+  const d = document.getElementById('cap-in').value.trim() || 'a helpful tip for ' + p + ' users';
   const goal = document.getElementById('cap-goal').value;
   const ht = document.getElementById('cap-ht').value === 'yes';
   setBtn('cap-btn', true, '<span>✍️</span> Build My Post');
@@ -1127,7 +1134,7 @@ async function genHooks(){
   if(!canGen()) return;
   const p = gplat('hook-prow');
   const style = gtones('hook-style');
-  const d = document.getElementById('hook-in').value.trim() || 'a helpful tip for creators';
+  const d = document.getElementById('hook-in').value.trim() || 'a helpful tip for people on social media';
   setBtn('hook-btn', true, '<span>🎣</span> Write My Hooks');
   document.getElementById('hook-out').innerHTML = '';
   const prompt = `Write 6 scroll-stopping ${p} hooks for: "${d}"
@@ -1332,12 +1339,12 @@ TWITTER
 // ═══ IDEA GENERATOR ═══
 async function genIdeas(){
   if(!canGen()) return;
-  const niche = document.getElementById('id-niche').value.trim() || 'content creator';
+  const niche = document.getElementById('id-niche').value.trim() || 'social media';
   const plat = document.getElementById('id-plat').value;
   const fmt = document.getElementById('id-fmt').value;
   setBtn('id-btn', true, '<span>💡</span> Give Me 10 Ideas');
   document.getElementById('id-out').innerHTML = '';
-  const prompt = `Generate 10 creative ${fmt} content ideas for a ${niche} creator on ${plat}.
+  const prompt = `Generate 10 creative ${fmt} content ideas for someone who posts about ${niche} on ${plat}.
 Each idea should be specific, actionable, and scroll-stopping.
 Format as numbered list: 1. [idea]`;
   try{
@@ -1360,7 +1367,7 @@ async function genBio(){
   if(!canGen()) return;
   const p = gplat('bio-prow');
   const inc = gtones('bio-inc');
-  const d = document.getElementById('bio-in').value.trim() || 'a content creator sharing tips and inspiration';
+  const d = document.getElementById('bio-in').value.trim() || 'someone who shares tips and inspiration online';
   setBtn('bio-btn', true, '<span>👤</span> Write My Bio');
   document.getElementById('bio-out').innerHTML = '';
   const prompt = `Write 3 different ${p} bios for: "${d}"
@@ -1393,8 +1400,8 @@ const WC = ['var(--pink)','var(--orange)','var(--yellow)','var(--green)'];
 
 async function genCalendar(){
   if(!canGen()) return;
-  const niche = document.getElementById('cal-niche').value.trim() || 'content creator';
-  const brand = document.getElementById('cal-brand').value.trim() || 'Creator';
+  const niche = document.getElementById('cal-niche').value.trim() || 'social media';
+  const brand = document.getElementById('cal-brand').value.trim() || '';
   const plat = gplat('cal-prow');
   const freq = document.querySelector('#cal-freq .ppill.on')?.dataset.v || '1';
   const goal = gtones('cal-goal-chips');
@@ -1415,7 +1422,7 @@ async function genCalendar(){
   const weekPlan = THEMES.map((t,w) => 'Week '+(w+1)+' "'+t.name+'": '+t.days.map((d,i) => 'Day '+(w*7+i+1)+' '+d.t+' — '+d.d).join(', ')).join('\n');
   const prodLine = product ? 'In Week 3, naturally mention this product: '+product+'.' : '';
 
-  const prompt = `You are a content calendar expert. Create a 30-day content calendar for a ${niche} creator named "${brand}".
+  const prompt = `You are a content calendar expert. Create a 30-day content calendar for someone who posts about ${niche}${brand ? ' named "'+brand+'"' : ''}.
 Platform: ${plat}. Goal: ${goal}. ${prodLine}
 
 Week plan:
