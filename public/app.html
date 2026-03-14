@@ -1009,10 +1009,11 @@ Write naturally. Real human voice. No corporate speak.`;
     html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(full)+')">📋 Copy All</button><button class="btn-sm" onclick="doSave('+JSON.stringify(full)+',' + JSON.stringify('Quick Post')+')">⭐ Save</button></div>';
     html += refineHTML(full);
     html += '</div>';
+    html += regenBtn('quickCreate', 'Regenerate');
     document.getElementById('quick-out').innerHTML = html;
     rec();
   }catch(e){
-    document.getElementById('quick-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: ' + e.message + '</div>';
+    document.getElementById('quick-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: ' + e.message + '</div>' + regenBtn('quickCreate', 'Try Again');
   }
   setBtn('quick-btn', false, '<span>⚡</span> Create Standout Content');
 }
