@@ -1204,33 +1204,47 @@ async function genCaption(){
   const d = document.getElementById('cap-in').value.trim() || 'a helpful tip for ' + p + ' users';
   const goal = document.getElementById('cap-goal').value;
   const ht = document.getElementById('cap-ht').value === 'yes';
+  const capLen = document.getElementById('cap-length').value;
+  const lenInstructions = {
+    short: 'CAPTION: [1-2 clear, punchy sentences. Keep it tight.]',
+    medium: 'CAPTION: [One full paragraph, 3-5 sentences. Use clear sentences with proper punctuation. Avoid run-on sentences. Break longer thoughts into shorter sentences.]',
+    long: 'CAPTION: [Story-style caption, 2-3 short paragraphs. Tell a mini story. Use clear sentences. Limit paragraphs to 2-4 sentences. No run-on sentences.]'
+  };
   setBtn('cap-btn', true, '<span>✍️</span> Build My Post');
   document.getElementById('cap-out').innerHTML = '';
   const prompt = `Expert ${p} copywriter. Write 3 complete post packages for: "${d}"
 Goal: ${goal} | Tone: ${tone}
 
+IMPORTANT WRITING RULES:
+- Use clear sentences with proper punctuation.
+- Avoid long run-on sentences.
+- Break longer thoughts into shorter sentences.
+- Limit paragraphs to 2-4 sentences.
+- The caption should read naturally but remain grammatically clear.
+
 For each write EXACTLY:
 ITEM[number]
-HOOK: [scroll-stopping opener]
-CAPTION: [3-5 sentence body]
-CTA: [call to action]
+HOOK: [scroll-stopping opener, 1-2 sentences]
+${lenInstructions[capLen]}
+CTA: [call to action question]
 ${ht?'HASHTAGS: [8-10 hashtags]':''}
 ---`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
+    const blocks = txt.split(/ITEM\s*\[?\d+\]?/i).filter(b => b.trim());
     let html = '';
     (blocks.length ? blocks : [txt]).slice(0,3).forEach((block, i) => {
       const lines = block.split('\n');
       const getField = (key) => { const l = lines.find(x => x.toUpperCase().startsWith(key.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
       const hook = getField('HOOK'); const cap = getField('CAPTION'); const cta = getField('CTA'); const htags = getField('HASHTAGS');
-      const full = (hook?hook+'\n\n':'')+(cap?cap+'\n\n':'')+(cta?cta+'\n\n':'')+(htags?htags:'');
+      const copyText = cleanCopyText(hook, cap, cta, htags);
       html += '<div class="res-card"><div class="res-tag">✦ Option '+(i+1)+' · '+p+'</div>';
       if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook+'</div></div>';
       if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
       if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta+'</div></div>';
       if(htags) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+htags+'</div></div>';
-      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(full)+')">📋 Copy</button><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(htags)+')">📋 Hashtags</button><button class="btn-sm" onclick="doSave('+JSON.stringify(full)+','+JSON.stringify(p)+')">⭐ Save</button></div>';
-      html += refineHTML(full);
+      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button>'+(htags?'<button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(htags)+')">📋 Hashtags</button>':'')+'<button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+','+JSON.stringify(p)+')">⭐ Save</button></div>';
+      html += refineHTML(copyText);
       html += '</div>';
     });
     if(!html) html = '<div class="res-card"><div class="res-body">'+txt.replace(/\n/g,'<br>')+'</div></div>';
