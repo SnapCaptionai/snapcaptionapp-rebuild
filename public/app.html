@@ -1839,16 +1839,18 @@ function wtpSelect(field, el, value){
   el.classList.add('selected');
   wtpState[field] = value;
 
-  // Auto advance to next step
+  // Auto advance: hide current step, show next
   setTimeout(() => {
     if(field === 'type'){
+      document.getElementById('wtp-step1').style.display = 'none';
       document.getElementById('wtp-step2').style.display = 'block';
       document.getElementById('wtp-step2').scrollIntoView({behavior:'smooth', block:'start'});
     } else if(field === 'creator'){
+      document.getElementById('wtp-step2').style.display = 'none';
       document.getElementById('wtp-step3').style.display = 'block';
       document.getElementById('wtp-step3').scrollIntoView({behavior:'smooth', block:'start'});
     }
-  }, 200);
+  }, 300);
 }
 
 async function genWhatToPost(){
