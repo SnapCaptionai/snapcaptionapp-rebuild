@@ -636,6 +636,92 @@ select option{background:var(--card2);}
 </div>
 
 <script>
+// ═══ SUPABASE CLIENT ═══
+let _sbUrl = '', _sbKey = '', _sbClient = null, _sbUser = null;
+
+// Receive config from parent iframe
+window.addEventListener('message', function(e){
+  if(e.data?.type === 'SUPABASE_CONFIG'){
+    _sbUrl = e.data.url;
+    _sbKey = e.data.key;
+    initSupabase();
+  }
+});
+window.parent.postMessage({type:'GET_SUPABASE_CONFIG'},'*');
+
+async function initSupabase(){
+  if(!_sbUrl || !_sbKey) return;
+  // Use supabase-js from CDN
+  if(!window.supabase){
+    await new Promise((resolve) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+      s.onload = resolve;
+      document.head.appendChild(s);
+    });
+  }
+  _sbClient = window.supabase.createClient(_sbUrl, _sbKey);
+  // Check for existing session
+  const { data: { session } } = await _sbClient.auth.getSession();
+  if(session) { _sbUser = session.user; loadFromSupabase(); }
+}
+
+async function loadFromSupabase(){
+  if(!_sbClient || !_sbUser) return;
+  try{
+    // Load saved content
+    const { data: savedRows } = await _sbClient.from('saved_content').select('*').order('created_at',{ascending:false});
+    if(savedRows && savedRows.length){
+      saved = savedRows.map(r => ({id:r.id, text:r.text, platform:r.platform, date:r.saved_date}));
+      localStorage.setItem('sc2-saved', JSON.stringify(saved));
+      rSaved(); rHome();
+    }
+    // Load calendar
+    const { data: calRows } = await _sbClient.from('calendar_posts').select('*').order('day_number',{ascending:true});
+    if(calRows && calRows.length){
+      calendarData = calRows.map(r => ({
+        _dbId:r.id, day:r.day_number, week:r.week, weekName:r.week_name,
+        platform:r.platform, theme:r.theme, hook:r.hook, caption:r.caption,
+        hashtags:r.hashtags, tip:r.tip, done:r.done, date:new Date(r.post_date), freq:r.freq
+      }));
+      calStartDate = new Date(calRows[0].post_date);
+      document.getElementById('cal-setup').style.display = 'none';
+      renderCalendar();
+    }
+  }catch(e){ console.warn('Supabase load error:', e); }
+}
+
+async function syncSaveToSupabase(item){
+  if(!_sbClient || !_sbUser) return;
+  try{
+    await _sbClient.from('saved_content').insert({
+      user_id: _sbUser.id, text: item.text, platform: item.platform, saved_date: item.date
+    });
+  }catch(e){ console.warn('Save sync error:', e); }
+}
+
+async function syncCalendarToSupabase(){
+  if(!_sbClient || !_sbUser || !calendarData.length) return;
+  try{
+    // Delete old calendar, insert new
+    await _sbClient.from('calendar_posts').delete().eq('user_id', _sbUser.id);
+    const rows = calendarData.map(d => ({
+      user_id: _sbUser.id, day_number: d.day, week: d.week, week_name: d.weekName,
+      platform: d.platform, theme: d.theme, hook: d.hook, caption: d.caption,
+      hashtags: d.hashtags, tip: d.tip, done: d.done,
+      post_date: new Date(d.date).toISOString().split('T')[0], freq: d.freq
+    }));
+    await _sbClient.from('calendar_posts').insert(rows);
+  }catch(e){ console.warn('Calendar sync error:', e); }
+}
+
+async function syncCalendarDone(idx){
+  if(!_sbClient || !_sbUser) return;
+  const d = calendarData[idx];
+  if(!d || !d._dbId) return;
+  try{ await _sbClient.from('calendar_posts').update({done:d.done}).eq('id',d._dbId); }catch(e){}
+}
+
 // ═══ STATE — all variables declared first ═══
 const FREE_LIMIT = 5;
 let uses = +localStorage.getItem('sc2-uses') || 0;
