@@ -537,29 +537,13 @@ select option{background:var(--card2);}
     <!-- AI Engine -->
     <div class="card">
       <span class="sl">🤖 AI Engine</span>
-      <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:10px">Claude works out of the box. Add your own key for ChatGPT or Gemini.</div>
-      <div class="eng-card active-eng" id="eng-claude" onclick="selectEngine('claude')">
+      <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:10px">All AI requests are powered by SnapCaption's cloud backend — no API keys needed.</div>
+      <div class="eng-card active-eng">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-          <div style="display:flex;align-items:center;gap:8px"><span>🟠</span><strong>Claude (Anthropic)</strong></div>
-          <div class="eng-badge" id="badge-claude">ACTIVE</div>
+          <div style="display:flex;align-items:center;gap:8px"><span>⚡</span><strong>SnapCaption AI</strong></div>
+          <div class="eng-badge">ACTIVE</div>
         </div>
-        <div style="font-size:0.72rem;color:var(--muted2)">Best for deep creative writing. Powers your app now.</div>
-      </div>
-      <div class="eng-card" id="eng-openai" onclick="selectEngine('openai')">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-          <div style="display:flex;align-items:center;gap:8px"><span>🟢</span><strong>ChatGPT (OpenAI)</strong></div>
-          <div class="eng-badge off" id="badge-openai">ADD KEY</div>
-        </div>
-        <div style="font-size:0.72rem;color:var(--muted2)">Great for broad content variety.</div>
-        <input type="text" id="key-openai" placeholder="sk-... paste your OpenAI key" style="margin-top:8px;font-size:0.78rem" oninput="saveKey('openai')">
-      </div>
-      <div class="eng-card" id="eng-gemini" onclick="selectEngine('gemini')">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-          <div style="display:flex;align-items:center;gap:8px"><span>🔵</span><strong>Gemini (Google)</strong></div>
-          <div class="eng-badge off" id="badge-gemini">ADD KEY</div>
-        </div>
-        <div style="font-size:0.72rem;color:var(--muted2)">Excellent for YouTube content.</div>
-        <input type="text" id="key-gemini" placeholder="AIza... paste your Gemini key" style="margin-top:8px;font-size:0.78rem" oninput="saveKey('gemini')">
+        <div style="font-size:0.72rem;color:var(--muted2)">Fast, high-quality content generation. No setup required.</div>
       </div>
     </div>
     <!-- Creator Mode -->
