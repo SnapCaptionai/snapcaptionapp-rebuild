@@ -139,9 +139,10 @@ select option{background:var(--card2);}
 <body>
 
 <!-- GLOBAL LOADING OVERLAY -->
-<div id="global-loader">
+<div id="global-loader" onclick="forceHideLoader()">
   <div class="gl-spin"></div>
   <div class="gl-text">Generating your content...</div>
+  <div style="margin-top:12px;font-size:0.68rem;color:var(--muted)">Tap to dismiss</div>
 </div>
 
 <!-- SPLASH -->
