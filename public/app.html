@@ -1528,7 +1528,7 @@ function renderDayCard(d){
   return html;
 }
 
-function toggleDone(idx){ if(calendarData[idx]){ calendarData[idx].done = !calendarData[idx].done; renderCalendar(); } }
+function toggleDone(idx){ if(calendarData[idx]){ calendarData[idx].done = !calendarData[idx].done; syncCalendarDone(idx); renderCalendar(); } }
 function setCalView(v){ calView=v; renderCalendar(); }
 function setWkFilter(w){ calWeekFilter=w; renderCalendar(); }
 
