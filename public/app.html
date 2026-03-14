@@ -1296,7 +1296,7 @@ NICHE
 
 Just the hashtags, no extra text.`;
   try{
-    const txt = await ai(prompt);
+    const txt = await ai(prompt, FAST_MODEL);
     const getSet = (key) => { const m = txt.match(new RegExp(key+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:BROAD|TARGETED|NICHE)|$)','i')); return m ? m[1].trim() : ''; };
     const broad = getSet('BROAD'); const target = getSet('TARGETED'); const niche2 = getSet('NICHE');
     let html = '';
