@@ -1170,12 +1170,13 @@ async function ai(prompt){
   if(!apiKey){
     throw new Error('No API key set for ' + engine + '. Go to Settings to add your key.');
   }
-  const voiceCtx = getVoiceContext();
-  const fullPrompt = prompt + voiceCtx;
+  if(!SUPABASE_URL){
+    throw new Error('Backend not ready. Please reload the page.');
+  }
   const r = await fetch(SUPABASE_URL + '/functions/v1/ai-proxy', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
-    body: JSON.stringify({ engine, apiKey, prompt: fullPrompt })
+    body: JSON.stringify({ engine, apiKey, prompt })
   });
   const d = await r.json();
   if(d.error) throw new Error(d.error);
