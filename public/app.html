@@ -1428,7 +1428,7 @@ async function genCalendar(){
     }
     bar.style.width = '100%';
     pt.textContent = '✅ All 30 days ready!';
-    setTimeout(() => { document.getElementById('cal-progress').style.display = 'none'; renderCalendar(); }, 600);
+    setTimeout(() => { document.getElementById('cal-progress').style.display = 'none'; renderCalendar(); syncCalendarToSupabase(); }, 600);
   }catch(e){
     document.getElementById('cal-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>';
     document.getElementById('cal-progress').style.display = 'none';
