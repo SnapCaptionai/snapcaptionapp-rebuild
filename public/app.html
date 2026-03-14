@@ -578,38 +578,13 @@ setTimeout(dismissSplash, 3500);
 
     <div class="card">
       <div class="sl">🤖 AI Engine</div>
-      <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:12px;line-height:1.6">Choose which AI powers your content. Each has a different style. You need to add your own API key for each one you want to use.</div>
-      <div style="display:flex;flex-direction:column;gap:10px" id="ai-engine-list">
-        <div class="ai-engine-card active-engine" id="eng-claude" onclick="selectEngine('claude')">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.1rem">🟠</span><strong style="font-size:0.88rem">Claude (Anthropic)</strong></div>
-            <div class="engine-badge" id="badge-claude">ACTIVE</div>
-          </div>
-          <div style="font-size:0.72rem;color:var(--muted2)">Best for deep, creative, authentic writing. Currently powering your app.</div>
-          <input type="text" id="key-claude" placeholder="sk-ant-... (your Anthropic API key)" style="margin-top:10px;font-size:0.78rem" oninput="saveKey('claude')">
+      <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:12px;line-height:1.6">AI is built in and ready to go — no API keys needed! Powered by advanced AI to generate your content.</div>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(0,255,133,0.08);border:1px solid rgba(0,255,133,0.25);border-radius:12px;padding:14px 16px">
+        <span style="font-size:1.4rem">✅</span>
+        <div>
+          <div style="font-weight:700;font-size:0.88rem;color:var(--green)">AI Connected</div>
+          <div style="font-size:0.72rem;color:var(--muted2)">Ready to generate captions, scripts, hooks, and more.</div>
         </div>
-        <div class="ai-engine-card" id="eng-openai" onclick="selectEngine('openai')">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.1rem">🟢</span><strong style="font-size:0.88rem">ChatGPT (OpenAI)</strong></div>
-            <div class="engine-badge off" id="badge-openai">ADD KEY</div>
-          </div>
-          <div style="font-size:0.72rem;color:var(--muted2)">Most recognized AI. Great for broad content and variety.</div>
-          <input type="text" id="key-openai" placeholder="sk-... (your OpenAI API key)" style="margin-top:10px;font-size:0.78rem" oninput="saveKey('openai')">
-        </div>
-        <div class="ai-engine-card" id="eng-gemini" onclick="selectEngine('gemini')">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.1rem">🔵</span><strong style="font-size:0.88rem">Gemini (Google)</strong></div>
-            <div class="engine-badge off" id="badge-gemini">ADD KEY</div>
-          </div>
-          <div style="font-size:0.72rem;color:var(--muted2)">Google's AI. Excellent for YouTube content since Google owns both.</div>
-          <input type="text" id="key-gemini" placeholder="AIza... (your Gemini API key)" style="margin-top:10px;font-size:0.78rem" oninput="saveKey('gemini')">
-        </div>
-      </div>
-      <div style="margin-top:12px;background:var(--card2);border-radius:10px;padding:12px;font-size:0.74rem;color:var(--muted2);line-height:1.6">
-        <strong style="color:var(--text)">How to get a free API key:</strong><br>
-        🟠 Claude → console.anthropic.com (free $5 credit)<br>
-        🟢 ChatGPT → platform.openai.com (free $5 credit)<br>
-        🔵 Gemini → aistudio.google.com (free tier available)
       </div>
     </div>
 
