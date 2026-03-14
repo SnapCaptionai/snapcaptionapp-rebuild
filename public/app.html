@@ -1695,28 +1695,22 @@ function copyAllCalendar(){
   alert('✅ Full 30-day calendar copied!');
 }
 
-// ═══ ADSENSE ═══
-// To activate AdSense: replace YOUR_ADSENSE_ID with your real ID (ca-pub-XXXXXXXXXXXXXXXX)
-// Then call showAdBanner() at the bottom of this script
-const ADSENSE_ID = 'YOUR_ADSENSE_ID';
+// ═══ ADMOB TEST BANNER ═══
+const ADMOB_TEST_ID = 'ca-app-pub-3940256099942544/6300978111';
 function showAdBanner(){
   const freeUser = !localStorage.getItem('sc2-creator') && !localStorage.getItem('sc2-pro');
-  if(!freeUser || ADSENSE_ID === 'YOUR_ADSENSE_ID') return;
+  if(!freeUser) return;
   const existing = document.getElementById('ad-banner');
   if(existing) return;
   const ad = document.createElement('div');
   ad.id = 'ad-banner';
-  ad.style.cssText = 'position:fixed;bottom:58px;left:0;right:0;z-index:40;background:var(--surface);border-top:1px solid var(--border);padding:6px;text-align:center;';
-  const ins = document.createElement('ins');
-  ins.className = 'adsbygoogle';
-  ins.style.cssText = 'display:block;height:50px';
-  ins.setAttribute('data-ad-client', ADSENSE_ID);
-  ins.setAttribute('data-ad-slot', 'auto');
-  ins.setAttribute('data-ad-format', 'auto');
-  ad.appendChild(ins);
+  ad.style.cssText = 'position:fixed;bottom:58px;left:0;right:0;z-index:40;background:var(--surface);border-top:1px solid var(--border);padding:8px;text-align:center;';
+  ad.innerHTML = '<div style="background:linear-gradient(135deg,rgba(255,45,120,0.08),rgba(0,212,255,0.08));border:1px dashed var(--border2);border-radius:8px;padding:10px 16px;font-size:0.72rem;color:var(--muted2);display:flex;align-items:center;justify-content:center;gap:8px;height:50px"><span style="font-size:1rem">📣</span> AdMob Test Banner · ' + ADMOB_TEST_ID + '</div>';
   document.body.appendChild(ad);
-  if(window.adsbygoogle) (window.adsbygoogle = window.adsbygoogle || []).push({});
+  // Adjust bottom nav padding
+  document.querySelector('.screen.active')?.style.setProperty('padding-bottom','170px');
 }
+showAdBanner();
 
 // ═══ VOICE PROFILE ═══
 // voiceProfile declared at top of script
