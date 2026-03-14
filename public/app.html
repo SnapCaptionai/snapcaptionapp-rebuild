@@ -931,6 +931,12 @@ function doSave(text, plat){
   sv(); rHome();
 }
 
+// ═══ REGENERATE SUPPORT ═══
+let _lastGenFn = {};
+function regenBtn(genName, label){
+  return '<button class="btn-gen" style="margin-top:10px;background:var(--card2);border:1px solid var(--border2);box-shadow:none;font-size:0.85rem" onclick="'+genName+'()"><span>🔄</span> '+label+'</button>';
+}
+
 // ═══ REFINE BUTTONS ═══
 function refineHTML(text, context){
   const enc = JSON.stringify(text);
