@@ -1115,9 +1115,10 @@ ${ht?'HASHTAGS: [8-10 hashtags]':''}
       html += '</div>';
     });
     if(!html) html = '<div class="res-card"><div class="res-body">'+txt.replace(/\n/g,'<br>')+'</div></div>';
+    html += regenBtn('genCaption', 'Regenerate');
     document.getElementById('cap-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('cap-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('cap-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genCaption', 'Try Again'); }
   setBtn('cap-btn', false, '<span>✍️</span> Build My Post');
 }
 
