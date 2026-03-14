@@ -934,7 +934,7 @@ async function genCaption(){
   const prompt = 'Expert ' + p + ' content creator. Write ' + ct + ' distinct posts for: "' + d + '"\nGoal: ' + goal + '. Tone: ' + t + '. ' + creatorLine + brandLine + prodLine + (ht==='yes'?'End each with 8-10 hashtags.':'No hashtags.') + voice + '\n\nFor EACH post format EXACTLY as:\nITEM[number]\nHOOK: [scroll-stopping opener]\nCAPTION: [3-5 sentence body]\nCTA: [call to action]\n' + (ht==='yes'?'HASHTAGS: [hashtags]\n':'') + '---\n\nWrite like a real human creator. Native ' + p + ' style.';
   try{
     const txt = await ai(prompt);
-    const items = txt.split(/ITEM\d+\n/).filter(x=>x.trim());
+    const items = txt.split(/ITEM\s*\[?\d+\]?\s*\n/).filter(x=>x.trim());
     const out = document.getElementById('cap-out');
     let html = '';
     items.slice(0, parseInt(ct)).forEach((item, i) => {
