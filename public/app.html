@@ -1018,51 +1018,118 @@ async function refinePost(btn, mode, text){
   btn.textContent = orig; btn.disabled = false;
 }
 
+// ═══ CLEAN COPY (no labels) ═══
+function cleanCopyText(hook, cap, cta, ht){
+  let parts = [];
+  if(hook) parts.push(hook);
+  if(cap) parts.push(cap);
+  if(cta) parts.push(cta);
+  if(ht) parts.push(ht);
+  return parts.join('\n\n');
+}
+
 // ═══ QUICK CREATE ═══
 async function quickCreate(){
   if(!canGen()) return;
   const idea = document.getElementById('quick-idea').value.trim();
-  setBtn('quick-btn', true, '<span>⚡</span> Create Standout Content');
+  setBtn('quick-btn', true, '<span>⚡</span> Create 3 Posts');
   document.getElementById('standoutResult').style.display = 'block';
   document.getElementById('quick-out').innerHTML = '';
   const topic = idea || 'a helpful tip for people who post on social media';
-  const prompt = `Create a complete social media post package for: "${topic}"
+  const prompt = `Create 3 different complete social media posts for: "${topic}"
 
-Format EXACTLY as:
-HOOK
-[1-2 scroll-stopping opening lines]
-
-CAPTION
-[3-5 sentence caption body, conversational and real]
-
-CTA
-[One strong call to action]
-
-HASHTAGS
-[10 relevant hashtags]
+For each, format EXACTLY as:
+ITEM[number]
+HOOK: [1-2 scroll-stopping opening lines]
+CAPTION: [3-5 sentence caption body, conversational and real. Use clear sentences with proper punctuation. Avoid run-on sentences. Break longer thoughts into shorter sentences. Limit paragraphs to 2-4 sentences.]
+CTA: [One strong call to action question]
+HASHTAGS: [8-10 relevant hashtags]
+---
 
 Write naturally. Real human voice. No corporate speak.`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
-      return m ? m[1].trim() : '';
-    };
-    const hook = get('HOOK'); const cap = get('CAPTION'); const cta = get('CTA'); const ht = get('HASHTAGS');
-    const full = (hook?'HOOK:\n'+hook+'\n\n':'')+(cap?'CAPTION:\n'+cap+'\n\n':'')+(cta?'CTA:\n'+cta+'\n\n':'')+(ht?'HASHTAGS:\n'+ht:'');
-    let html = '<div class="res-card" style="margin-top:12px"><div class="res-tag">✦ Your Standout Post</div>';
-    if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook.replace(/\n/g,'<br>')+'</div></div>';
-    if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
-    if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta.replace(/\n/g,'<br>')+'</div></div>';
-    if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
-    html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(full)+')">📋 Copy All</button><button class="btn-sm" onclick="doSave('+JSON.stringify(full)+',' + JSON.stringify('Quick Post')+')">⭐ Save</button></div>';
-    html += refineHTML(full);
-    html += '</div>';
+    const blocks = txt.split(/ITEM\s*\[?\d+\]?/i).filter(b => b.trim());
+    let html = '';
+    (blocks.length ? blocks : [txt]).slice(0,3).forEach((block, i) => {
+      const lines = block.split('\n');
+      const getField = (key) => { const l = lines.find(x => x.toUpperCase().startsWith(key.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
+      const hook = getField('HOOK'); const cap = getField('CAPTION'); const cta = getField('CTA'); const ht = getField('HASHTAGS');
+      const copyText = cleanCopyText(hook, cap, cta, ht);
+      html += '<div class="res-card" style="margin-top:8px"><div class="res-tag">✦ Post Option '+(i+1)+'</div>';
+      if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook.replace(/\n/g,'<br>')+'</div></div>';
+      if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
+      if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta.replace(/\n/g,'<br>')+'</div></div>';
+      if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
+      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+',' + JSON.stringify('Quick Post')+')">⭐ Save</button></div>';
+      html += refineHTML(copyText);
+      html += '</div>';
+    });
     html += regenBtn('quickCreate', 'Regenerate');
     document.getElementById('quick-out').innerHTML = html;
     rec();
   }catch(e){
     document.getElementById('quick-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: ' + e.message + '</div>' + regenBtn('quickCreate', 'Try Again');
   }
-  setBtn('quick-btn', false, '<span>⚡</span> Create Standout Content');
+  setBtn('quick-btn', false, '<span>⚡</span> Create 3 Posts');
+}
+
+// ═══ BATCH MODE ═══
+async function genBatch(){
+  if(!canGen()) return;
+  const idea = document.getElementById('batch-idea').value.trim();
+  if(!idea){ alert('Type an idea first!'); return; }
+  setBtn('batch-btn', true, '<span>🚀</span> Create 8 Posts');
+  document.getElementById('batch-out').innerHTML = '';
+  const prompt = `Create 8 completely different social media posts all based on this one idea: "${idea}"
+
+Each post should take a different angle — motivational, storytelling, question, tip, bold statement, personal, educational, controversial.
+
+For each, format EXACTLY as:
+ITEM[number]
+HOOK: [1-2 scroll-stopping lines]
+CAPTION: [2-4 sentence caption. Use clear sentences with proper punctuation. Avoid run-on sentences.]
+CTA: [call to action]
+HASHTAGS: [5-8 hashtags]
+---
+
+Write naturally like a real person. No corporate speak. Each post should feel completely different from the others.`;
+  try{
+    const txt = await ai(prompt, QUALITY_MODEL);
+    const blocks = txt.split(/ITEM\s*\[?\d+\]?/i).filter(b => b.trim());
+    let html = '';
+    (blocks.length ? blocks : [txt]).slice(0,8).forEach((block, i) => {
+      const lines = block.split('\n');
+      const getField = (key) => { const l = lines.find(x => x.toUpperCase().startsWith(key.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
+      const hook = getField('HOOK'); const cap = getField('CAPTION'); const cta = getField('CTA'); const ht = getField('HASHTAGS');
+      const copyText = cleanCopyText(hook, cap, cta, ht);
+      html += '<div class="res-card"><div class="res-tag">✦ Post '+(i+1)+' of 8</div>';
+      if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook+'</div></div>';
+      if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
+      if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta+'</div></div>';
+      if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
+      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+',\'Batch Post\')">⭐ Save</button></div>';
+      html += '</div>';
+    });
+    html += regenBtn('genBatch', 'Regenerate All 8');
+    document.getElementById('batch-out').innerHTML = html;
+    rec();
+  }catch(e){ document.getElementById('batch-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genBatch', 'Try Again'); }
+  setBtn('batch-btn', false, '<span>🚀</span> Create 8 Posts');
+}
+
+// ═══ IDEA CAPTURE ═══
+function saveQuickIdea(){
+  const input = document.getElementById('idea-capture');
+  const text = input.value.trim();
+  if(!text) return;
+  doSave(text, 'Idea 💭');
+  input.value = '';
+  // Brief confirmation
+  const btn = input.nextElementSibling;
+  const orig = btn.textContent;
+  btn.textContent = '✅ Saved!';
+  setTimeout(() => btn.textContent = orig, 1500);
 }
 
 // ═══ WHAT SHOULD I POST ═══
