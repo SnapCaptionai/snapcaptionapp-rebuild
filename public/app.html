@@ -633,21 +633,8 @@ let streak = +localStorage.getItem('sc2-streak') || 0;
 let lastDay = localStorage.getItem('sc2-lastday') || '';
 let saved = JSON.parse(localStorage.getItem('sc2-saved') || '[]');
 let creatorMode = localStorage.getItem('sc2-creator') === 'true';
-let activeEngine = localStorage.getItem('sc2-engine') || 'claude';
 let voiceProfile = JSON.parse(localStorage.getItem('sc2-voice') || '{}');
 let profile = JSON.parse(localStorage.getItem('sc2-profile') || '{}');
-let calendarData = [];
-let calDoneMap = {};
-let calStartDate = new Date();
-let calPostsPerDay = 1;
-let calView = 'grid';
-let calWeekFilter = 0;
-let wtpState = {step:1, type:'', creator:'', tone:''};
-const engineKeys = {
-  claude: localStorage.getItem('sc2-key-claude') || '',
-  openai: localStorage.getItem('sc2-key-openai') || '',
-  gemini: localStorage.getItem('sc2-key-gemini') || ''
-};
 
 // ═══ INIT ═══
 const today = new Date().toDateString();
