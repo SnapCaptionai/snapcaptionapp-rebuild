@@ -635,6 +635,13 @@ let saved = JSON.parse(localStorage.getItem('sc2-saved') || '[]');
 let creatorMode = localStorage.getItem('sc2-creator') === 'true';
 let voiceProfile = JSON.parse(localStorage.getItem('sc2-voice') || '{}');
 let profile = JSON.parse(localStorage.getItem('sc2-profile') || '{}');
+let calendarData = [];
+let calDoneMap = {};
+let calStartDate = new Date();
+let calPostsPerDay = 1;
+let calView = 'grid';
+let calWeekFilter = 0;
+let wtpState = {step:1, type:'', creator:'', tone:''};
 
 // ═══ INIT ═══
 const today = new Date().toDateString();
