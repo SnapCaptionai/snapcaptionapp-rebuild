@@ -905,15 +905,17 @@ function forceHideLoader(){
 // ═══ AI ENGINE (backend proxy) ═══
 const EDGE_FN_URL = 'https://thjspqiuuzwvniddubtw.supabase.co/functions/v1/ai-proxy';
 
-async function ai(prompt){
+async function ai(prompt, model){
   const vc = getVoiceContext();
   const fullPrompt = vc ? vc + '\n\n' + prompt : prompt;
   showLoader();
   try{
+    const body = { prompt: fullPrompt };
+    if (model) body.model = model;
     const r = await fetch(EDGE_FN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: fullPrompt })
+      body: JSON.stringify(body)
     });
     const d = await r.json();
     if (!r.ok || d.error) throw new Error(d.error || 'AI request failed');
@@ -922,6 +924,9 @@ async function ai(prompt){
     hideLoader();
   }
 }
+
+const FAST_MODEL = 'google/gemini-2.5-flash-lite';
+const QUALITY_MODEL = 'google/gemini-3-flash-preview';
 
 // ═══ COPY & SAVE ═══
 function doCopy(btn, text){
@@ -964,7 +969,7 @@ async function refinePost(btn, mode, text){
     human: 'Rewrite this to sound more natural and conversational — less AI, more human. Use contractions, short sentences, and real talk:\n\n'+text
   };
   try{
-    const result = await ai(prompts[mode]);
+    const result = await ai(prompts[mode], FAST_MODEL);
     // Find the parent result card and update
     const card = btn.closest('.res-card') || btn.closest('.sblock');
     if(card){
@@ -1001,9 +1006,7 @@ HASHTAGS
 
 Write naturally. Real human voice. No corporate speak.`;
   try{
-    const txt = await ai(prompt);
-    const get = (key) => {
-      const m = txt.match(new RegExp(key+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:HOOK|CAPTION|CTA|HASHTAGS)|$)','i'));
+    const txt = await ai(prompt, FAST_MODEL);
       return m ? m[1].trim() : '';
     };
     const hook = get('HOOK'); const cap = get('CAPTION'); const cta = get('CTA'); const ht = get('HASHTAGS');
@@ -1063,7 +1066,7 @@ CTA
 HASHTAGS
 [10 hashtags]`;
   try{
-    const txt = await ai(prompt);
+    const txt = await ai(prompt, FAST_MODEL);
     const get = (key) => { const m = txt.match(new RegExp(key+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:HOOK|CAPTION|CTA|HASHTAGS)|$)','i')); return m ? m[1].trim() : ''; };
     const hook = get('HOOK'); const cap = get('CAPTION'); const cta = get('CTA'); const ht = get('HASHTAGS');
     const full = hook+'\n\n'+cap+'\n\n'+cta+'\n\n'+ht;
@@ -1110,8 +1113,7 @@ CTA: [call to action]
 ${ht?'HASHTAGS: [8-10 hashtags]':''}
 ---`;
   try{
-    const txt = await ai(prompt);
-    const blocks = txt.split(/---+/).filter(b => b.trim() && b.match(/ITEM\d+/i));
+    const txt = await ai(prompt, FAST_MODEL);
     let html = '';
     (blocks.length ? blocks : [txt]).slice(0,3).forEach((block, i) => {
       const lines = block.split('\n');
@@ -1161,8 +1163,7 @@ HOOK5
 HOOK6
 [hook text]`;
   try{
-    const txt = await ai(prompt);
-    const hooks = txt.split(/HOOK\d+\n/).filter(h => h.trim()).slice(0,6);
+    const txt = await ai(prompt, FAST_MODEL);
     const scores = [9,8,10,7,9,8];
     let html = '';
     (hooks.length ? hooks : [txt]).forEach((hook, i) => {
@@ -1239,8 +1240,7 @@ CALL TO ACTION
 Write like a real person talks on camera. Use contractions. Short punchy sentences mixed with longer ones. Mark [PAUSE] where the speaker should pause for effect. The total script MUST be 500-700 words minimum.`;
 
   try{
-    const txt = await ai(prompt);
-    const sectionKeys = 'HOOK|INTRO|MAIN CONTENT|SECTION 1|SECTION 2|SECTION 3|PRODUCT MENTION|OUTRO|CALL TO ACTION|REALIZATION';
+    const txt = await ai(prompt, QUALITY_MODEL);
     const secs = [
       {k:'HOOK',l:'🎣 HOOK',c:'var(--pink)'},
       {k:'INTRO',l:'👋 INTRO',c:'var(--orange)'},
@@ -1296,7 +1296,7 @@ NICHE
 
 Just the hashtags, no extra text.`;
   try{
-    const txt = await ai(prompt);
+    const txt = await ai(prompt, FAST_MODEL);
     const getSet = (key) => { const m = txt.match(new RegExp(key+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:BROAD|TARGETED|NICHE)|$)','i')); return m ? m[1].trim() : ''; };
     const broad = getSet('BROAD'); const target = getSet('TARGETED'); const niche2 = getSet('NICHE');
     let html = '';
@@ -1338,9 +1338,7 @@ LINKEDIN
 TWITTER
 [Twitter/X version]`;
   try{
-    const txt = await ai(prompt);
-    let html = '';
-    platforms.forEach(plat => {
+    const txt = await ai(prompt, FAST_MODEL);
       const m = txt.match(new RegExp(plat+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:FACEBOOK|INSTAGRAM|TIKTOK|YOUTUBE|LINKEDIN|TWITTER)|$)','i'));
       if(m && m[1].trim()){
         const ver = m[1].trim();
@@ -1367,8 +1365,7 @@ async function genIdeas(){
 Each idea should be specific, actionable, and scroll-stopping.
 Format as numbered list: 1. [idea]`;
   try{
-    const txt = await ai(prompt);
-    const ideas = txt.split(/\n?\d+\.\s+/).filter(i => i.trim()).slice(0,10);
+    const txt = await ai(prompt, FAST_MODEL);
     let html = '';
     (ideas.length ? ideas : [txt]).forEach((idea, i) => {
       const id = idea.trim();
@@ -1394,8 +1391,7 @@ Include: ${inc}
 Each bio should be optimized for ${p} and make people want to follow.
 Format as BIO1, BIO2, BIO3 with a line break between each.`;
   try{
-    const txt = await ai(prompt);
-    const bios = txt.split(/BIO\d+\n?/).filter(b => b.trim()).slice(0,3);
+    const txt = await ai(prompt, FAST_MODEL);
     let html = '';
     (bios.length ? bios : [txt]).forEach((bio, i) => {
       const b = bio.trim();
@@ -1459,8 +1455,7 @@ Rules:
 
   try{
     bar.style.width = '50%';
-    const txt = await ai(prompt);
-    bar.style.width = '85%';
+    const txt = await ai(prompt, QUALITY_MODEL);
 
     // Extract JSON array from response
     let parsed;
@@ -1557,7 +1552,7 @@ function renderCalendar(){
 async function remixDay(idx){
   const d = calendarData[idx]; if(!d) return;
   try{
-    const txt = await ai('Remix this content with a completely new angle, hook, and story. Same theme, brand new content.\n\nTheme: '+d.theme+'\nOriginal hook: '+d.hook+'\nPlatform: '+d.platform+'\n\nHOOK: [new hook]\nCAPTION: [new caption]\nHASHTAGS: [hashtags]');
+    const txt = await ai('Remix this content with a completely new angle, hook, and story. Same theme, brand new content.\n\nTheme: '+d.theme+'\nOriginal hook: '+d.hook+'\nPlatform: '+d.platform+'\n\nHOOK: [new hook]\nCAPTION: [new caption]\nHASHTAGS: [hashtags]', FAST_MODEL);
     const lines = txt.split('\n');
     const get = (k) => { const l = lines.find(x => x.toUpperCase().startsWith(k.toUpperCase()+':')); return l?l.substring(l.indexOf(':')+1).trim():''; };
     calendarData[idx].hook = get('HOOK')||d.hook;
@@ -1570,7 +1565,7 @@ async function remixDay(idx){
 async function catchUpDay(idx){
   const d = calendarData[idx]; if(!d) return;
   try{
-    const txt = await ai('Write fresh content for a missed post. Theme: '+d.theme+'. Platform: '+d.platform+'. Make it feel timely and current today.\n\nHOOK: [hook]\nCAPTION: [caption]\nHASHTAGS: [hashtags]');
+    const txt = await ai('Write fresh content for a missed post. Theme: '+d.theme+'. Platform: '+d.platform+'. Make it feel timely and current today.\n\nHOOK: [hook]\nCAPTION: [caption]\nHASHTAGS: [hashtags]', FAST_MODEL);
     const lines = txt.split('\n');
     const get = (k) => { const l = lines.find(x => x.toUpperCase().startsWith(k.toUpperCase()+':')); return l?l.substring(l.indexOf(':')+1).trim():''; };
     calendarData[idx].hook = get('HOOK')||d.hook;
