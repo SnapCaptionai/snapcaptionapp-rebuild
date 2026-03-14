@@ -789,20 +789,45 @@ function getVoiceContext(){
   return ctx;
 }
 
+// ═══ GLOBAL LOADER ═══
+let _aiInFlight = 0;
+function showLoader(msg){
+  _aiInFlight++;
+  const el = document.getElementById('global-loader');
+  if(el){ el.querySelector('.gl-text').textContent = msg || 'Generating your content...'; el.classList.add('active'); }
+}
+function hideLoader(){
+  _aiInFlight = Math.max(0, _aiInFlight - 1);
+  if(_aiInFlight === 0){
+    const el = document.getElementById('global-loader');
+    if(el) el.classList.remove('active');
+  }
+}
+function forceHideLoader(){
+  _aiInFlight = 0;
+  const el = document.getElementById('global-loader');
+  if(el) el.classList.remove('active');
+}
+
 // ═══ AI ENGINE (backend proxy) ═══
 const EDGE_FN_URL = 'https://thjspqiuuzwvniddubtw.supabase.co/functions/v1/ai-proxy';
 
 async function ai(prompt){
   const vc = getVoiceContext();
   const fullPrompt = vc ? vc + '\n\n' + prompt : prompt;
-  const r = await fetch(EDGE_FN_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt: fullPrompt })
-  });
-  const d = await r.json();
-  if (!r.ok || d.error) throw new Error(d.error || 'AI request failed');
-  return d.result || '';
+  showLoader();
+  try{
+    const r = await fetch(EDGE_FN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: fullPrompt })
+    });
+    const d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.error || 'AI request failed');
+    return d.result || '';
+  } finally {
+    hideLoader();
+  }
 }
 
 // ═══ COPY & SAVE ═══
