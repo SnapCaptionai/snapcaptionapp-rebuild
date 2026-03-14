@@ -1006,9 +1006,7 @@ HASHTAGS
 
 Write naturally. Real human voice. No corporate speak.`;
   try{
-    const txt = await ai(prompt);
-    const get = (key) => {
-      const m = txt.match(new RegExp(key+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:HOOK|CAPTION|CTA|HASHTAGS)|$)','i'));
+    const txt = await ai(prompt, FAST_MODEL);
       return m ? m[1].trim() : '';
     };
     const hook = get('HOOK'); const cap = get('CAPTION'); const cta = get('CTA'); const ht = get('HASHTAGS');
