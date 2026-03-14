@@ -1391,8 +1391,7 @@ Include: ${inc}
 Each bio should be optimized for ${p} and make people want to follow.
 Format as BIO1, BIO2, BIO3 with a line break between each.`;
   try{
-    const txt = await ai(prompt);
-    const bios = txt.split(/BIO\d+\n?/).filter(b => b.trim()).slice(0,3);
+    const txt = await ai(prompt, FAST_MODEL);
     let html = '';
     (bios.length ? bios : [txt]).forEach((bio, i) => {
       const b = bio.trim();
