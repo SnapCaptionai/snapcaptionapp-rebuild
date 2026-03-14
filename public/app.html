@@ -1422,7 +1422,7 @@ async function genCalendar(){
   const weekPlan = THEMES.map((t,w) => 'Week '+(w+1)+' "'+t.name+'": '+t.days.map((d,i) => 'Day '+(w*7+i+1)+' '+d.t+' — '+d.d).join(', ')).join('\n');
   const prodLine = product ? 'In Week 3, naturally mention this product: '+product+'.' : '';
 
-  const prompt = `You are a content calendar expert. Create a 30-day content calendar for a ${niche} creator named "${brand}".
+  const prompt = `You are a content calendar expert. Create a 30-day content calendar for someone who posts about ${niche}${brand ? ' named "'+brand+'"' : ''}.
 Platform: ${plat}. Goal: ${goal}. ${prodLine}
 
 Week plan:
