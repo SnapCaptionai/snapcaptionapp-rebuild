@@ -890,7 +890,7 @@ setTimeout(dismissSplash, 3500);
 </div>
 
 <script>
-const S={gen:+localStorage.getItem('sc2-gen')||0,streak:+localStorage.getItem('sc2-streak')||0,lastDay:localStorage.getItem('sc2-lastday')||'',saved:JSON.parse(localStorage.getItem('sc2-saved')||'[]'),uses:+localStorage.getItem('sc2-uses')||0,usesDate:localStorage.getItem('sc2-usesdate')||'',FREE_LIMIT:5};
+const S={gen:+localStorage.getItem('sc2-gen')||0,streak:+localStorage.getItem('sc2-streak')||0,lastDay:localStorage.getItem('sc2-lastday')||'',saved:JSON.parse(localStorage.getItem('sc2-saved')||'[]'),uses:+localStorage.getItem('sc2-uses')||0,usesDate:localStorage.getItem('sc2-usesdate')||'',FREE_LIMIT:25};
 const today=new Date().toDateString();
 if(S.lastDay!==today){const yd=new Date();yd.setDate(yd.getDate()-1);if(S.lastDay===yd.toDateString())S.streak=(S.streak||0)+1;else S.streak=S.lastDay?1:0;S.lastDay=today;sv();}
 if(S.usesDate!==today){S.uses=0;S.usesDate=today;sv();}
