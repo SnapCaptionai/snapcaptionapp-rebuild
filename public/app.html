@@ -1075,21 +1075,34 @@ function closeModal(e){if(e.target===document.getElementById('modal'))closeSheet
 function selPlan(el){document.querySelectorAll('.plan').forEach(p=>p.classList.remove('hot'));el.classList.add('hot');}
 
 // ═══ CREATOR MODE ═══
-const CREATOR_CODE = 'ShirleneMichelle0515';
-function checkCreatorCode(){
+const SUPABASE_URL = 'https://thjspqiuuzwvniddubtw.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoanNwcWl1dXp3dm5pZGR1YnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1MTQ2MDgsImV4cCI6MjA2ODA5MDYwOH0.VTw8mi2sLwUqgRY2hlqTc9mfhGAV2MBh6JO3tyPqNmA';
+
+async function checkCreatorCode(){
   const input = document.getElementById('creator-code-input').value.trim();
   const status = document.getElementById('creator-mode-status');
-  if(input === CREATOR_CODE){
-    S.creatorMode = true;
-    S.FREE_LIMIT = 99999;
-    localStorage.setItem('sc2-creator','true');
-    status.innerHTML = '<span style="color:var(--green)">✅ Creator Mode Unlocked! Unlimited use activated.</span>';
-    document.getElementById('creator-mode-card').style.borderColor = 'rgba(0,255,133,0.4)';
-    document.getElementById('set-creator').textContent = 'Unlocked ✅';
-    document.getElementById('set-creator').style.color = 'var(--green)';
-    rLim();
-  } else {
-    status.innerHTML = '<span style="color:#ff5c5c">❌ Incorrect code. Try again.</span>';
+  status.innerHTML = '<span style="color:var(--muted2)">Verifying...</span>';
+  try {
+    const r = await fetch(SUPABASE_URL + '/functions/v1/validate-creator-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
+      body: JSON.stringify({ code: input })
+    });
+    const d = await r.json();
+    if(d.valid){
+      S.creatorMode = true;
+      S.FREE_LIMIT = 99999;
+      localStorage.setItem('sc2-creator','true');
+      status.innerHTML = '<span style="color:var(--green)">✅ Creator Mode Unlocked! Unlimited use activated.</span>';
+      document.getElementById('creator-mode-card').style.borderColor = 'rgba(0,255,133,0.4)';
+      document.getElementById('set-creator').textContent = 'Unlocked ✅';
+      document.getElementById('set-creator').style.color = 'var(--green)';
+      rLim();
+    } else {
+      status.innerHTML = '<span style="color:#ff5c5c">❌ Incorrect code. Try again.</span>';
+    }
+  } catch(e) {
+    status.innerHTML = '<span style="color:#ff5c5c">❌ Connection error. Try again.</span>';
   }
 }
 
