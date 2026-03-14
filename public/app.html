@@ -1090,8 +1090,18 @@ function closeModal(e){if(e.target===document.getElementById('modal'))closeSheet
 function selPlan(el){document.querySelectorAll('.plan').forEach(p=>p.classList.remove('hot'));el.classList.add('hot');}
 
 // ═══ CREATOR MODE ═══
-const SUPABASE_URL = 'https://thjspqiuuzwvniddubtw.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoanNwcWl1dXp3dm5pZGR1YnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI1MTQ2MDgsImV4cCI6MjA2ODA5MDYwOH0.VTw8mi2sLwUqgRY2hlqTc9mfhGAV2MBh6JO3tyPqNmA';
+let SUPABASE_URL = '';
+let SUPABASE_ANON_KEY = '';
+
+// Get config from parent React app
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'SUPABASE_CONFIG') {
+    SUPABASE_URL = e.data.url;
+    SUPABASE_ANON_KEY = e.data.key;
+  }
+});
+// Request config on load
+window.parent.postMessage({ type: 'GET_SUPABASE_CONFIG' }, '*');
 
 async function checkCreatorCode(){
   const input = document.getElementById('creator-code-input').value.trim();
