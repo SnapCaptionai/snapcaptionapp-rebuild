@@ -1279,9 +1279,10 @@ Just the hashtags, no extra text.`;
       html += '<div class="res-card"><div class="res-tag" style="color:'+color+'">'+label+'</div><div class="res-body" style="color:'+color+'">'+tags+'</div><div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(tags)+')">📋 Copy Set</button><button class="btn-sm" onclick="doSave('+JSON.stringify(tags)+','+JSON.stringify(p+' Hashtags')+')">⭐ Save</button></div></div>';
     });
     if(!html) html = '<div class="res-card"><div class="res-body">'+txt.replace(/\n/g,'<br>')+'</div></div>';
+    html += regenBtn('genHashtags', 'Regenerate');
     document.getElementById('ht-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('ht-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('ht-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genHashtags', 'Try Again'); }
   setBtn('ht-btn', false, '<span>#️⃣</span> Generate Hashtags');
 }
 
