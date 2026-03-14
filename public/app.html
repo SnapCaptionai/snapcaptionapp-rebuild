@@ -1516,6 +1516,7 @@ Format as BIO1, BIO2, BIO3 with a line break between each.`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
     let html = '';
+    const bios = txt.split(/BIO\s*\d+/i).filter(b => b.trim());
     (bios.length ? bios : [txt]).forEach((bio, i) => {
       const b = bio.trim();
       html += '<div class="res-card"><div class="res-tag">✦ Bio Option '+(i+1)+' · '+p+'</div><div class="res-body">'+b.replace(/\n/g,'<br>')+'</div><div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(b)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(b)+','+JSON.stringify(p+' Bio')+')">⭐ Save</button></div></div>';
