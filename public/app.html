@@ -1240,8 +1240,7 @@ CALL TO ACTION
 Write like a real person talks on camera. Use contractions. Short punchy sentences mixed with longer ones. Mark [PAUSE] where the speaker should pause for effect. The total script MUST be 500-700 words minimum.`;
 
   try{
-    const txt = await ai(prompt);
-    const sectionKeys = 'HOOK|INTRO|MAIN CONTENT|SECTION 1|SECTION 2|SECTION 3|PRODUCT MENTION|OUTRO|CALL TO ACTION|REALIZATION';
+    const txt = await ai(prompt, QUALITY_MODEL);
     const secs = [
       {k:'HOOK',l:'🎣 HOOK',c:'var(--pink)'},
       {k:'INTRO',l:'👋 INTRO',c:'var(--orange)'},
