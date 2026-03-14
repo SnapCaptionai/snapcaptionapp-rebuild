@@ -934,7 +934,7 @@ async function genCaption(){
   const prompt = 'Expert ' + p + ' content creator. Write ' + ct + ' distinct posts for: "' + d + '"\nGoal: ' + goal + '. Tone: ' + t + '. ' + creatorLine + brandLine + prodLine + (ht==='yes'?'End each with 8-10 hashtags.':'No hashtags.') + voice + '\n\nFor EACH post format EXACTLY as:\nITEM[number]\nHOOK: [scroll-stopping opener]\nCAPTION: [3-5 sentence body]\nCTA: [call to action]\n' + (ht==='yes'?'HASHTAGS: [hashtags]\n':'') + '---\n\nWrite like a real human creator. Native ' + p + ' style.';
   try{
     const txt = await ai(prompt);
-    const items = txt.split(/ITEM\d+\n/).filter(x=>x.trim());
+    const items = txt.split(/ITEM\s*\[?\d+\]?\s*\n/).filter(x=>x.trim());
     const out = document.getElementById('cap-out');
     let html = '';
     items.slice(0, parseInt(ct)).forEach((item, i) => {
@@ -960,7 +960,12 @@ async function genCaption(){
       html += '<button class="rbtn" style="opacity:0.4;cursor:not-allowed;font-size:0.68rem">🎵 TikTok (Soon)</button>';
       html += '</div></div>';
     });
-    out.innerHTML = html || '<div class="res-card" style="color:#ff5c5c">No results — try again</div>';
+    if(!html) {
+      // Fallback: show full AI output as a single result
+      html = '<div class="res-card" style="margin-bottom:14px"><div class="res-tag">✦ Your Post · ' + p + '</div><div class="res-body">' + txt.replace(/\n/g,'<br>') + '</div>';
+      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,\'' + encodeURIComponent(txt) + '\')">📋 Copy</button><button class="btn-sm" onclick="doSave(this,\'' + encodeURIComponent(txt) + '\',\'' + p + '\')">⭐ Save</button></div></div>';
+    }
+    out.innerHTML = html;
     rec();
   }catch(e){
     document.getElementById('cap-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">⚠️ ' + (e.message || 'Error — try again') + '</div>';
@@ -968,7 +973,7 @@ async function genCaption(){
   setBtn('cap-btn', false, '<span>⚡</span> Build My Post');
 }
 
-async function genHook(){if(!canGen())return;const scr=document.getElementById('s-hook');const p=aplat(scr),st=atones(scr)||'Curiosity';const d=document.getElementById('hook-in').value.trim();if(!d){alert('Describe your video!');return;}setBtn('hook-btn',true,'<span>🎣</span> Write My Hooks');document.getElementById('hook-out').innerHTML='';try{const txt=await ai(`Trending ${p} hook expert. Write 6 scroll-stopping opening hooks for: "${d}"\nStyle: ${st}\nFirst words spoken — must hook in 3 seconds. Short and punchy.\nFormat ONLY as:\nITEM1\n[hook]\nITEM2\n[hook]\nITEM3\n[hook]\nITEM4\n[hook]\nITEM5\n[hook]\nITEM6\n[hook]`);const hooks = txt.split(/ITEM\d+\n/).filter(x=>x.trim()).slice(0,6);
+async function genHook(){if(!canGen())return;const scr=document.getElementById('s-hook');const p=aplat(scr),st=atones(scr)||'Curiosity';const d=document.getElementById('hook-in').value.trim();if(!d){alert('Describe your video!');return;}setBtn('hook-btn',true,'<span>🎣</span> Write My Hooks');document.getElementById('hook-out').innerHTML='';try{const txt=await ai(`Trending ${p} hook expert. Write 6 scroll-stopping opening hooks for: "${d}"\nStyle: ${st}\nFirst words spoken — must hook in 3 seconds. Short and punchy.\nFormat ONLY as:\nITEM1\n[hook]\nITEM2\n[hook]\nITEM3\n[hook]\nITEM4\n[hook]\nITEM5\n[hook]\nITEM6\n[hook]`);const hooks = txt.split(/ITEM\s*\[?\d+\]?\s*\n/).filter(x=>x.trim()).slice(0,6);
 const out = document.getElementById('hook-out');
 let html = '';
 hooks.forEach((hook, i) => {
@@ -1826,7 +1831,7 @@ async function genWhatToPost(){
     let html = '<div class="res-card"><div class="res-tag">✦ Your ' + wtpState.type + ' Post · ' + wtpState.tone + '</div>';
     let found = 0;
     secs.forEach(s => {
-      const pat = new RegExp(s.k + '[:\s]*\n([\s\S]*?)(?=\n{0,3}(?:HOOK|CAPTION BODY|CALL TO ACTION|HASHTAGS)|$)', 'i');
+      const pat = new RegExp(s.k + '[:\\s]*\\n([\\s\\S]*?)(?=\\n{0,3}(?:HOOK|CAPTION BODY|CALL TO ACTION|HASHTAGS)|$)', 'i');
       const m = txt.match(pat);
       if(m && m[1].trim()){ found++; html += '<div class="sblock ' + s.c + '" style="margin-bottom:10px"><div class="sblock-lbl">' + s.l + '</div><div class="sblock-text">' + m[1].trim().replace(/\n/g,'<br>') + '</div></div>'; }
     });
