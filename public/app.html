@@ -1034,9 +1034,15 @@ function wtpPick(field, el, val){
 async function genWTP(){
   if(!canGen()) return;
   document.getElementById('wtp-out').innerHTML = '<div class="res-card" style="text-align:center;padding:20px"><div class="spin" style="margin:0 auto"></div><div style="margin-top:10px;font-size:0.8rem;color:var(--muted2)">Creating your post...</div></div>';
-  const prompt = `Create a complete social media post for a ${wtpState.creator||'content creator'}.
+  const userType = wtpState.creator || 'someone who posts on social media';
+  const isIndividual = userType === 'Individual';
+  const typeContext = isIndividual
+    ? 'an everyday social media user sharing personal reflections, life updates, motivational posts, or conversation starters'
+    : 'a ' + userType;
+  const prompt = `Create a complete social media post for ${typeContext}.
 Post type: ${wtpState.type||'helpful tip'}
 Tone: ${wtpState.tone||'Real Talk'}
+${isIndividual ? 'This is for a regular person — NOT a business or brand. Keep it personal, relatable, and genuine.' : ''}
 
 Format EXACTLY as:
 HOOK
