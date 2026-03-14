@@ -905,15 +905,17 @@ function forceHideLoader(){
 // ═══ AI ENGINE (backend proxy) ═══
 const EDGE_FN_URL = 'https://thjspqiuuzwvniddubtw.supabase.co/functions/v1/ai-proxy';
 
-async function ai(prompt){
+async function ai(prompt, model){
   const vc = getVoiceContext();
   const fullPrompt = vc ? vc + '\n\n' + prompt : prompt;
   showLoader();
   try{
+    const body = { prompt: fullPrompt };
+    if (model) body.model = model;
     const r = await fetch(EDGE_FN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: fullPrompt })
+      body: JSON.stringify(body)
     });
     const d = await r.json();
     if (!r.ok || d.error) throw new Error(d.error || 'AI request failed');
@@ -922,6 +924,9 @@ async function ai(prompt){
     hideLoader();
   }
 }
+
+const FAST_MODEL = 'google/gemini-2.5-flash-lite';
+const QUALITY_MODEL = 'google/gemini-3-flash-preview';
 
 // ═══ COPY & SAVE ═══
 function doCopy(btn, text){

@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { prompt } = await req.json();
+    const { prompt, model } = await req.json();
 
     if (!prompt) {
       return new Response(JSON.stringify({ error: 'Missing prompt' }), {
