@@ -1455,8 +1455,7 @@ Rules:
 
   try{
     bar.style.width = '50%';
-    const txt = await ai(prompt);
-    bar.style.width = '85%';
+    const txt = await ai(prompt, QUALITY_MODEL);
 
     // Extract JSON array from response
     let parsed;
