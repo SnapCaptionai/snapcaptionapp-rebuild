@@ -855,7 +855,7 @@ setTimeout(dismissSplash, 3500);
     <div class="sheet-sub">Pick the plan that fits where you are right now.</div>
 
     <div style="display:flex;gap:8px;margin-bottom:16px">
-      <div id="plan-starter" onclick="selTier('starter')" style="flex:1;background:var(--card2);border:2px solid rgba(0,212,255,0.3);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s">
+      <a href="https://buy.stripe.com/test_starter_399" target="_blank" id="plan-starter" style="flex:1;background:var(--card2);border:2px solid rgba(0,212,255,0.3);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s;text-decoration:none;color:inherit;display:block">
         <div style="font-size:0.65rem;font-weight:800;color:var(--cyan);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">STARTER</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--cyan)">$3.99</div>
         <div style="font-size:0.65rem;color:var(--muted2)">per month</div>
@@ -866,8 +866,8 @@ setTimeout(dismissSplash, 3500);
           ✗ No calendar<br>
           ✗ No multiplier
         </div>
-      </div>
-      <div id="plan-pro" onclick="selTier('pro')" style="flex:1;background:linear-gradient(135deg,rgba(255,45,120,0.1),rgba(255,122,0,0.08));border:2px solid rgba(255,45,120,0.5);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s">
+      </a>
+      <a href="https://buy.stripe.com/test_pro_799" target="_blank" id="plan-pro" style="flex:1;background:linear-gradient(135deg,rgba(255,45,120,0.1),rgba(255,122,0,0.08));border:2px solid rgba(255,45,120,0.5);border-radius:14px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s;text-decoration:none;color:inherit;display:block">
         <div style="font-size:0.65rem;font-weight:800;color:var(--pink);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">PRO ⭐</div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">$7.99</div>
         <div style="font-size:0.65rem;color:var(--muted2)">per month</div>
@@ -878,7 +878,7 @@ setTimeout(dismissSplash, 3500);
           ✓ Voice memory<br>
           ✓ Content multiplier
         </div>
-      </div>
+      </a>
     </div>
     <div onclick="selTier('annual')" style="background:linear-gradient(135deg,rgba(255,214,0,0.08),rgba(255,122,0,0.06));border:2px solid rgba(255,214,0,0.4);border-radius:14px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:16px">
       <div><div style="font-weight:800;font-size:0.9rem">Annual Pro <span style="background:var(--grad);color:#fff;font-size:0.6rem;padding:3px 8px;border-radius:4px;margin-left:6px;font-weight:800">BEST VALUE</span></div><div style="font-size:0.72rem;color:var(--muted2);margin-top:2px">Only $5.99/mo · Save 25%</div></div>
@@ -890,6 +890,7 @@ setTimeout(dismissSplash, 3500);
 </div>
 
 <script>
+var voiceProfile = JSON.parse(localStorage.getItem('sc2-voice') || '{}');
 const S={gen:+localStorage.getItem('sc2-gen')||0,streak:+localStorage.getItem('sc2-streak')||0,lastDay:localStorage.getItem('sc2-lastday')||'',saved:JSON.parse(localStorage.getItem('sc2-saved')||'[]'),uses:+localStorage.getItem('sc2-uses')||0,usesDate:localStorage.getItem('sc2-usesdate')||'',FREE_LIMIT:25};
 const today=new Date().toDateString();
 if(S.lastDay!==today){const yd=new Date();yd.setDate(yd.getDate()-1);if(S.lastDay===yd.toDateString())S.streak=(S.streak||0)+1;else S.streak=S.lastDay?1:0;S.lastDay=today;sv();}
@@ -916,15 +917,15 @@ async function genCaption(){
   if(!canGen()) return;
   const scr = document.getElementById('s-caption');
   const p = aplat(scr), t = atones(scr)||'Casual';
-  const d = document.getElementById('cap-in').value.trim();
-  if(!d){alert('Describe your post!'); return;}
+  const d = document.getElementById('cap-in').value.trim() || 'an engaging social media post that connects with my audience';
   const ht = document.getElementById('cap-ht').value;
   const ct = document.getElementById('cap-ct').value;
   const creator = document.getElementById('cap-creator')?.value.trim() || voiceProfile?.name || '';
   const brand = document.getElementById('cap-brand-name')?.value.trim() || voiceProfile?.brand || '';
   const goal = document.querySelector('#cap-goal-row .ppill.on')?.dataset.v || 'Grow Followers';
   const prodToggle = document.getElementById('cap-prod-toggle')?.checked;
-  const prod = prodToggle ? (document.getElementById('cap-prod-desc')?.value.trim() || '') : '';
+  const prodVal = document.getElementById('cap-prod-desc')?.value.trim() || '';
+  const prod = (prodToggle && prodVal) ? prodVal : '';
   const voice = getVoiceContext();
   setBtn('cap-btn', true, '<span>⚡</span> Building Your Post...');
   document.getElementById('cap-out').innerHTML = '';
@@ -1031,13 +1032,14 @@ async function genScript(){
   const product=document.getElementById('scr-product').value.trim();
   const link=document.getElementById('scr-link').value.trim();
   const prodTypes=[...document.querySelectorAll('#prod-type-chips .chip.on')].map(c=>c.textContent).join(', ')||'digital product';
-  if(!topic){alert('What is your video about?');return;}
+  const topicFinal = topic || 'an engaging video for my audience';
+  if(!topic) { /* allow empty — use default */ }
   setBtn('scr-btn',true,'<span>\u{1F3AC}</span> Writing Your Script...');
   document.getElementById('scr-out').innerHTML='';
   const isReal=style.includes('Realization');
   const prodSeg=product?`\n\nPRODUCT MENTION\n[Natural transition from content. Recommend: "${product}". Type: ${prodTypes}. Direct them to: ${link||'link in bio'}. Conversational, like telling a friend. 30-45 seconds max. Then transition back smoothly.]`:'';
   const mainInstructions=isReal?`Use this EXACT structure repeated 4-5 times:\nREALIZATION [number]\n[One bold truth stated clearly]\nEXPLANATION\n[Why this is true — 2-3 sentences of depth]\nEXAMPLE\n[Real relatable scenario that proves it. Paint the picture. Make people feel seen.]\n${prodSeg}`:`Write main content in natural speaking sections. Include [VISUAL CUE] notes.${prodSeg}`;
-  const prompt=`Script writer for a ${niche} ${p} creator. Write a complete word-for-word ${len} video script.\nTopic: "${topic}"\nTone: ${tone} | Style: ${style}\n\nFormat EXACTLY:\n\nHOOK\n[1-2 lines — bold truth that stops scroll. No \"in this video\". Start mid-thought.]\n\nINTRO\n[2-3 sentences. Set up what they will learn or feel. Build anticipation.]\n\nMAIN CONTENT\n${mainInstructions}\n\nOUTRO\n[Wrap up. One final truth that sticks with them.]\n\nCALL TO ACTION\n[Natural CTA — follow, save, comment. Make it feel earned.]\n\nWrite like a real human. Contractions. Short punchy sentences. Mark [PAUSE] where needed. Depth over fluff.`;
+  const prompt=`Script writer for a ${niche} ${p} creator. Write a complete word-for-word ${len} video script.\nTopic: "${topicFinal}"\nTone: ${tone} | Style: ${style}\n\nFormat EXACTLY:\n\nHOOK\n[1-2 lines — bold truth that stops scroll. No \"in this video\". Start mid-thought.]\n\nINTRO\n[2-3 sentences. Set up what they will learn or feel. Build anticipation.]\n\nMAIN CONTENT\n${mainInstructions}\n\nOUTRO\n[Wrap up. One final truth that sticks with them.]\n\nCALL TO ACTION\n[Natural CTA — follow, save, comment. Make it feel earned.]\n\nIMPORTANT: You MUST include ALL 5 sections: HOOK, INTRO, MAIN CONTENT, OUTRO, CALL TO ACTION. Each section must have its label on its own line followed by the content. Write like a real human. Contractions. Short punchy sentences. Mark [PAUSE] where needed. Depth over fluff.`;
   try{
     const txt=await ai(prompt);
     const out=document.getElementById('scr-out');
@@ -1051,12 +1053,17 @@ async function genScript(){
     ];
     let found=0;
     let html='<div class="res-card"><div class="res-tag">\u2756 Your '+len+' '+p+' Script</div>';
+    const allKeys = secs.map(s=>s.k).join('|');
     secs.forEach(s=>{
-      const pat=new RegExp(s.k+'[:\\s]*\\n([\\s\\S]*?)(?=\\n{0,3}(?:HOOK|INTRO|MAIN CONTENT|PRODUCT MENTION|OUTRO|CALL TO ACTION|REALIZATION)|$)','i');
+      const pat=new RegExp('(?:^|\\n)\\**\\s*'+s.k+'\\s*\\**[:\\s]*\\n([\\s\\S]*?)(?=\\n\\**\\s*(?:'+allKeys+'|REALIZATION)\\s*\\**[:\\s]*\\n|$)','i');
       const m=txt.match(pat);
       if(m&&m[1].trim()){found++;html+='<div class="sblock '+s.c+'" style="margin-bottom:10px"><div class="sblock-lbl">'+s.l+'</div><div class="sblock-text">'+m[1].trim().replace(/\n/g,'<br>')+'</div></div>';}
     });
-    if(found===0){html+='<div class="sblock body"><div class="sblock-text">'+txt.trim().replace(/\n/g,'<br>')+'</div></div>';}
+    if(found<3){
+      // Fallback: show full output with labeled wrapper
+      html='<div class="res-card"><div class="res-tag">\u2756 Your '+len+' '+p+' Script</div>';
+      html+='<div class="sblock body" style="margin-bottom:10px"><div class="sblock-lbl">\u{1F3AC} FULL SCRIPT</div><div class="sblock-text">'+txt.trim().replace(/\n/g,'<br>')+'</div></div>';
+    }
     html+='<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,encodeURIComponent(txt))">\u{1F4CB} Copy Full Script</button><button class="btn-sm" onclick="doSave(this,encodeURIComponent(txt),\''+p+' Script\')">\u2B50 Save</button></div></div>';
     out.innerHTML=html;rec();
   }catch(e){document.getElementById('scr-out').innerHTML='<div class="res-card" style="color:#ff5c5c">Error \u2014 try again</div>';}
@@ -1693,31 +1700,25 @@ function copyAllCalendar(){
   alert('✅ Full 30-day calendar copied!');
 }
 
-// ═══ ADSENSE ═══
-// To activate AdSense: replace YOUR_ADSENSE_ID with your real ID (ca-pub-XXXXXXXXXXXXXXXX)
-// Then call showAdBanner() at the bottom of this script
-const ADSENSE_ID = 'YOUR_ADSENSE_ID';
+// ═══ ADMOB TEST BANNER ═══
+const ADMOB_TEST_ID = 'ca-app-pub-3940256099942544/6300978111';
 function showAdBanner(){
   const freeUser = !localStorage.getItem('sc2-creator') && !localStorage.getItem('sc2-pro');
-  if(!freeUser || ADSENSE_ID === 'YOUR_ADSENSE_ID') return;
+  if(!freeUser) return;
   const existing = document.getElementById('ad-banner');
   if(existing) return;
   const ad = document.createElement('div');
   ad.id = 'ad-banner';
-  ad.style.cssText = 'position:fixed;bottom:58px;left:0;right:0;z-index:40;background:var(--surface);border-top:1px solid var(--border);padding:6px;text-align:center;';
-  const ins = document.createElement('ins');
-  ins.className = 'adsbygoogle';
-  ins.style.cssText = 'display:block;height:50px';
-  ins.setAttribute('data-ad-client', ADSENSE_ID);
-  ins.setAttribute('data-ad-slot', 'auto');
-  ins.setAttribute('data-ad-format', 'auto');
-  ad.appendChild(ins);
+  ad.style.cssText = 'position:fixed;bottom:58px;left:0;right:0;z-index:40;background:var(--surface);border-top:1px solid var(--border);padding:8px;text-align:center;';
+  ad.innerHTML = '<div style="background:linear-gradient(135deg,rgba(255,45,120,0.08),rgba(0,212,255,0.08));border:1px dashed var(--border2);border-radius:8px;padding:10px 16px;font-size:0.72rem;color:var(--muted2);display:flex;align-items:center;justify-content:center;gap:8px;height:50px"><span style="font-size:1rem">📣</span> AdMob Test Banner · ' + ADMOB_TEST_ID + '</div>';
   document.body.appendChild(ad);
-  if(window.adsbygoogle) (window.adsbygoogle = window.adsbygoogle || []).push({});
+  // Adjust bottom nav padding
+  document.querySelector('.screen.active')?.style.setProperty('padding-bottom','170px');
 }
+showAdBanner();
 
 // ═══ VOICE PROFILE ═══
-let voiceProfile = JSON.parse(localStorage.getItem('sc2-voice') || '{}');
+// voiceProfile declared at top of script
 
 function saveVoiceProfile(){
   const tone = [...document.querySelectorAll('#voice-tone-chips .chip.on')].map(c=>c.textContent).join(', ');
