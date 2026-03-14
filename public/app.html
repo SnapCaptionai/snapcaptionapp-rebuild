@@ -1053,12 +1053,17 @@ async function genScript(){
     ];
     let found=0;
     let html='<div class="res-card"><div class="res-tag">\u2756 Your '+len+' '+p+' Script</div>';
+    const allKeys = secs.map(s=>s.k).join('|');
     secs.forEach(s=>{
-      const pat=new RegExp(s.k+'[:\\s]*\\n([\\s\\S]*?)(?=\\n{0,3}(?:HOOK|INTRO|MAIN CONTENT|PRODUCT MENTION|OUTRO|CALL TO ACTION|REALIZATION)|$)','i');
+      const pat=new RegExp('(?:^|\\n)\\**\\s*'+s.k+'\\s*\\**[:\\s]*\\n([\\s\\S]*?)(?=\\n\\**\\s*(?:'+allKeys+'|REALIZATION)\\s*\\**[:\\s]*\\n|$)','i');
       const m=txt.match(pat);
       if(m&&m[1].trim()){found++;html+='<div class="sblock '+s.c+'" style="margin-bottom:10px"><div class="sblock-lbl">'+s.l+'</div><div class="sblock-text">'+m[1].trim().replace(/\n/g,'<br>')+'</div></div>';}
     });
-    if(found===0){html+='<div class="sblock body"><div class="sblock-text">'+txt.trim().replace(/\n/g,'<br>')+'</div></div>';}
+    if(found<3){
+      // Fallback: show full output with labeled wrapper
+      html='<div class="res-card"><div class="res-tag">\u2756 Your '+len+' '+p+' Script</div>';
+      html+='<div class="sblock body" style="margin-bottom:10px"><div class="sblock-lbl">\u{1F3AC} FULL SCRIPT</div><div class="sblock-text">'+txt.trim().replace(/\n/g,'<br>')+'</div></div>';
+    }
     html+='<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,encodeURIComponent(txt))">\u{1F4CB} Copy Full Script</button><button class="btn-sm" onclick="doSave(this,encodeURIComponent(txt),\''+p+' Script\')">\u2B50 Save</button></div></div>';
     out.innerHTML=html;rec();
   }catch(e){document.getElementById('scr-out').innerHTML='<div class="res-card" style="color:#ff5c5c">Error \u2014 try again</div>';}
