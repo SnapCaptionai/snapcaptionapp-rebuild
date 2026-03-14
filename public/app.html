@@ -1826,7 +1826,7 @@ async function genWhatToPost(){
     let html = '<div class="res-card"><div class="res-tag">✦ Your ' + wtpState.type + ' Post · ' + wtpState.tone + '</div>';
     let found = 0;
     secs.forEach(s => {
-      const pat = new RegExp(s.k + '[:\s]*\n([\s\S]*?)(?=\n{0,3}(?:HOOK|CAPTION BODY|CALL TO ACTION|HASHTAGS)|$)', 'i');
+      const pat = new RegExp(s.k + '[:\\s]*\\n([\\s\\S]*?)(?=\\n{0,3}(?:HOOK|CAPTION BODY|CALL TO ACTION|HASHTAGS)|$)', 'i');
       const m = txt.match(pat);
       if(m && m[1].trim()){ found++; html += '<div class="sblock ' + s.c + '" style="margin-bottom:10px"><div class="sblock-lbl">' + s.l + '</div><div class="sblock-text">' + m[1].trim().replace(/\n/g,'<br>') + '</div></div>'; }
     });
