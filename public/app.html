@@ -1394,38 +1394,82 @@ async function genCalendar(){
 
   const bar = document.getElementById('cal-prog-bar');
   const pt = document.getElementById('cal-prog-text');
+  pt.textContent = 'Generating all 30 days...';
+  bar.style.width = '30%';
+
+  const weekPlan = THEMES.map((t,w) => 'Week '+(w+1)+' "'+t.name+'": '+t.days.map((d,i) => 'Day '+(w*7+i+1)+' '+d.t+' — '+d.d).join(', ')).join('\n');
+  const prodLine = product ? 'In Week 3, naturally mention this product: '+product+'.' : '';
+
+  const prompt = `You are a content calendar expert. Create a 30-day content calendar for a ${niche} creator named "${brand}".
+Platform: ${plat}. Goal: ${goal}. ${prodLine}
+
+Week plan:
+${weekPlan}
+
+Return ONLY a valid JSON array with exactly 30 objects. No markdown, no backticks, no extra text.
+Each object: {"day":1,"platform":"...","theme":"...","hook":"...","caption":"...","hashtags":"...","tip":"..."}
+
+Rules:
+- "hook" = 1-2 scroll-stopping lines
+- "caption" = 4-5 sentence engaging caption
+- "hashtags" = 8 relevant hashtags with # prefix
+- "tip" = one short posting tip
+- Write like a real human. No corporate speak.`;
 
   try{
-    for(let w = 0; w < 4; w++){
-      const theme = THEMES[w];
-      pt.textContent = 'Building Week '+(w+1)+' — '+theme.name+'...';
-      bar.style.width = ((w/4)*80)+'%';
+    bar.style.width = '50%';
+    const txt = await ai(prompt);
+    bar.style.width = '85%';
 
-      const dayList = theme.days.map((d,i) => 'Day '+(w*7+i+1)+': '+d.t+' — '+d.d).join('\n');
-      const prodLine = (product && w === 2) ? 'Week 3: naturally weave in — '+product : '';
-
-      const prompt = 'Content calendar for a '+niche+' creator named '+brand+'. Week '+(w+1)+': "'+theme.name+'". Platform: '+plat+'. Goal: '+goal+'. '+prodLine+'\n\nWrite ALL 7 days. For each day:\n\nDAY[number]\nPLATFORM: [platform]\nTHEME: [theme]\nHOOK: [scroll-stopping opener]\nCAPTION: [4-5 sentence caption]\nHASHTAGS: [8 hashtags]\nTIP: [one tip]\n---\n\nDays:\n'+dayList;
-
-      const txt = await ai(prompt);
-      const blocks = txt.split(/---+/).filter(b => b.trim() && /DAY\d+/i.test(b));
-
-      for(let i = 0; i < 7; i++){
-        const dayNum = w*7+i+1;
-        const block = blocks[i] || '';
-        const lines = block.split('\n');
-        const get = (k) => { const l = lines.find(x => x.toUpperCase().startsWith(k.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
-        const d = new Date(calStartDate); d.setDate(d.getDate()+dayNum-1);
-        calendarData.push({
-          day:dayNum, week:w+1, weekName:theme.name,
-          platform:get('PLATFORM')||plat,
-          theme:get('THEME')||theme.days[i]?.t||'',
-          hook:get('HOOK')||'', caption:get('CAPTION')||'',
-          hashtags:get('HASHTAGS')||'', tip:get('TIP')||'',
-          done:false, date:d, freq:parseInt(freq)||1
-        });
-      }
-      rec();
+    // Extract JSON array from response
+    let parsed;
+    try {
+      // Try direct parse first
+      parsed = JSON.parse(txt);
+    } catch(_) {
+      // Try extracting JSON from markdown code blocks or surrounding text
+      const jsonMatch = txt.match(/\[[\s\S]*\]/);
+      if(jsonMatch) parsed = JSON.parse(jsonMatch[0]);
+      else throw new Error('Could not parse calendar data from AI response');
     }
+
+    if(!Array.isArray(parsed) || parsed.length < 20) throw new Error('AI returned incomplete calendar (' + (parsed?.length||0) + ' days). Please try again.');
+
+    parsed.slice(0, 30).forEach((item, i) => {
+      const dayNum = i + 1;
+      const weekIdx = Math.floor(i / 7);
+      const dayInWeek = i % 7;
+      const d = new Date(calStartDate); d.setDate(d.getDate() + i);
+      calendarData.push({
+        day: dayNum,
+        week: weekIdx + 1,
+        weekName: THEMES[weekIdx]?.name || '',
+        platform: item.platform || plat,
+        theme: item.theme || THEMES[weekIdx]?.days[dayInWeek]?.t || '',
+        hook: item.hook || '',
+        caption: item.caption || '',
+        hashtags: item.hashtags || '',
+        tip: item.tip || '',
+        done: false,
+        date: d,
+        freq: parseInt(freq) || 1
+      });
+    });
+
+    // Pad to 30 if AI returned fewer
+    while(calendarData.length < 30){
+      const i = calendarData.length;
+      const weekIdx = Math.floor(i / 7);
+      const dayInWeek = i % 7;
+      const d = new Date(calStartDate); d.setDate(d.getDate() + i);
+      calendarData.push({
+        day: i+1, week: weekIdx+1, weekName: THEMES[weekIdx]?.name||'',
+        platform: plat, theme: THEMES[weekIdx]?.days[dayInWeek]?.t||'', hook:'', caption:'', hashtags:'', tip:'',
+        done: false, date: d, freq: parseInt(freq)||1
+      });
+    }
+
+    rec();
     bar.style.width = '100%';
     pt.textContent = '✅ All 30 days ready!';
     setTimeout(() => { document.getElementById('cal-progress').style.display = 'none'; renderCalendar(); syncCalendarToSupabase(); }, 600);
