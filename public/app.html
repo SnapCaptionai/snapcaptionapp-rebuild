@@ -810,8 +810,11 @@ function rec(){
 }
 
 function canGen(){
-  if(creatorMode) return true;
-  if(uses >= FREE_LIMIT){ openUpgrade(); return false; }
+  if(creatorMode && uses >= 200){ alert('Daily limit reached (200). Try again tomorrow.'); return false; }
+  if(!creatorMode && uses >= FREE_LIMIT){ openUpgrade(); return false; }
+  const now = Date.now();
+  if(now - _lastGenTime < COOLDOWN_MS){ alert('Please wait a moment before generating again.'); return false; }
+  _lastGenTime = now;
   return true;
 }
 
