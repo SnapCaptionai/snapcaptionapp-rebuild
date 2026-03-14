@@ -1348,9 +1348,10 @@ Format as numbered list: 1. [idea]`;
       const id = idea.trim();
       html += '<div class="res-card"><div class="res-tag">💡 Idea '+(i+1)+'</div><div class="res-body">'+id+'</div><div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(id)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(id)+',' + JSON.stringify('Content Idea')+')">⭐ Save</button></div></div>';
     });
+    html += regenBtn('genIdeas', 'Regenerate');
     document.getElementById('id-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('id-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('id-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genIdeas', 'Try Again'); }
   setBtn('id-btn', false, '<span>💡</span> Give Me 10 Ideas');
 }
 
