@@ -1489,6 +1489,7 @@ Format as numbered list: 1. [idea]`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
     let html = '';
+    const ideas = txt.split(/\d+[\.\)]\s*/).filter(i => i.trim());
     (ideas.length ? ideas : [txt]).forEach((idea, i) => {
       const id = idea.trim();
       html += '<div class="res-card"><div class="res-tag">💡 Idea '+(i+1)+'</div><div class="res-body">'+id+'</div><div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(id)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(id)+',' + JSON.stringify('Content Idea')+')">⭐ Save</button></div></div>';
