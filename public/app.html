@@ -1113,8 +1113,7 @@ CTA: [call to action]
 ${ht?'HASHTAGS: [8-10 hashtags]':''}
 ---`;
   try{
-    const txt = await ai(prompt);
-    const blocks = txt.split(/---+/).filter(b => b.trim() && b.match(/ITEM\d+/i));
+    const txt = await ai(prompt, FAST_MODEL);
     let html = '';
     (blocks.length ? blocks : [txt]).slice(0,3).forEach((block, i) => {
       const lines = block.split('\n');
