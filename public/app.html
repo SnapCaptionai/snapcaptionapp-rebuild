@@ -1454,28 +1454,6 @@ function initSettings(){
     if(sc){ sc.textContent = 'Unlocked ✅'; sc.style.color = 'var(--green)'; }
   }
   rHome();
-  // Active engine
-  document.querySelectorAll('.eng-card').forEach(c => c.classList.remove('active-eng'));
-  const ae = document.getElementById('eng-'+activeEngine);
-  if(ae) ae.classList.add('active-eng');
-}
-
-function saveKey(engine){
-  const k = document.getElementById('key-'+engine)?.value.trim();
-  if(k){ engineKeys[engine]=k; localStorage.setItem('sc2-key-'+engine,k); const b=document.getElementById('badge-'+engine); if(b){b.textContent='READY';b.classList.remove('off');} }
-}
-
-function selectEngine(engine){
-  if(engine!=='claude' && !engineKeys[engine]){ alert('Add your '+engine+' API key first!'); return; }
-  activeEngine=engine; localStorage.setItem('sc2-engine',engine);
-  document.querySelectorAll('.eng-card').forEach(c=>c.classList.remove('active-eng'));
-  document.getElementById('eng-'+engine)?.classList.add('active-eng');
-  ['claude','openai','gemini'].forEach(e => {
-    const b=document.getElementById('badge-'+e);
-    if(!b) return;
-    if(e===engine){b.textContent='ACTIVE';b.className='eng-badge';}
-    else{b.textContent=engineKeys[e]?'READY':'ADD KEY';b.className='eng-badge off';}
-  });
 }
 
 function saveVoiceProfile(){
