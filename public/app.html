@@ -924,7 +924,8 @@ async function genCaption(){
   const brand = document.getElementById('cap-brand-name')?.value.trim() || voiceProfile?.brand || '';
   const goal = document.querySelector('#cap-goal-row .ppill.on')?.dataset.v || 'Grow Followers';
   const prodToggle = document.getElementById('cap-prod-toggle')?.checked;
-  const prod = prodToggle ? (document.getElementById('cap-prod-desc')?.value.trim() || '') : '';
+  const prodVal = document.getElementById('cap-prod-desc')?.value.trim() || '';
+  const prod = (prodToggle && prodVal) ? prodVal : '';
   const voice = getVoiceContext();
   setBtn('cap-btn', true, '<span>⚡</span> Building Your Post...');
   document.getElementById('cap-out').innerHTML = '';
