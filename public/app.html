@@ -988,7 +988,7 @@ async function genCaption(){
     out.innerHTML = html || '<div class="res-card" style="color:#ff5c5c">No results — try again</div>';
     rec();
   }catch(e){
-    document.getElementById('cap-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error — try again</div>';
+    document.getElementById('cap-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">⚠️ ' + (e.message || 'Error — try again') + '</div>';
   }
   setBtn('cap-btn', false, '<span>⚡</span> Build My Post');
 }
