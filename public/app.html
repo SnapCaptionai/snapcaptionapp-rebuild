@@ -1066,7 +1066,7 @@ CTA
 HASHTAGS
 [10 hashtags]`;
   try{
-    const txt = await ai(prompt);
+    const txt = await ai(prompt, FAST_MODEL);
     const get = (key) => { const m = txt.match(new RegExp(key+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:HOOK|CAPTION|CTA|HASHTAGS)|$)','i')); return m ? m[1].trim() : ''; };
     const hook = get('HOOK'); const cap = get('CAPTION'); const cta = get('CTA'); const ht = get('HASHTAGS');
     const full = hook+'\n\n'+cap+'\n\n'+cta+'\n\n'+ht;
