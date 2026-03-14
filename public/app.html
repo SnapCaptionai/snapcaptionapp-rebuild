@@ -1032,7 +1032,8 @@ async function genScript(){
   const product=document.getElementById('scr-product').value.trim();
   const link=document.getElementById('scr-link').value.trim();
   const prodTypes=[...document.querySelectorAll('#prod-type-chips .chip.on')].map(c=>c.textContent).join(', ')||'digital product';
-  if(!topic){alert('What is your video about?');return;}
+  const topicFinal = topic || 'an engaging video for my audience';
+  if(!topic) { /* allow empty — use default */ }
   setBtn('scr-btn',true,'<span>\u{1F3AC}</span> Writing Your Script...');
   document.getElementById('scr-out').innerHTML='';
   const isReal=style.includes('Realization');
