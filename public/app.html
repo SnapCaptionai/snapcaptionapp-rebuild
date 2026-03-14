@@ -1134,7 +1134,7 @@ async function genHooks(){
   if(!canGen()) return;
   const p = gplat('hook-prow');
   const style = gtones('hook-style');
-  const d = document.getElementById('hook-in').value.trim() || 'a helpful tip for creators';
+  const d = document.getElementById('hook-in').value.trim() || 'a helpful tip for people on social media';
   setBtn('hook-btn', true, '<span>🎣</span> Write My Hooks');
   document.getElementById('hook-out').innerHTML = '';
   const prompt = `Write 6 scroll-stopping ${p} hooks for: "${d}"
