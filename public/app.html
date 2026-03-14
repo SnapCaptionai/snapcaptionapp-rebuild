@@ -931,6 +931,12 @@ function doSave(text, plat){
   sv(); rHome();
 }
 
+// ═══ REGENERATE SUPPORT ═══
+let _lastGenFn = {};
+function regenBtn(genName, label){
+  return '<button class="btn-gen" style="margin-top:10px;background:var(--card2);border:1px solid var(--border2);box-shadow:none;font-size:0.85rem" onclick="'+genName+'()"><span>🔄</span> '+label+'</button>';
+}
+
 // ═══ REFINE BUTTONS ═══
 function refineHTML(text, context){
   const enc = JSON.stringify(text);
@@ -1003,10 +1009,11 @@ Write naturally. Real human voice. No corporate speak.`;
     html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(full)+')">📋 Copy All</button><button class="btn-sm" onclick="doSave('+JSON.stringify(full)+',' + JSON.stringify('Quick Post')+')">⭐ Save</button></div>';
     html += refineHTML(full);
     html += '</div>';
+    html += regenBtn('quickCreate', 'Regenerate');
     document.getElementById('quick-out').innerHTML = html;
     rec();
   }catch(e){
-    document.getElementById('quick-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: ' + e.message + '</div>';
+    document.getElementById('quick-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: ' + e.message + '</div>' + regenBtn('quickCreate', 'Try Again');
   }
   setBtn('quick-btn', false, '<span>⚡</span> Create Standout Content');
 }
@@ -1055,9 +1062,10 @@ HASHTAGS
     html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(full)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(full)+',' + JSON.stringify('WTP Post')+')">⭐ Save</button><button class="btn-sm" onclick="resetWTP()">🔄 Start Over</button></div>';
     html += refineHTML(full);
     html += '</div>';
+    html += regenBtn('genWTP', 'Regenerate');
     document.getElementById('wtp-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('wtp-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('wtp-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genWTP', 'Try Again'); }
 }
 
 function resetWTP(){
@@ -1107,9 +1115,10 @@ ${ht?'HASHTAGS: [8-10 hashtags]':''}
       html += '</div>';
     });
     if(!html) html = '<div class="res-card"><div class="res-body">'+txt.replace(/\n/g,'<br>')+'</div></div>';
+    html += regenBtn('genCaption', 'Regenerate');
     document.getElementById('cap-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('cap-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('cap-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genCaption', 'Try Again'); }
   setBtn('cap-btn', false, '<span>✍️</span> Build My Post');
 }
 
@@ -1153,9 +1162,10 @@ HOOK6
       html += '<div class="refine-row"><button class="rbtn" onclick="refinePost(this,\'shorter\','+JSON.stringify(h)+')">✂️ Shorter</button><button class="rbtn" onclick="refinePost(this,\'dramatic\','+JSON.stringify(h)+')">🔥 Dramatic</button><button class="rbtn" onclick="refinePost(this,\'human\','+JSON.stringify(h)+')">💬 More Human</button></div>';
       html += '</div>';
     });
+    html += regenBtn('genHooks', 'Regenerate');
     document.getElementById('hook-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('hook-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('hook-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genHooks', 'Try Again'); }
   setBtn('hook-btn', false, '<span>🎣</span> Write My Hooks');
 }
 
@@ -1231,9 +1241,10 @@ Write how a real human talks. Short sentences. Contractions. Mark [PAUSE] where 
     html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(txt)+')">📋 Copy Script</button><button class="btn-sm" onclick="doSave('+JSON.stringify(txt)+','+JSON.stringify(p+' Script')+')">⭐ Save</button></div>';
     html += refineHTML(txt);
     html += '</div>';
+    html += regenBtn('genScript', 'Regenerate');
     document.getElementById('scr-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('scr-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('scr-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genScript', 'Try Again'); }
   setBtn('scr-btn', false, '<span>🎬</span> Write My Script');
 }
 
@@ -1268,9 +1279,10 @@ Just the hashtags, no extra text.`;
       html += '<div class="res-card"><div class="res-tag" style="color:'+color+'">'+label+'</div><div class="res-body" style="color:'+color+'">'+tags+'</div><div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(tags)+')">📋 Copy Set</button><button class="btn-sm" onclick="doSave('+JSON.stringify(tags)+','+JSON.stringify(p+' Hashtags')+')">⭐ Save</button></div></div>';
     });
     if(!html) html = '<div class="res-card"><div class="res-body">'+txt.replace(/\n/g,'<br>')+'</div></div>';
+    html += regenBtn('genHashtags', 'Regenerate');
     document.getElementById('ht-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('ht-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('ht-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genHashtags', 'Try Again'); }
   setBtn('ht-btn', false, '<span>#️⃣</span> Generate Hashtags');
 }
 
@@ -1310,9 +1322,10 @@ TWITTER
       }
     });
     if(!html) html = '<div class="res-card"><div class="res-body">'+txt.replace(/\n/g,'<br>')+'</div></div>';
+    html += regenBtn('genRepurpose', 'Regenerate');
     document.getElementById('rep-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('rep-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('rep-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genRepurpose', 'Try Again'); }
   setBtn('rep-btn', false, '<span>🔁</span> Multiply My Content');
 }
 
@@ -1335,9 +1348,10 @@ Format as numbered list: 1. [idea]`;
       const id = idea.trim();
       html += '<div class="res-card"><div class="res-tag">💡 Idea '+(i+1)+'</div><div class="res-body">'+id+'</div><div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(id)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(id)+',' + JSON.stringify('Content Idea')+')">⭐ Save</button></div></div>';
     });
+    html += regenBtn('genIdeas', 'Regenerate');
     document.getElementById('id-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('id-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('id-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genIdeas', 'Try Again'); }
   setBtn('id-btn', false, '<span>💡</span> Give Me 10 Ideas');
 }
 
@@ -1361,9 +1375,10 @@ Format as BIO1, BIO2, BIO3 with a line break between each.`;
       const b = bio.trim();
       html += '<div class="res-card"><div class="res-tag">✦ Bio Option '+(i+1)+' · '+p+'</div><div class="res-body">'+b.replace(/\n/g,'<br>')+'</div><div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(b)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(b)+','+JSON.stringify(p+' Bio')+')">⭐ Save</button></div></div>';
     });
+    html += regenBtn('genBio', 'Regenerate');
     document.getElementById('bio-out').innerHTML = html;
     rec();
-  }catch(e){ document.getElementById('bio-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>'; }
+  }catch(e){ document.getElementById('bio-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>' + regenBtn('genBio', 'Try Again'); }
   setBtn('bio-btn', false, '<span>👤</span> Write My Bio');
 }
 
@@ -1394,38 +1409,82 @@ async function genCalendar(){
 
   const bar = document.getElementById('cal-prog-bar');
   const pt = document.getElementById('cal-prog-text');
+  pt.textContent = 'Generating all 30 days...';
+  bar.style.width = '30%';
+
+  const weekPlan = THEMES.map((t,w) => 'Week '+(w+1)+' "'+t.name+'": '+t.days.map((d,i) => 'Day '+(w*7+i+1)+' '+d.t+' — '+d.d).join(', ')).join('\n');
+  const prodLine = product ? 'In Week 3, naturally mention this product: '+product+'.' : '';
+
+  const prompt = `You are a content calendar expert. Create a 30-day content calendar for a ${niche} creator named "${brand}".
+Platform: ${plat}. Goal: ${goal}. ${prodLine}
+
+Week plan:
+${weekPlan}
+
+Return ONLY a valid JSON array with exactly 30 objects. No markdown, no backticks, no extra text.
+Each object: {"day":1,"platform":"...","theme":"...","hook":"...","caption":"...","hashtags":"...","tip":"..."}
+
+Rules:
+- "hook" = 1-2 scroll-stopping lines
+- "caption" = 4-5 sentence engaging caption
+- "hashtags" = 8 relevant hashtags with # prefix
+- "tip" = one short posting tip
+- Write like a real human. No corporate speak.`;
 
   try{
-    for(let w = 0; w < 4; w++){
-      const theme = THEMES[w];
-      pt.textContent = 'Building Week '+(w+1)+' — '+theme.name+'...';
-      bar.style.width = ((w/4)*80)+'%';
+    bar.style.width = '50%';
+    const txt = await ai(prompt);
+    bar.style.width = '85%';
 
-      const dayList = theme.days.map((d,i) => 'Day '+(w*7+i+1)+': '+d.t+' — '+d.d).join('\n');
-      const prodLine = (product && w === 2) ? 'Week 3: naturally weave in — '+product : '';
-
-      const prompt = 'Content calendar for a '+niche+' creator named '+brand+'. Week '+(w+1)+': "'+theme.name+'". Platform: '+plat+'. Goal: '+goal+'. '+prodLine+'\n\nWrite ALL 7 days. For each day:\n\nDAY[number]\nPLATFORM: [platform]\nTHEME: [theme]\nHOOK: [scroll-stopping opener]\nCAPTION: [4-5 sentence caption]\nHASHTAGS: [8 hashtags]\nTIP: [one tip]\n---\n\nDays:\n'+dayList;
-
-      const txt = await ai(prompt);
-      const blocks = txt.split(/---+/).filter(b => b.trim() && /DAY\d+/i.test(b));
-
-      for(let i = 0; i < 7; i++){
-        const dayNum = w*7+i+1;
-        const block = blocks[i] || '';
-        const lines = block.split('\n');
-        const get = (k) => { const l = lines.find(x => x.toUpperCase().startsWith(k.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
-        const d = new Date(calStartDate); d.setDate(d.getDate()+dayNum-1);
-        calendarData.push({
-          day:dayNum, week:w+1, weekName:theme.name,
-          platform:get('PLATFORM')||plat,
-          theme:get('THEME')||theme.days[i]?.t||'',
-          hook:get('HOOK')||'', caption:get('CAPTION')||'',
-          hashtags:get('HASHTAGS')||'', tip:get('TIP')||'',
-          done:false, date:d, freq:parseInt(freq)||1
-        });
-      }
-      rec();
+    // Extract JSON array from response
+    let parsed;
+    try {
+      // Try direct parse first
+      parsed = JSON.parse(txt);
+    } catch(_) {
+      // Try extracting JSON from markdown code blocks or surrounding text
+      const jsonMatch = txt.match(/\[[\s\S]*\]/);
+      if(jsonMatch) parsed = JSON.parse(jsonMatch[0]);
+      else throw new Error('Could not parse calendar data from AI response');
     }
+
+    if(!Array.isArray(parsed) || parsed.length < 20) throw new Error('AI returned incomplete calendar (' + (parsed?.length||0) + ' days). Please try again.');
+
+    parsed.slice(0, 30).forEach((item, i) => {
+      const dayNum = i + 1;
+      const weekIdx = Math.floor(i / 7);
+      const dayInWeek = i % 7;
+      const d = new Date(calStartDate); d.setDate(d.getDate() + i);
+      calendarData.push({
+        day: dayNum,
+        week: weekIdx + 1,
+        weekName: THEMES[weekIdx]?.name || '',
+        platform: item.platform || plat,
+        theme: item.theme || THEMES[weekIdx]?.days[dayInWeek]?.t || '',
+        hook: item.hook || '',
+        caption: item.caption || '',
+        hashtags: item.hashtags || '',
+        tip: item.tip || '',
+        done: false,
+        date: d,
+        freq: parseInt(freq) || 1
+      });
+    });
+
+    // Pad to 30 if AI returned fewer
+    while(calendarData.length < 30){
+      const i = calendarData.length;
+      const weekIdx = Math.floor(i / 7);
+      const dayInWeek = i % 7;
+      const d = new Date(calStartDate); d.setDate(d.getDate() + i);
+      calendarData.push({
+        day: i+1, week: weekIdx+1, weekName: THEMES[weekIdx]?.name||'',
+        platform: plat, theme: THEMES[weekIdx]?.days[dayInWeek]?.t||'', hook:'', caption:'', hashtags:'', tip:'',
+        done: false, date: d, freq: parseInt(freq)||1
+      });
+    }
+
+    rec();
     bar.style.width = '100%';
     pt.textContent = '✅ All 30 days ready!';
     setTimeout(() => { document.getElementById('cal-progress').style.display = 'none'; renderCalendar(); syncCalendarToSupabase(); }, 600);
