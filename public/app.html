@@ -1285,6 +1285,7 @@ HOOK6
     const txt = await ai(prompt, FAST_MODEL);
     const scores = [9,8,10,7,9,8];
     let html = '';
+    const hooks = txt.split(/HOOK\d+/i).filter(h => h.trim());
     (hooks.length ? hooks : [txt]).forEach((hook, i) => {
       const h = hook.trim();
       const score = scores[i] || 8;
@@ -1458,6 +1459,8 @@ TWITTER
 [Twitter/X version]`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
+    let html = '';
+    platforms.forEach(plat => {
       const m = txt.match(new RegExp(plat+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:FACEBOOK|INSTAGRAM|TIKTOK|YOUTUBE|LINKEDIN|TWITTER)|$)','i'));
       if(m && m[1].trim()){
         const ver = m[1].trim();
@@ -1486,6 +1489,7 @@ Format as numbered list: 1. [idea]`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
     let html = '';
+    const ideas = txt.split(/\d+[\.\)]\s*/).filter(i => i.trim());
     (ideas.length ? ideas : [txt]).forEach((idea, i) => {
       const id = idea.trim();
       html += '<div class="res-card"><div class="res-tag">💡 Idea '+(i+1)+'</div><div class="res-body">'+id+'</div><div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(id)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(id)+',' + JSON.stringify('Content Idea')+')">⭐ Save</button></div></div>';
@@ -1512,6 +1516,7 @@ Format as BIO1, BIO2, BIO3 with a line break between each.`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
     let html = '';
+    const bios = txt.split(/BIO\s*\d+/i).filter(b => b.trim());
     (bios.length ? bios : [txt]).forEach((bio, i) => {
       const b = bio.trim();
       html += '<div class="res-card"><div class="res-tag">✦ Bio Option '+(i+1)+' · '+p+'</div><div class="res-body">'+b.replace(/\n/g,'<br>')+'</div><div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(b)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(b)+','+JSON.stringify(p+' Bio')+')">⭐ Save</button></div></div>';
