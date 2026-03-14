@@ -578,38 +578,13 @@ setTimeout(dismissSplash, 3500);
 
     <div class="card">
       <div class="sl">🤖 AI Engine</div>
-      <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:12px;line-height:1.6">Choose which AI powers your content. Each has a different style. You need to add your own API key for each one you want to use.</div>
-      <div style="display:flex;flex-direction:column;gap:10px" id="ai-engine-list">
-        <div class="ai-engine-card active-engine" id="eng-claude" onclick="selectEngine('claude')">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.1rem">🟠</span><strong style="font-size:0.88rem">Claude (Anthropic)</strong></div>
-            <div class="engine-badge" id="badge-claude">ACTIVE</div>
-          </div>
-          <div style="font-size:0.72rem;color:var(--muted2)">Best for deep, creative, authentic writing. Currently powering your app.</div>
-          <input type="text" id="key-claude" placeholder="sk-ant-... (your Anthropic API key)" style="margin-top:10px;font-size:0.78rem" oninput="saveKey('claude')">
+      <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:12px;line-height:1.6">AI is built in and ready to go — no API keys needed! Powered by advanced AI to generate your content.</div>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(0,255,133,0.08);border:1px solid rgba(0,255,133,0.25);border-radius:12px;padding:14px 16px">
+        <span style="font-size:1.4rem">✅</span>
+        <div>
+          <div style="font-weight:700;font-size:0.88rem;color:var(--green)">AI Connected</div>
+          <div style="font-size:0.72rem;color:var(--muted2)">Ready to generate captions, scripts, hooks, and more.</div>
         </div>
-        <div class="ai-engine-card" id="eng-openai" onclick="selectEngine('openai')">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.1rem">🟢</span><strong style="font-size:0.88rem">ChatGPT (OpenAI)</strong></div>
-            <div class="engine-badge off" id="badge-openai">ADD KEY</div>
-          </div>
-          <div style="font-size:0.72rem;color:var(--muted2)">Most recognized AI. Great for broad content and variety.</div>
-          <input type="text" id="key-openai" placeholder="sk-... (your OpenAI API key)" style="margin-top:10px;font-size:0.78rem" oninput="saveKey('openai')">
-        </div>
-        <div class="ai-engine-card" id="eng-gemini" onclick="selectEngine('gemini')">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <div style="display:flex;align-items:center;gap:8px"><span style="font-size:1.1rem">🔵</span><strong style="font-size:0.88rem">Gemini (Google)</strong></div>
-            <div class="engine-badge off" id="badge-gemini">ADD KEY</div>
-          </div>
-          <div style="font-size:0.72rem;color:var(--muted2)">Google's AI. Excellent for YouTube content since Google owns both.</div>
-          <input type="text" id="key-gemini" placeholder="AIza... (your Gemini API key)" style="margin-top:10px;font-size:0.78rem" oninput="saveKey('gemini')">
-        </div>
-      </div>
-      <div style="margin-top:12px;background:var(--card2);border-radius:10px;padding:12px;font-size:0.74rem;color:var(--muted2);line-height:1.6">
-        <strong style="color:var(--text)">How to get a free API key:</strong><br>
-        🟠 Claude → console.anthropic.com (free $5 credit)<br>
-        🟢 ChatGPT → platform.openai.com (free $5 credit)<br>
-        🔵 Gemini → aistudio.google.com (free tier available)
       </div>
     </div>
 
@@ -686,7 +661,7 @@ setTimeout(dismissSplash, 3500);
         <div style="display:flex;justify-content:space-between"><span style="color:var(--muted2)">Total generated</span><span id="set-gen" style="color:var(--pink);font-weight:600">0</span></div>
         <div style="display:flex;justify-content:space-between"><span style="color:var(--muted2)">Day streak</span><span id="set-streak" style="color:var(--orange);font-weight:600">0</span></div>
         <div style="display:flex;justify-content:space-between"><span style="color:var(--muted2)">Saved ideas</span><span id="set-saved" style="color:var(--cyan);font-weight:600">0</span></div>
-        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted2)">Active AI engine</span><span id="set-engine" style="color:var(--green);font-weight:600">Claude</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--muted2)">Active AI engine</span><span id="set-engine" style="color:var(--green);font-weight:600">Built-in AI</span></div>
         <div style="display:flex;justify-content:space-between"><span style="color:var(--muted2)">Creator mode</span><span id="set-creator" style="font-weight:600">Locked 🔒</span></div>
       </div>
     </div>
@@ -694,7 +669,7 @@ setTimeout(dismissSplash, 3500);
     <div class="card" style="border-color:rgba(0,212,255,0.15)">
       <div class="sl" style="color:var(--cyan)">🔒 Privacy Notice</div>
       <div style="font-size:0.76rem;color:var(--muted2);line-height:1.7;margin-bottom:12px">
-        Your API keys are stored only on your device and are never transmitted to SnapCaption servers. You can delete them at any time by clearing your app data.
+        Your content is generated using AI and is not stored on our servers. Voice profiles and saved ideas are stored locally on your device.
       </div>
       <div style="display:flex;flex-direction:column;gap:8px">
         <a href="https://snapcaptionai.github.io/SnapCaption-Legal/SnapCaption%20privacy-policy.html" target="_blank" style="display:flex;align-items:center;gap:8px;background:var(--card2);border-radius:10px;padding:12px 14px;text-decoration:none;color:var(--text);font-size:0.82rem;font-weight:600">
@@ -1165,52 +1140,18 @@ async function checkCreatorCode(){
 }
 
 // ═══ AI ENGINE ═══
-let activeEngine = localStorage.getItem('sc2-engine') || 'claude';
-const engineKeys = {
-  claude: localStorage.getItem('sc2-key-claude') || '',
-  openai: localStorage.getItem('sc2-key-openai') || '',
-  gemini: localStorage.getItem('sc2-key-gemini') || ''
-};
-
-function saveKey(engine){
-  const key = document.getElementById('key-'+engine).value.trim();
-  engineKeys[engine] = key;
-  localStorage.setItem('sc2-key-'+engine, key);
-  document.getElementById('badge-'+engine).textContent = key ? 'READY' : 'ADD KEY';
-  document.getElementById('badge-'+engine).className = 'engine-badge' + (key ? '' : ' off');
-}
-
-function selectEngine(engine){
-  if(engine !== 'claude' && !engineKeys[engine]){
-    alert('Please add your ' + engine + ' API key first!');
-    return;
-  }
-  activeEngine = engine;
-  localStorage.setItem('sc2-engine', engine);
-  document.querySelectorAll('.ai-engine-card').forEach(c => c.classList.remove('active-engine'));
-  document.getElementById('eng-'+engine).classList.add('active-engine');
-  ['claude','openai','gemini'].forEach(e => {
-    const b = document.getElementById('badge-'+e);
-    if(e === engine){ b.textContent = 'ACTIVE'; b.className = 'engine-badge'; }
-    else { b.textContent = engineKeys[e] ? 'READY' : 'ADD KEY'; b.className = 'engine-badge off'; }
-  });
-  document.getElementById('set-engine').textContent = engine.charAt(0).toUpperCase()+engine.slice(1);
-}
+// ═══ AI ENGINE (built-in, no keys needed) ═══
+let activeEngine = 'built-in';
 
 async function ai(prompt){
-  const engine = activeEngine;
-  const apiKey = engineKeys[engine];
-  if(!apiKey){
-    throw new Error('No API key set for ' + engine + '. Go to Settings → AI Engine to add your key.');
-  }
   if(!SUPABASE_URL){
     throw new Error('Backend not connected yet. Please wait a moment and try again, or reload the page.');
   }
-  console.log('[SnapCaption] Calling AI proxy:', engine, 'URL:', SUPABASE_URL);
+  console.log('[SnapCaption] Calling AI proxy...');
   const r = await fetch(SUPABASE_URL + '/functions/v1/ai-proxy', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
-    body: JSON.stringify({ engine, apiKey, prompt })
+    body: JSON.stringify({ prompt })
   });
   if(!r.ok){
     const txt = await r.text();
@@ -1232,15 +1173,6 @@ function switchTrack(track){
 
 // ═══ SETTINGS INIT ═══
 function initSettings(){
-  // Restore keys
-  ['claude','openai','gemini'].forEach(e => {
-    const k = localStorage.getItem('sc2-key-'+e) || '';
-    engineKeys[e] = k;
-    const inp = document.getElementById('key-'+e);
-    if(inp && k) inp.value = k;
-    const b = document.getElementById('badge-'+e);
-    if(b && e !== activeEngine){ b.textContent = k ? 'READY' : 'ADD KEY'; b.className = 'engine-badge off'; }
-  });
   // Restore creator mode
   if(localStorage.getItem('sc2-creator') === 'true'){
     S.creatorMode = true;
@@ -1258,11 +1190,7 @@ function initSettings(){
   if(sg) sg.textContent = S.gen;
   if(ss) ss.textContent = S.streak;
   if(sv2) sv2.textContent = S.saved.length;
-  if(se) se.textContent = activeEngine.charAt(0).toUpperCase()+activeEngine.slice(1);
-  // Active engine highlight
-  document.querySelectorAll('.ai-engine-card').forEach(c => c.classList.remove('active-engine'));
-  const ae = document.getElementById('eng-'+activeEngine);
-  if(ae) ae.classList.add('active-engine');
+  if(se) se.textContent = 'Built-in AI';
 }
 
 function clearData(){

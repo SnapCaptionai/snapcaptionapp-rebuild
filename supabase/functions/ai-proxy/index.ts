@@ -11,51 +11,63 @@ serve(async (req) => {
   }
 
   try {
-    const { engine, apiKey, prompt } = await req.json();
+    const { prompt } = await req.json();
 
-    if (!apiKey || !prompt || !engine) {
-      return new Response(JSON.stringify({ error: 'Missing engine, apiKey, or prompt' }), {
+    if (!prompt) {
+      return new Response(JSON.stringify({ error: 'Missing prompt' }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    let result = '';
-
-    if (engine === 'openai') {
-      const r = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-        body: JSON.stringify({ model: 'gpt-4o', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }),
+    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    if (!LOVABLE_API_KEY) {
+      return new Response(JSON.stringify({ error: 'AI service not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
-      const d = await r.json();
-      if (!r.ok) throw new Error(`OpenAI API error [${r.status}]: ${JSON.stringify(d)}`);
-      result = d.choices?.[0]?.message?.content || '';
-    } else if (engine === 'gemini') {
-      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { maxOutputTokens: 4000 } }),
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(`Gemini API error [${r.status}]: ${JSON.stringify(d)}`);
-      result = d.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    } else if (engine === 'claude') {
-      const r = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey,
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 4000, messages: [{ role: 'user', content: prompt }] }),
-      });
-      const d = await r.json();
-      if (!r.ok) throw new Error(`Claude API error [${r.status}]: ${JSON.stringify(d)}`);
-      result = d.content?.map((i: any) => i.text || '').join('') || '';
-    } else {
-      throw new Error(`Unknown engine: ${engine}`);
     }
+
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-3-flash-preview',
+        messages: [
+          { role: 'system', content: 'You are an expert social media content creator. Write engaging, authentic content that sounds human — never robotic or corporate. Follow formatting instructions exactly.' },
+          { role: 'user', content: prompt },
+        ],
+      }),
+    });
+
+    if (response.status === 429) {
+      return new Response(JSON.stringify({ error: 'AI is busy — please wait a moment and try again.' }), {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (response.status === 402) {
+      return new Response(JSON.stringify({ error: 'AI usage limit reached. Please try again later.' }), {
+        status: 402,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    if (!response.ok) {
+      const t = await response.text();
+      console.error('AI gateway error:', response.status, t);
+      return new Response(JSON.stringify({ error: 'AI service error. Please try again.' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const data = await response.json();
+    const result = data.choices?.[0]?.message?.content || '';
 
     return new Response(JSON.stringify({ result }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
