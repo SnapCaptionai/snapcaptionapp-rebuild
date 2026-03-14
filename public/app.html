@@ -718,6 +718,15 @@ rHome(); rLim();
 
 // ═══ NAVIGATION ═══
 function go(id){
+  // Close upgrade modal
+  closeSheet();
+  // Hide global loader
+  hideLoader();
+  // Reset WTP wizard
+  if(id !== 'wtp') resetWTP();
+  // Reset all generator buttons to non-loading state
+  resetAllBtns();
+
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.bni').forEach(b => b.classList.remove('active'));
   const scr = document.getElementById('s-'+id);
@@ -727,6 +736,24 @@ function go(id){
   if(id === 'saved') rSaved();
   if(id === 'settings') initSettings();
   if(id === 'home') { rHome(); rLim(); }
+}
+
+function resetAllBtns(){
+  const btnMap = {
+    'quick-btn': '<span>⚡</span> Create Standout Content',
+    'cap-btn': '<span>✍️</span> Build My Post',
+    'hook-btn': '<span>🎣</span> Write My Hooks',
+    'scr-btn': '<span>🎬</span> Write My Script',
+    'ht-btn': '<span>#️⃣</span> Generate Hashtags',
+    'rep-btn': '<span>🔁</span> Multiply My Content',
+    'id-btn': '<span>💡</span> Give Me 10 Ideas',
+    'bio-btn': '<span>👤</span> Write My Bio',
+    'cal-btn': '<span>🗓️</span> Generate My 30-Day Calendar'
+  };
+  Object.entries(btnMap).forEach(([id, label]) => {
+    const b = document.getElementById(id);
+    if(b && b.disabled){ b.disabled = false; b.innerHTML = label; }
+  });
 }
 
 // ═══ SPLASH ═══
