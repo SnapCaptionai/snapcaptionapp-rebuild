@@ -842,7 +842,10 @@ setTimeout(dismissSplash, 3500);
       <!-- Step 3 -->
       <div id="wtp-step3" style="display:none">
         <div class="card" style="border-color:rgba(155,92,255,0.25)">
-          <span class="sl" style="color:var(--purple)">Step 3 of 3 — What tone feels right today?</span>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <span class="sl" style="color:var(--purple);margin-bottom:0">Step 3 of 3 — What tone feels right today?</span>
+            <button class="btn-sm" onclick="document.getElementById('wtp-step3').style.display='none';document.getElementById('wtp-step2').style.display='block'">← Back</button>
+          </div>
           <div style="display:flex;flex-direction:column;gap:10px" id="wtp-tone">
             <div class="wtp-opt" onclick="wtpSelect('tone',this,'Inspirational')">✨ Inspirational</div>
             <div class="wtp-opt" onclick="wtpSelect('tone',this,'Real Talk')">💯 Real Talk</div>
