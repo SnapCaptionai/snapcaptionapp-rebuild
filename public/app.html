@@ -1140,52 +1140,18 @@ async function checkCreatorCode(){
 }
 
 // ═══ AI ENGINE ═══
-let activeEngine = localStorage.getItem('sc2-engine') || 'claude';
-const engineKeys = {
-  claude: localStorage.getItem('sc2-key-claude') || '',
-  openai: localStorage.getItem('sc2-key-openai') || '',
-  gemini: localStorage.getItem('sc2-key-gemini') || ''
-};
-
-function saveKey(engine){
-  const key = document.getElementById('key-'+engine).value.trim();
-  engineKeys[engine] = key;
-  localStorage.setItem('sc2-key-'+engine, key);
-  document.getElementById('badge-'+engine).textContent = key ? 'READY' : 'ADD KEY';
-  document.getElementById('badge-'+engine).className = 'engine-badge' + (key ? '' : ' off');
-}
-
-function selectEngine(engine){
-  if(engine !== 'claude' && !engineKeys[engine]){
-    alert('Please add your ' + engine + ' API key first!');
-    return;
-  }
-  activeEngine = engine;
-  localStorage.setItem('sc2-engine', engine);
-  document.querySelectorAll('.ai-engine-card').forEach(c => c.classList.remove('active-engine'));
-  document.getElementById('eng-'+engine).classList.add('active-engine');
-  ['claude','openai','gemini'].forEach(e => {
-    const b = document.getElementById('badge-'+e);
-    if(e === engine){ b.textContent = 'ACTIVE'; b.className = 'engine-badge'; }
-    else { b.textContent = engineKeys[e] ? 'READY' : 'ADD KEY'; b.className = 'engine-badge off'; }
-  });
-  document.getElementById('set-engine').textContent = engine.charAt(0).toUpperCase()+engine.slice(1);
-}
+// ═══ AI ENGINE (built-in, no keys needed) ═══
+let activeEngine = 'built-in';
 
 async function ai(prompt){
-  const engine = activeEngine;
-  const apiKey = engineKeys[engine];
-  if(!apiKey){
-    throw new Error('No API key set for ' + engine + '. Go to Settings → AI Engine to add your key.');
-  }
   if(!SUPABASE_URL){
     throw new Error('Backend not connected yet. Please wait a moment and try again, or reload the page.');
   }
-  console.log('[SnapCaption] Calling AI proxy:', engine, 'URL:', SUPABASE_URL);
+  console.log('[SnapCaption] Calling AI proxy...');
   const r = await fetch(SUPABASE_URL + '/functions/v1/ai-proxy', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY },
-    body: JSON.stringify({ engine, apiKey, prompt })
+    body: JSON.stringify({ prompt })
   });
   if(!r.ok){
     const txt = await r.text();
@@ -1207,15 +1173,6 @@ function switchTrack(track){
 
 // ═══ SETTINGS INIT ═══
 function initSettings(){
-  // Restore keys
-  ['claude','openai','gemini'].forEach(e => {
-    const k = localStorage.getItem('sc2-key-'+e) || '';
-    engineKeys[e] = k;
-    const inp = document.getElementById('key-'+e);
-    if(inp && k) inp.value = k;
-    const b = document.getElementById('badge-'+e);
-    if(b && e !== activeEngine){ b.textContent = k ? 'READY' : 'ADD KEY'; b.className = 'engine-badge off'; }
-  });
   // Restore creator mode
   if(localStorage.getItem('sc2-creator') === 'true'){
     S.creatorMode = true;
@@ -1233,11 +1190,7 @@ function initSettings(){
   if(sg) sg.textContent = S.gen;
   if(ss) ss.textContent = S.streak;
   if(sv2) sv2.textContent = S.saved.length;
-  if(se) se.textContent = activeEngine.charAt(0).toUpperCase()+activeEngine.slice(1);
-  // Active engine highlight
-  document.querySelectorAll('.ai-engine-card').forEach(c => c.classList.remove('active-engine'));
-  const ae = document.getElementById('eng-'+activeEngine);
-  if(ae) ae.classList.add('active-engine');
+  if(se) se.textContent = 'Built-in AI';
 }
 
 function clearData(){
