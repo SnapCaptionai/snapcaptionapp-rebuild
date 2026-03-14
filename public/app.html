@@ -194,7 +194,10 @@ select option{background:var(--card2);}
       <div style="font-size:0.76rem;color:var(--muted2);margin-bottom:12px">Type anything — or leave blank for a surprise 🎲</div>
       <textarea id="quick-idea" rows="2" placeholder="What's your idea? (optional — just tap Generate!)"></textarea>
       <button class="btn-gen" style="margin-top:10px" id="quick-btn" onclick="quickCreate()"><span>⚡</span> Create Standout Content</button>
-      <div id="quick-out"></div>
+      <div id="standoutResult" style="display:none;position:relative;margin-top:12px">
+        <button id="closeResult" onclick="document.getElementById('standoutResult').style.display='none'" style="position:absolute;right:0;top:0;background:none;border:none;color:var(--muted2);font-size:1.2rem;cursor:pointer;padding:4px 8px;z-index:1">✕</button>
+        <div id="quick-out"></div>
+      </div>
     </div>
     <!-- Stats -->
     <div class="hero-card">
@@ -808,6 +811,8 @@ rHome(); rLim();
 function go(id){
   // Close upgrade modal
   closeSheet();
+  // Hide standout result panel
+  const sr = document.getElementById('standoutResult'); if(sr) sr.style.display = 'none';
   // Hide global loader
   hideLoader();
   // Reset WTP wizard
@@ -976,6 +981,7 @@ async function quickCreate(){
   if(!canGen()) return;
   const idea = document.getElementById('quick-idea').value.trim();
   setBtn('quick-btn', true, '<span>⚡</span> Create Standout Content');
+  document.getElementById('standoutResult').style.display = 'block';
   document.getElementById('quick-out').innerHTML = '';
   const topic = idea || 'a helpful tip for people who post on social media';
   const prompt = `Create a complete social media post package for: "${topic}"
