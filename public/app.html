@@ -1719,7 +1719,7 @@ function showAdBanner(){
 }
 
 // ═══ VOICE PROFILE ═══
-let voiceProfile = JSON.parse(localStorage.getItem('sc2-voice') || '{}');
+// voiceProfile declared at top of script
 
 function saveVoiceProfile(){
   const tone = [...document.querySelectorAll('#voice-tone-chips .chip.on')].map(c=>c.textContent).join(', ');
