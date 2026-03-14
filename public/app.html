@@ -1491,14 +1491,6 @@ function delSaved(i){ saved.splice(i,1); sv(); rHome(); rSaved(); }
 
 // ═══ SETTINGS ═══
 function initSettings(){
-  // Load keys
-  ['openai','gemini'].forEach(e => {
-    const k = localStorage.getItem('sc2-key-'+e)||'';
-    const inp = document.getElementById('key-'+e);
-    if(inp && k) inp.value = k;
-    const b = document.getElementById('badge-'+e);
-    if(b && k){ b.textContent = 'READY'; b.classList.remove('off'); }
-  });
   // Load voice
   const vd = document.getElementById('voice-desc');
   if(vd && voiceProfile.desc) vd.value = voiceProfile.desc;
