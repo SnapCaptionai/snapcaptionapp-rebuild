@@ -35,7 +35,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-3-flash-preview',
+        model: model || 'google/gemini-3-flash-preview',
         messages: [
           { role: 'system', content: 'You are an expert social media writer. Write engaging, authentic content that sounds human — never robotic or corporate. The user could be anyone: a business owner, educator, artist, entrepreneur, or just someone who wants to share something online. Follow formatting instructions exactly.' },
           { role: 'user', content: prompt },
