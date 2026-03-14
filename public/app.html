@@ -1400,8 +1400,8 @@ const WC = ['var(--pink)','var(--orange)','var(--yellow)','var(--green)'];
 
 async function genCalendar(){
   if(!canGen()) return;
-  const niche = document.getElementById('cal-niche').value.trim() || 'content creator';
-  const brand = document.getElementById('cal-brand').value.trim() || 'Creator';
+  const niche = document.getElementById('cal-niche').value.trim() || 'social media';
+  const brand = document.getElementById('cal-brand').value.trim() || '';
   const plat = gplat('cal-prow');
   const freq = document.querySelector('#cal-freq .ppill.on')?.dataset.v || '1';
   const goal = gtones('cal-goal-chips');
