@@ -1365,8 +1365,7 @@ async function genIdeas(){
 Each idea should be specific, actionable, and scroll-stopping.
 Format as numbered list: 1. [idea]`;
   try{
-    const txt = await ai(prompt);
-    const ideas = txt.split(/\n?\d+\.\s+/).filter(i => i.trim()).slice(0,10);
+    const txt = await ai(prompt, FAST_MODEL);
     let html = '';
     (ideas.length ? ideas : [txt]).forEach((idea, i) => {
       const id = idea.trim();
