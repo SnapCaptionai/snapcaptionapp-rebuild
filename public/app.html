@@ -924,8 +924,10 @@ function doCopy(btn, text){
   setTimeout(() => btn.textContent = orig, 2000);
 }
 function doSave(text, plat){
-  saved.unshift({text, platform:plat||'General', date:new Date().toLocaleDateString('en',{month:'short',day:'numeric'})});
+  const item = {text, platform:plat||'General', date:new Date().toLocaleDateString('en',{month:'short',day:'numeric'})};
+  saved.unshift(item);
   if(saved.length > 100) saved = saved.slice(0,100);
+  syncSaveToSupabase(item);
   sv(); rHome();
 }
 
