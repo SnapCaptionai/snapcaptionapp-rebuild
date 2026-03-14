@@ -1569,7 +1569,7 @@ function clearAllData(){
 
 // ═══ UPGRADE MODAL ═══
 function openUpgrade(){ document.getElementById('modal').classList.add('open'); }
-function closeSheet(){ document.getElementById('modal').classList.remove('open'); }
+function closeSheet(){ const m = document.getElementById('modal'); if(m) m.classList.remove('open'); }
 function closeModal(e){ if(e.target===document.getElementById('modal')) closeSheet(); }
 function selPlan(el){ document.querySelectorAll('.plan').forEach(p=>p.classList.remove('sel')); el.classList.add('sel'); }
 
