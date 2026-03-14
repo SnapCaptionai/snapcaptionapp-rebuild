@@ -247,7 +247,7 @@ select option{background:var(--card2);}
 
     <!-- Limit bar -->
     <div class="lim-wrap" id="lim-wrap">
-      <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted2)"><span>Daily uses</span><span id="lim-text">5 of 5 left</span></div>
+      <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted2)"><span>Daily uses</span><span id="lim-text">20 of 20 left</span></div>
       <div class="lim-bar-bg"><div class="lim-bar" id="lim-bar" style="width:100%"></div></div>
     </div>
 
@@ -764,7 +764,9 @@ async function syncCalendarDone(idx){
 }
 
 // ═══ STATE — all variables declared first ═══
-const FREE_LIMIT = 5;
+const FREE_LIMIT = 20;
+let _lastGenTime = 0;
+const COOLDOWN_MS = 3000;
 let uses = +localStorage.getItem('sc2-uses') || 0;
 let usesDate = localStorage.getItem('sc2-usesdate') || '';
 let totalGen = +localStorage.getItem('sc2-gen') || 0;
@@ -808,8 +810,11 @@ function rec(){
 }
 
 function canGen(){
-  if(creatorMode) return true;
-  if(uses >= FREE_LIMIT){ openUpgrade(); return false; }
+  if(creatorMode && uses >= 200){ alert('Daily limit reached (200). Try again tomorrow.'); return false; }
+  if(!creatorMode && uses >= FREE_LIMIT){ openUpgrade(); return false; }
+  const now = Date.now();
+  if(now - _lastGenTime < COOLDOWN_MS){ alert('Please wait a moment before generating again.'); return false; }
+  _lastGenTime = now;
   return true;
 }
 
@@ -833,13 +838,13 @@ function rHome(){
 }
 
 function rLim(){
-  const rem = Math.max(0, FREE_LIMIT - uses);
+  const limit = creatorMode ? 200 : FREE_LIMIT;
+  const rem = Math.max(0, limit - uses);
   const bar = document.getElementById('lim-bar');
   const txt = document.getElementById('lim-text');
   const wrap = document.getElementById('lim-wrap');
-  if(creatorMode && wrap){ wrap.style.display = 'none'; return; }
-  if(bar) bar.style.width = (rem/FREE_LIMIT*100) + '%';
-  if(txt) txt.textContent = rem + ' of ' + FREE_LIMIT + ' left today';
+  if(bar) bar.style.width = (rem/limit*100) + '%';
+  if(txt) txt.textContent = rem + ' of ' + limit + ' left today';
 }
 
 rHome(); rLim();
@@ -1376,7 +1381,8 @@ Write like a real person talks on camera. Use contractions. Short punchy sentenc
     let html = '<div class="res-card"><div class="res-tag">✦ Your '+len+' '+p+' Script</div>';
     secs.forEach(s => {
       const escapedKey = s.k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const pat = new RegExp(escapedKey+'[^\\n]*\\n([\\s\\S]*?)(?=\\n{0,3}(?:'+sectionKeys+')|$)','i');
+      const allKeys = secs.map(x => x.k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+      const pat = new RegExp(escapedKey+'[^\\n]*\\n([\\s\\S]*?)(?=\\n{0,3}(?:'+allKeys+')|$)','i');
       const m = txt.match(pat);
       if(m && m[1].trim()){
         found++;
