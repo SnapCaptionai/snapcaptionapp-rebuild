@@ -1565,7 +1565,7 @@ async function remixDay(idx){
 async function catchUpDay(idx){
   const d = calendarData[idx]; if(!d) return;
   try{
-    const txt = await ai('Write fresh content for a missed post. Theme: '+d.theme+'. Platform: '+d.platform+'. Make it feel timely and current today.\n\nHOOK: [hook]\nCAPTION: [caption]\nHASHTAGS: [hashtags]');
+    const txt = await ai('Write fresh content for a missed post. Theme: '+d.theme+'. Platform: '+d.platform+'. Make it feel timely and current today.\n\nHOOK: [hook]\nCAPTION: [caption]\nHASHTAGS: [hashtags]', FAST_MODEL);
     const lines = txt.split('\n');
     const get = (k) => { const l = lines.find(x => x.toUpperCase().startsWith(k.toUpperCase()+':')); return l?l.substring(l.indexOf(':')+1).trim():''; };
     calendarData[idx].hook = get('HOOK')||d.hook;
