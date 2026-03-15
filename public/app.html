@@ -345,6 +345,11 @@ select option{background:var(--card2);}
         <div class="chip" onclick="tc(this)">Professional</div>
       </div>
     </div>
+    <div class="card" style="border-color:rgba(255,180,0,0.2);background:rgba(255,180,0,0.03)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span>🛍️</span><span class="sl" style="margin-bottom:0;color:#ffb400">Product Mention (optional)</span></div>
+      <textarea id="cap-product" rows="2" placeholder="Describe your product — or leave blank to skip"></textarea>
+      <input type="text" id="cap-link" placeholder="Where to send them (optional)" style="margin-top:8px">
+    </div>
     <button class="btn-gen" id="cap-btn" onclick="genCaption()"><span>✍️</span> Build My Post</button>
     <div id="cap-out" style="margin-top:12px"></div>
   </div>
@@ -463,6 +468,11 @@ select option{background:var(--card2);}
         <div><span class="sl">Format</span><select id="id-fmt"><option>Mixed</option><option>Short Video</option><option>Long Video</option><option>Post/Caption</option></select></div>
       </div>
     </div>
+    <div class="card" style="border-color:rgba(255,180,0,0.2);background:rgba(255,180,0,0.03)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span>🛍️</span><span class="sl" style="margin-bottom:0;color:#ffb400">Product Mention (optional)</span></div>
+      <textarea id="id-product" rows="2" placeholder="Describe your product — or leave blank to skip"></textarea>
+      <input type="text" id="id-link" placeholder="Where to send them (optional)" style="margin-top:8px">
+    </div>
     <button class="btn-gen" style="background:linear-gradient(135deg,#ffd600,#ff7a00)" id="id-btn" onclick="genIdeas()"><span>💡</span> Give Me 10 Ideas</button>
     <div id="id-out" style="margin-top:12px"></div>
   </div>
@@ -533,8 +543,14 @@ select option{background:var(--card2);}
           </div>
         </div>
         <div class="field"><input type="text" id="cal-product" placeholder="Your product or brand (optional)"></div>
+        <span class="sl">How much to generate</span>
+        <div class="ppills" id="cal-scope">
+          <div class="ppill" data-v="1" onclick="pp(this)">1 Post</div>
+          <div class="ppill on" data-v="7" onclick="pp(this)">1 Week</div>
+          <div class="ppill" data-v="30" onclick="pp(this)">Full 30 Days</div>
+        </div>
       </div>
-      <button class="btn-gen" style="background:linear-gradient(135deg,#ffd600,#ff7a00)" id="cal-btn" onclick="genCalendar()"><span>🗓️</span> Generate My 30-Day Calendar</button>
+      <button class="btn-gen" style="background:linear-gradient(135deg,#ffd600,#ff7a00)" id="cal-btn" onclick="genCalendar()"><span>🗓️</span> Generate Calendar</button>
     </div>
     <div id="cal-progress" style="display:none;margin-top:12px">
       <div class="card" style="text-align:center;padding:20px">
@@ -905,7 +921,7 @@ function resetAllBtns(){
     'rep-btn': '<span>🔁</span> Multiply My Content',
     'id-btn': '<span>💡</span> Give Me 10 Ideas',
     'bio-btn': '<span>👤</span> Write My Bio',
-    'cal-btn': '<span>🗓️</span> Generate My 30-Day Calendar'
+    'cal-btn': '<span>🗓️</span> Generate Calendar'
   };
   Object.entries(btnMap).forEach(([id, label]) => {
     const b = document.getElementById(id);
@@ -1073,17 +1089,22 @@ function regenBtn(genName, label){
 }
 
 // ═══ REFINE BUTTONS ═══
+let _refineStore = {};
+let _refineId = 0;
 function refineHTML(text){
-  const enc = jsArg(text);
+  const rid = '_r' + (++_refineId);
+  _refineStore[rid] = text;
   return `<div class="refine-row">
-    <button class="rbtn" onclick='refinePost(this,"shorter",${enc})'>✂️ Shorten</button>
-    <button class="rbtn" onclick='refinePost(this,"rewrite",${enc})'>🔄 Try another version</button>
-    <button class="rbtn" onclick='refinePost(this,"dramatic",${enc})'>🔥 Make it more bold</button>
-    <button class="rbtn human" onclick='refinePost(this,"human",${enc})'>💬 Make it more natural</button>
+    <button class="rbtn" onclick="refinePost(this,'shorter','${rid}')">✂️ Shorten</button>
+    <button class="rbtn" onclick="refinePost(this,'rewrite','${rid}')">🔄 Try another version</button>
+    <button class="rbtn" onclick="refinePost(this,'dramatic','${rid}')">🔥 Make it more bold</button>
+    <button class="rbtn human" onclick="refinePost(this,'human','${rid}')">💬 Make it more natural</button>
   </div>`;
 }
 
-async function refinePost(btn, mode, text){
+async function refinePost(btn, mode, rid){
+  const text = _refineStore[rid];
+  if(!text){ alert('Nothing to refine.'); return; }
   if(!canGen()) return;
   const orig = btn.textContent; btn.textContent = '⏳...'; btn.disabled = true;
   const prompts = {
@@ -1094,10 +1115,16 @@ async function refinePost(btn, mode, text){
   };
   try{
     const result = await ai(prompts[mode], FAST_MODEL);
+    // Update stored text for subsequent refines
+    _refineStore[rid] = result;
     const card = btn.closest('.res-card') || btn.closest('.sblock');
     if(card){
+      // Update all visible text sections
       const body = card.querySelector('.res-body') || card.querySelector('.sblock-text');
       if(body) body.innerHTML = result.replace(/\n/g,'<br>');
+      // Also update sections if present
+      const sections = card.querySelectorAll('.res-section-text');
+      if(sections.length === 1) sections[0].innerHTML = result.replace(/\n/g,'<br>');
     }
     rec();
   }catch(e){ alert('Refine failed: ' + (e?.message || 'Please try again')); }
@@ -1298,16 +1325,19 @@ async function genCaption(){
   const goal = document.getElementById('cap-goal').value;
   const ht = document.getElementById('cap-ht').value === 'yes';
   const capLen = document.getElementById('cap-length').value;
+  const product = document.getElementById('cap-product').value.trim();
+  const link = document.getElementById('cap-link').value.trim();
   const lenInstructions = {
     short: 'CAPTION: [1-2 clear, punchy sentences. Keep it tight.]',
     medium: 'CAPTION: [One full paragraph, 3-5 sentences. Use clear sentences with proper punctuation. Avoid run-on sentences. Break longer thoughts into shorter sentences.]',
     long: 'CAPTION: [Story-style caption, 2-3 short paragraphs. Tell a mini story. Use clear sentences. Limit paragraphs to 2-4 sentences. No run-on sentences.]'
   };
+  const prodLine = product ? '\n\nPRODUCT INTEGRATION: Naturally mention "'+product+'" in the caption as a genuine recommendation — not an ad.'+( link ? ' Include a natural call to action directing people to: '+link : '') : '';
   setBtn('cap-btn', true, '<span>✍️</span> Build My Post');
   document.getElementById('cap-out').innerHTML = '';
   const prompt = `Expert ${p} copywriter. Write 3 complete post packages for: "${d}"
 Goal: ${goal} | Tone: ${tone}
-Tone direction: ${toneDirective(tone)}
+Tone direction: ${toneDirective(tone)}${prodLine}
 
 IMPORTANT WRITING RULES:
 - Use clear sentences with proper punctuation.
@@ -1384,11 +1414,13 @@ HOOK6
     (hooks.length ? hooks : [txt]).forEach((hook, i) => {
       const h = hook.trim();
       const score = scores[i] || 8;
+      const hRid = '_r' + (++_refineId);
+      _refineStore[hRid] = h;
       html += '<div class="res-card">';
       html += '<div class="hook-score">🎯 Scroll Stop Score: '+score+'/10</div>';
       html += '<div class="res-body" style="font-weight:600;color:var(--text)">'+h+'</div>';
       html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(h)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(h)+','+JSON.stringify(p+' Hook')+')">⭐ Save</button><button class="btn-sm" onclick="sendToScript('+JSON.stringify(h)+')">🎬 Use For Script</button></div>';
-      html += '<div class="refine-row"><button class="rbtn" onclick="refinePost(this,\'shorter\','+JSON.stringify(h)+')">✂️ Shorten</button><button class="rbtn" onclick="refinePost(this,\'dramatic\','+JSON.stringify(h)+')">🔥 Make it more bold</button><button class="rbtn" onclick="refinePost(this,\'human\','+JSON.stringify(h)+')">💬 Make it more natural</button></div>';
+      html += '<div class="refine-row"><button class="rbtn" onclick="refinePost(this,\'shorter\',\''+hRid+'\')">✂️ Shorten</button><button class="rbtn" onclick="refinePost(this,\'dramatic\',\''+hRid+'\')">🔥 Make it more bold</button><button class="rbtn" onclick="refinePost(this,\'human\',\''+hRid+'\')">💬 Make it more natural</button></div>';
       html += '</div>';
     });
     html += regenBtn('genHooks', 'Regenerate');
@@ -1577,10 +1609,13 @@ async function genIdeas(){
   const niche = document.getElementById('id-niche').value.trim() || 'social media';
   const plat = document.getElementById('id-plat').value;
   const fmt = document.getElementById('id-fmt').value;
+  const product = document.getElementById('id-product').value.trim();
+  const link = document.getElementById('id-link').value.trim();
+  const prodLine = product ? '\nSome ideas should naturally incorporate this product/service: "'+product+'".'+(link ? ' When relevant, suggest directing people to: '+link : '') : '';
   setBtn('id-btn', true, '<span>💡</span> Give Me 10 Ideas');
   document.getElementById('id-out').innerHTML = '';
   const prompt = `Generate 10 creative ${fmt} content ideas for someone who posts about ${niche} on ${plat}.
-Each idea should be specific, actionable, and scroll-stopping.
+Each idea should be specific, actionable, and scroll-stopping.${prodLine}
 Format as numbered list: 1. [idea]`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
@@ -1641,30 +1676,43 @@ async function genCalendar(){
   const freq = document.querySelector('#cal-freq .ppill.on')?.dataset.v || '1';
   const goal = gtones('cal-goal-chips');
   const product = document.getElementById('cal-product').value.trim();
+  const scope = parseInt(document.querySelector('#cal-scope .ppill.on')?.dataset.v || '7');
 
   document.getElementById('cal-btn').disabled = true;
   document.getElementById('cal-btn').innerHTML = '<div class="spin"></div> Building...';
   document.getElementById('cal-progress').style.display = 'block';
   document.getElementById('cal-out').innerHTML = '';
-  calendarData = [];
-  calStartDate = new Date();
+
+  const startDay = calendarData.length;
+  if(startDay === 0) calStartDate = new Date();
 
   const bar = document.getElementById('cal-prog-bar');
   const pt = document.getElementById('cal-prog-text');
-  pt.textContent = 'Generating all 30 days...';
+  const scopeLabel = scope === 1 ? '1 post' : scope === 7 ? '1 week' : '30 days';
+  pt.textContent = 'Generating ' + scopeLabel + '...';
   bar.style.width = '30%';
 
-  const weekPlan = THEMES.map((t,w) => 'Week '+(w+1)+' "'+t.name+'": '+t.days.map((d,i) => 'Day '+(w*7+i+1)+' '+d.t+' — '+d.d).join(', ')).join('\n');
-  const prodLine = product ? 'In Week 3, naturally mention this product: '+product+'.' : '';
+  const endDay = Math.min(startDay + scope, 30);
+  const count = endDay - startDay;
 
-  const prompt = `You are a content calendar expert. Create a 30-day content calendar for someone who posts about ${niche}${brand ? ' named "'+brand+'"' : ''}.
+  // Build plan for just the requested days
+  const dayPlans = [];
+  for(let i = startDay; i < endDay; i++){
+    const weekIdx = Math.floor(i / 7);
+    const dayInWeek = i % 7;
+    const theme = THEMES[weekIdx]?.days[dayInWeek];
+    if(theme) dayPlans.push('Day '+(i+1)+' (Week '+(weekIdx+1)+' "'+THEMES[weekIdx].name+'") '+theme.t+' — '+theme.d);
+  }
+  const prodLine = product && startDay < 21 && endDay > 14 ? 'Naturally mention this product: '+product+'.' : '';
+
+  const prompt = `You are a content calendar expert. Create ${count} days of content for someone who posts about ${niche}${brand ? ' named "'+brand+'"' : ''}.
 Platform: ${plat}. Goal: ${goal}. ${prodLine}
 
-Week plan:
-${weekPlan}
+Day plan:
+${dayPlans.join('\n')}
 
-Return ONLY a valid JSON array with exactly 30 objects. No markdown, no backticks, no extra text.
-Each object: {"day":1,"platform":"...","theme":"...","hook":"...","caption":"...","hashtags":"...","tip":"..."}
+Return ONLY a valid JSON array with exactly ${count} objects. No markdown, no backticks, no extra text.
+Each object: {"day":${startDay+1},"platform":"...","theme":"...","hook":"...","caption":"...","hashtags":"...","tip":"..."}
 
 Rules:
 - "hook" = 1-2 scroll-stopping lines
@@ -1675,27 +1723,23 @@ Rules:
 
   try{
     bar.style.width = '50%';
-    const txt = await ai(prompt, QUALITY_MODEL);
+    const useModel = count <= 7 ? FAST_MODEL : QUALITY_MODEL;
+    const txt = await ai(prompt, useModel);
 
-    // Extract JSON array from response
     let parsed;
-    try {
-      // Try direct parse first
-      parsed = JSON.parse(txt);
-    } catch(_) {
-      // Try extracting JSON from markdown code blocks or surrounding text
+    try { parsed = JSON.parse(txt); } catch(_) {
       const jsonMatch = txt.match(/\[[\s\S]*\]/);
       if(jsonMatch) parsed = JSON.parse(jsonMatch[0]);
       else throw new Error('Could not parse calendar data from AI response');
     }
 
-    if(!Array.isArray(parsed) || parsed.length < 20) throw new Error('AI returned incomplete calendar (' + (parsed?.length||0) + ' days). Please try again.');
+    if(!Array.isArray(parsed) || parsed.length < 1) throw new Error('AI returned empty calendar. Please try again.');
 
-    parsed.slice(0, 30).forEach((item, i) => {
-      const dayNum = i + 1;
-      const weekIdx = Math.floor(i / 7);
-      const dayInWeek = i % 7;
-      const d = new Date(calStartDate); d.setDate(d.getDate() + i);
+    parsed.slice(0, count).forEach((item, i) => {
+      const dayNum = startDay + i + 1;
+      const weekIdx = Math.floor((startDay + i) / 7);
+      const dayInWeek = (startDay + i) % 7;
+      const d = new Date(calStartDate); d.setDate(d.getDate() + startDay + i);
       calendarData.push({
         day: dayNum,
         week: weekIdx + 1,
@@ -1712,29 +1756,16 @@ Rules:
       });
     });
 
-    // Pad to 30 if AI returned fewer
-    while(calendarData.length < 30){
-      const i = calendarData.length;
-      const weekIdx = Math.floor(i / 7);
-      const dayInWeek = i % 7;
-      const d = new Date(calStartDate); d.setDate(d.getDate() + i);
-      calendarData.push({
-        day: i+1, week: weekIdx+1, weekName: THEMES[weekIdx]?.name||'',
-        platform: plat, theme: THEMES[weekIdx]?.days[dayInWeek]?.t||'', hook:'', caption:'', hashtags:'', tip:'',
-        done: false, date: d, freq: parseInt(freq)||1
-      });
-    }
-
     rec();
     bar.style.width = '100%';
-    pt.textContent = '✅ All 30 days ready!';
+    pt.textContent = '✅ ' + calendarData.length + ' days ready!';
     setTimeout(() => { document.getElementById('cal-progress').style.display = 'none'; renderCalendar(); syncCalendarToSupabase(); }, 600);
   }catch(e){
     document.getElementById('cal-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>';
     document.getElementById('cal-progress').style.display = 'none';
   }
   document.getElementById('cal-btn').disabled = false;
-  document.getElementById('cal-btn').innerHTML = '<span>🗓️</span> Regenerate Calendar';
+  document.getElementById('cal-btn').innerHTML = '<span>🗓️</span> Generate Calendar';
   document.getElementById('cal-setup').style.display = 'none';
 }
 
@@ -1761,15 +1792,108 @@ function renderCalendar(){
   });
 
   // Bottom actions
-  html += '<div style="display:flex;gap:8px;margin-top:8px">';
-  html += '<button onclick="copyAll30()" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-family:\'Plus Jakarta Sans\',sans-serif;font-size:0.8rem;cursor:pointer">📋 Copy All 30</button>';
-  html += '<button onclick="document.getElementById(\'cal-setup\').style.display=\'block\';document.getElementById(\'cal-out\').innerHTML=\'\'" style="flex:1;padding:12px;border-radius:10px;border:1px solid rgba(255,214,0,0.3);background:rgba(255,214,0,0.06);color:var(--yellow);font-family:\'Plus Jakarta Sans\',sans-serif;font-size:0.8rem;cursor:pointer">🔄 Generate New Calendar</button>';
-  html += '</div>';
+  html += '<div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">';
+  if(calendarData.length < 30){
+    const remaining = 30 - calendarData.length;
+    const nextChunk = Math.min(remaining, 7);
+    html += '<button onclick="genCalendarMore('+nextChunk+')" style="width:100%;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,#ffd600,#ff7a00);color:#fff;font-family:\'Plus Jakarta Sans\',sans-serif;font-weight:800;font-size:0.9rem;cursor:pointer;box-shadow:0 0 20px rgba(255,214,0,0.25)">➕ Generate Next '+nextChunk+' Days ('+calendarData.length+'/30)</button>';
+    if(remaining > 7){
+      html += '<button onclick="genCalendarMore('+remaining+')" style="width:100%;padding:12px;border-radius:10px;border:1px solid rgba(255,214,0,0.3);background:rgba(255,214,0,0.06);color:var(--yellow);font-family:\'Plus Jakarta Sans\',sans-serif;font-size:0.8rem;cursor:pointer">⚡ Generate All Remaining ('+remaining+' days)</button>';
+    }
+  }
+  html += '<div style="display:flex;gap:8px">';
+  html += '<button onclick="copyAll30()" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border2);background:transparent;color:var(--muted2);font-family:\'Plus Jakarta Sans\',sans-serif;font-size:0.8rem;cursor:pointer">📋 Copy All '+calendarData.length+'</button>';
+  html += '<button onclick="calendarData=[];document.getElementById(\'cal-setup\').style.display=\'block\';document.getElementById(\'cal-out\').innerHTML=\'\'" style="flex:1;padding:12px;border-radius:10px;border:1px solid rgba(255,214,0,0.3);background:rgba(255,214,0,0.06);color:var(--yellow);font-family:\'Plus Jakarta Sans\',sans-serif;font-size:0.8rem;cursor:pointer">🔄 Start Over</button>';
+  html += '</div></div>';
 
   document.getElementById('cal-out').innerHTML = html;
 }
 
-async function remixDay(idx){
+async function genCalendarMore(count){
+  // Temporarily set scope and trigger generation for next batch
+  const scopePills = document.querySelectorAll('#cal-scope .ppill');
+  scopePills.forEach(p => p.classList.remove('on'));
+  // Find closest scope pill or just set it programmatically
+  const scopeVal = count <= 1 ? '1' : count <= 7 ? '7' : '30';
+  // We call genCalendar directly but override scope
+  if(!canGen()) return;
+  const niche = document.getElementById('cal-niche').value.trim() || 'social media';
+  const brand = document.getElementById('cal-brand').value.trim() || '';
+  const plat = gplat('cal-prow');
+  const freq = document.querySelector('#cal-freq .ppill.on')?.dataset.v || '1';
+  const goal = gtones('cal-goal-chips');
+  const product = document.getElementById('cal-product').value.trim();
+
+  document.getElementById('cal-progress').style.display = 'block';
+  const bar = document.getElementById('cal-prog-bar');
+  const pt = document.getElementById('cal-prog-text');
+  pt.textContent = 'Generating ' + count + ' more days...';
+  bar.style.width = '30%';
+
+  const startDay = calendarData.length;
+  const endDay = Math.min(startDay + count, 30);
+  const actualCount = endDay - startDay;
+
+  const dayPlans = [];
+  for(let i = startDay; i < endDay; i++){
+    const weekIdx = Math.floor(i / 7);
+    const dayInWeek = i % 7;
+    const theme = THEMES[weekIdx]?.days[dayInWeek];
+    if(theme) dayPlans.push('Day '+(i+1)+' (Week '+(weekIdx+1)+' "'+THEMES[weekIdx].name+'") '+theme.t+' — '+theme.d);
+  }
+  const prodLine = product && startDay < 21 && endDay > 14 ? 'Naturally mention this product: '+product+'.' : '';
+
+  const prompt = `You are a content calendar expert. Create ${actualCount} days of content for someone who posts about ${niche}${brand ? ' named "'+brand+'"' : ''}.
+Platform: ${plat}. Goal: ${goal}. ${prodLine}
+
+Day plan:
+${dayPlans.join('\n')}
+
+Return ONLY a valid JSON array with exactly ${actualCount} objects. No markdown, no backticks, no extra text.
+Each object: {"day":${startDay+1},"platform":"...","theme":"...","hook":"...","caption":"...","hashtags":"...","tip":"..."}
+
+Rules:
+- "hook" = 1-2 scroll-stopping lines
+- "caption" = 4-5 sentence engaging caption
+- "hashtags" = 8 relevant hashtags with # prefix
+- "tip" = one short posting tip
+- Write like a real human. No corporate speak.`;
+
+  try{
+    bar.style.width = '50%';
+    const useModel = actualCount <= 7 ? FAST_MODEL : QUALITY_MODEL;
+    const txt = await ai(prompt, useModel);
+    let parsed;
+    try { parsed = JSON.parse(txt); } catch(_) {
+      const jsonMatch = txt.match(/\[[\s\S]*\]/);
+      if(jsonMatch) parsed = JSON.parse(jsonMatch[0]);
+      else throw new Error('Could not parse calendar data');
+    }
+    if(!Array.isArray(parsed) || parsed.length < 1) throw new Error('AI returned empty data. Try again.');
+
+    parsed.slice(0, actualCount).forEach((item, i) => {
+      const dayNum = startDay + i + 1;
+      const weekIdx = Math.floor((startDay + i) / 7);
+      const dayInWeek = (startDay + i) % 7;
+      const d = new Date(calStartDate); d.setDate(d.getDate() + startDay + i);
+      calendarData.push({
+        day: dayNum, week: weekIdx + 1, weekName: THEMES[weekIdx]?.name || '',
+        platform: item.platform || plat, theme: item.theme || THEMES[weekIdx]?.days[dayInWeek]?.t || '',
+        hook: item.hook || '', caption: item.caption || '', hashtags: item.hashtags || '', tip: item.tip || '',
+        done: false, date: d, freq: parseInt(freq) || 1
+      });
+    });
+    rec();
+    bar.style.width = '100%';
+    pt.textContent = '✅ ' + calendarData.length + ' days ready!';
+    setTimeout(() => { document.getElementById('cal-progress').style.display = 'none'; renderCalendar(); syncCalendarToSupabase(); }, 600);
+  }catch(e){
+    document.getElementById('cal-progress').style.display = 'none';
+    alert('Error: ' + e.message);
+  }
+}
+
+
   const d = calendarData[idx]; if(!d) return;
   try{
     const txt = await ai('Remix this content with a completely new angle, hook, and story. Same theme, brand new content.\n\nTheme: '+d.theme+'\nOriginal hook: '+d.hook+'\nPlatform: '+d.platform+'\n\nHOOK: [new hook]\nCAPTION: [new caption]\nHASHTAGS: [hashtags]', FAST_MODEL);
