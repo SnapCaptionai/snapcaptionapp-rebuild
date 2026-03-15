@@ -175,10 +175,9 @@ select option{background:var(--card2);}
   <button class="pro-pill" onclick="openUpgrade()">✦ GO PRO</button>
 </div>
 
-<!-- AD BANNER (free users) -->
+<!-- AD BANNER (free users, configured via runtime env) -->
 <div class="ad-banner" id="ad-banner" style="display:none">
   <span>Advertisement</span>
-  <!-- AdMob: ca-app-pub-3940256099942544/6300978111 (test) -->
 </div>
 
 <!-- SCREENS -->
@@ -677,18 +676,30 @@ select option{background:var(--card2);}
 </div>
 
 <script>
-// ═══ SUPABASE CLIENT ═══
+// ═══ RUNTIME CONFIG FROM WRAPPER ═══
+const APP_ORIGIN = window.location.origin;
 let _sbUrl = '', _sbKey = '', _sbClient = null, _sbUser = null;
+let _edgeFnUrl = '';
+let _admobId = '';
+let _stripeLinks = { starter: '', pro: '', annual: '' };
 
-// Receive config from parent iframe
+function applyRuntimeConfig(payload){
+  if(!payload) return;
+  _sbUrl = payload.url || _sbUrl;
+  _sbKey = payload.key || _sbKey;
+  _admobId = payload.admobId || _admobId;
+  _stripeLinks = { ..._stripeLinks, ...(payload.stripeLinks || {}) };
+  _edgeFnUrl = _sbUrl ? `${_sbUrl}/functions/v1/ai-proxy` : '';
+  renderAdBanner();
+  initSupabase();
+}
+
 window.addEventListener('message', function(e){
-  if(e.data?.type === 'SUPABASE_CONFIG'){
-    _sbUrl = e.data.url;
-    _sbKey = e.data.key;
-    initSupabase();
-  }
+  if(e.origin !== APP_ORIGIN || e.source !== window.parent) return;
+  if(e.data?.type === 'APP_CONFIG') applyRuntimeConfig(e.data);
+  if(e.data?.type === 'SUPABASE_CONFIG') applyRuntimeConfig(e.data); // backward compatible
 });
-window.parent.postMessage({type:'GET_SUPABASE_CONFIG'},'*');
+window.parent.postMessage({type:'GET_APP_CONFIG'}, APP_ORIGIN);
 
 async function initSupabase(){
   if(!_sbUrl || !_sbKey) return;
@@ -842,12 +853,22 @@ function rLim(){
   const rem = Math.max(0, limit - uses);
   const bar = document.getElementById('lim-bar');
   const txt = document.getElementById('lim-text');
-  const wrap = document.getElementById('lim-wrap');
   if(bar) bar.style.width = (rem/limit*100) + '%';
   if(txt) txt.textContent = rem + ' of ' + limit + ' left today';
 }
 
-rHome(); rLim();
+function renderAdBanner(){
+  const ad = document.getElementById('ad-banner');
+  if(!ad) return;
+  if(creatorMode || !_admobId){
+    ad.style.display = 'none';
+    return;
+  }
+  ad.style.display = 'block';
+  ad.dataset.admobId = _admobId;
+}
+
+rHome(); rLim(); renderAdBanner();
 
 // ═══ NAVIGATION ═══
 function go(id){
@@ -946,34 +967,94 @@ function forceHideLoader(){
 }
 
 // ═══ AI ENGINE (backend proxy) ═══
-const EDGE_FN_URL = 'https://thjspqiuuzwvniddubtw.supabase.co/functions/v1/ai-proxy';
+const FAST_MODEL = 'google/gemini-2.5-flash-lite';
+const QUALITY_MODEL = 'google/gemini-3-flash-preview';
+const FAST_TIMEOUT_MS = 18000;
+const QUALITY_TIMEOUT_MS = 35000;
+
+function withTimeout(ms){
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  return { controller, timer };
+}
+
+function toneDirective(tone){
+  const t = (tone || '').toLowerCase();
+  if(t.includes('bold') || t.includes('dramatic')) return 'Use decisive language, strong opinions, and high energy while staying authentic.';
+  if(t.includes('natural') || t.includes('casual') || t.includes('real talk')) return 'Use conversational wording, contractions, and simple sentence rhythm.';
+  if(t.includes('story')) return 'Lean into storytelling with concrete details and a clear emotional arc.';
+  if(t.includes('funny')) return 'Use light humor and playful phrasing without sounding forced.';
+  return 'Keep the writing clear, direct, and human.';
+}
+
+function jsArg(value){
+  return JSON.stringify(value ?? '').replace(/</g, '\\u003c');
+}
+
+function escapeHtml(value){
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 async function ai(prompt, model){
+  if(!_edgeFnUrl) throw new Error('App config missing. Refresh and try again.');
   const vc = getVoiceContext();
   const fullPrompt = vc ? vc + '\n\n' + prompt : prompt;
+  const selectedModel = model || FAST_MODEL;
+  const timeoutMs = selectedModel === FAST_MODEL ? FAST_TIMEOUT_MS : QUALITY_TIMEOUT_MS;
+  const { controller, timer } = withTimeout(timeoutMs);
+
   showLoader();
   try{
-    const body = { prompt: fullPrompt };
-    if (model) body.model = model;
-    const r = await fetch(EDGE_FN_URL, {
+    const body = { prompt: fullPrompt, model: selectedModel };
+    const headers = { 'Content-Type': 'application/json' };
+
+    if(_sbClient){
+      const { data: { session } } = await _sbClient.auth.getSession();
+      if(session?.access_token) headers.Authorization = 'Bearer ' + session.access_token;
+    }
+
+    const r = await fetch(_edgeFnUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      headers,
+      body: JSON.stringify(body),
+      signal: controller.signal,
     });
-    const d = await r.json();
-    if (!r.ok || d.error) throw new Error(d.error || 'AI request failed');
+
+    let d = {};
+    try { d = await r.json(); } catch(_) {}
+    if (!r.ok || d.error) throw new Error(d.error || 'AI request failed. Please try again.');
     return d.result || '';
+  } catch (error) {
+    if(error?.name === 'AbortError') throw new Error('Request timed out. Please try again.');
+    throw error;
   } finally {
+    clearTimeout(timer);
     hideLoader();
   }
 }
 
-const FAST_MODEL = 'google/gemini-2.5-flash-lite';
-const QUALITY_MODEL = 'google/gemini-3-flash-preview';
-
 // ═══ COPY & SAVE ═══
+function normalizeCopyText(text){
+  return String(text || '')
+    .replace(/^\s*(HOOK|CAPTION|CTA|HASHTAGS)\s*:\s*/gim, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function copyPostOutput(btn, outputId){
+  const output = document.getElementById(outputId);
+  doCopy(btn, output ? output.innerText : '');
+}
+
 function doCopy(btn, text){
-  navigator.clipboard.writeText(text).catch(()=>{});
+  const finalText = normalizeCopyText(text);
+  if(!finalText){ alert('Nothing to copy yet.'); return; }
+  navigator.clipboard.writeText(finalText).catch(()=>{});
   const orig = btn.textContent; btn.textContent = '✅ Copied!';
   setTimeout(() => btn.textContent = orig, 2000);
 }
@@ -992,13 +1073,13 @@ function regenBtn(genName, label){
 }
 
 // ═══ REFINE BUTTONS ═══
-function refineHTML(text, context){
-  const enc = JSON.stringify(text);
+function refineHTML(text){
+  const enc = jsArg(text);
   return `<div class="refine-row">
-    <button class="rbtn" onclick="refinePost(this,'shorter',${enc})">✂️ Shorten</button>
-    <button class="rbtn" onclick="refinePost(this,'rewrite',${enc})">🔄 Try another version</button>
-    <button class="rbtn" onclick="refinePost(this,'dramatic',${enc})">🔥 Make it more bold</button>
-    <button class="rbtn human" onclick="refinePost(this,'human',${enc})">💬 Make it more natural</button>
+    <button class="rbtn" onclick='refinePost(this,"shorter",${enc})'>✂️ Shorten</button>
+    <button class="rbtn" onclick='refinePost(this,"rewrite",${enc})'>🔄 Try another version</button>
+    <button class="rbtn" onclick='refinePost(this,"dramatic",${enc})'>🔥 Make it more bold</button>
+    <button class="rbtn human" onclick='refinePost(this,"human",${enc})'>💬 Make it more natural</button>
   </div>`;
 }
 
@@ -1006,32 +1087,31 @@ async function refinePost(btn, mode, text){
   if(!canGen()) return;
   const orig = btn.textContent; btn.textContent = '⏳...'; btn.disabled = true;
   const prompts = {
-    shorter: 'Make this shorter and punchier while keeping the core message:\n\n'+text,
-    rewrite: 'Completely rewrite this with a fresh angle, same goal and tone:\n\n'+text,
-    dramatic: 'Make this more dramatic and bold while keeping it authentic:\n\n'+text,
-    human: 'Rewrite this to sound more natural and conversational — less AI, more human. Use contractions, short sentences, and real talk:\n\n'+text
+    shorter: 'Make this shorter and punchier while keeping the core message. Return only the final post text:\n\n'+text,
+    rewrite: 'Completely rewrite this with a fresh angle while preserving intent. Return only the final post text:\n\n'+text,
+    dramatic: 'Make this bolder and more assertive. Tone direction: '+toneDirective('bold')+' Return only the final post text:\n\n'+text,
+    human: 'Make this sound more natural and conversational. Tone direction: '+toneDirective('natural')+' Return only the final post text:\n\n'+text
   };
   try{
     const result = await ai(prompts[mode], FAST_MODEL);
-    // Find the parent result card and update
     const card = btn.closest('.res-card') || btn.closest('.sblock');
     if(card){
       const body = card.querySelector('.res-body') || card.querySelector('.sblock-text');
       if(body) body.innerHTML = result.replace(/\n/g,'<br>');
     }
     rec();
-  }catch(e){ alert('Refine failed — try again'); }
+  }catch(e){ alert('Refine failed: ' + (e?.message || 'Please try again')); }
   btn.textContent = orig; btn.disabled = false;
 }
 
 // ═══ CLEAN COPY (no labels) ═══
 function cleanCopyText(hook, cap, cta, ht){
-  let parts = [];
+  const parts = [];
   if(hook) parts.push(hook);
   if(cap) parts.push(cap);
   if(cta) parts.push(cta);
   if(ht) parts.push(ht);
-  return parts.join('\n\n');
+  return normalizeCopyText(parts.join('\n\n'));
 }
 
 // ═══ QUICK CREATE ═══
@@ -1062,12 +1142,14 @@ Write naturally. Real human voice. No corporate speak.`;
       const getField = (key) => { const l = lines.find(x => x.toUpperCase().startsWith(key.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
       const hook = getField('HOOK'); const cap = getField('CAPTION'); const cta = getField('CTA'); const ht = getField('HASHTAGS');
       const copyText = cleanCopyText(hook, cap, cta, ht);
+      const outputId = 'postOutput-quick-' + i;
       html += '<div class="res-card" style="margin-top:8px"><div class="res-tag">✦ Post Option '+(i+1)+'</div>';
       if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook.replace(/\n/g,'<br>')+'</div></div>';
       if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
       if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta.replace(/\n/g,'<br>')+'</div></div>';
       if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
-      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+',' + JSON.stringify('Quick Post')+')">⭐ Save</button></div>';
+      html += '<div id="'+outputId+'" style="display:none;white-space:pre-wrap">'+escapeHtml(copyText)+'</div>';
+      html += '<div class="res-actions"><button class="btn-sm" onclick="copyPostOutput(this,\''+outputId+'\')">📋 Copy</button><button class="btn-sm" onclick=\'doSave('+jsArg(copyText)+','+jsArg('Quick Post')+')\'>⭐ Save</button></div>';
       html += refineHTML(copyText);
       html += '</div>';
     });
@@ -1109,12 +1191,14 @@ Write naturally like a real person. No corporate speak. Each post should feel co
       const getField = (key) => { const l = lines.find(x => x.toUpperCase().startsWith(key.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
       const hook = getField('HOOK'); const cap = getField('CAPTION'); const cta = getField('CTA'); const ht = getField('HASHTAGS');
       const copyText = cleanCopyText(hook, cap, cta, ht);
+      const outputId = 'postOutput-batch-' + i;
       html += '<div class="res-card"><div class="res-tag">✦ Post '+(i+1)+' of 8</div>';
       if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook+'</div></div>';
       if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
       if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta+'</div></div>';
       if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
-      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+',\'Batch Post\')">⭐ Save</button></div>';
+      html += '<div id="'+outputId+'" style="display:none;white-space:pre-wrap">'+escapeHtml(copyText)+'</div>';
+      html += '<div class="res-actions"><button class="btn-sm" onclick="copyPostOutput(this,\''+outputId+'\')">📋 Copy</button><button class="btn-sm" onclick=\'doSave('+jsArg(copyText)+','+jsArg('Batch Post')+')\'>⭐ Save</button></div>';
       html += '</div>';
     });
     html += regenBtn('genBatch', 'Regenerate All 8');
@@ -1161,6 +1245,7 @@ async function genWTP(){
   const prompt = `Create a complete social media post for ${typeContext}.
 Post type: ${wtpState.type||'helpful tip'}
 Tone: ${wtpState.tone||'Real Talk'}
+Tone direction: ${toneDirective(wtpState.tone||'Real Talk')}
 ${isIndividual ? 'This is for a regular person — NOT a business or brand. Keep it personal, relatable, and genuine.' : ''}
 
 Format EXACTLY as:
@@ -1180,12 +1265,14 @@ HASHTAGS
     const get = (key) => { const m = txt.match(new RegExp(key+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:HOOK|CAPTION|CTA|HASHTAGS)|$)','i')); return m ? m[1].trim() : ''; };
     const hook = get('HOOK'); const cap = get('CAPTION'); const cta = get('CTA'); const ht = get('HASHTAGS');
     const copyText = cleanCopyText(hook, cap, cta, ht);
+    const outputId = 'postOutput-wtp';
     let html = '<div class="res-card"><div class="res-tag">✦ Your Post — '+wtpState.type+'</div>';
     if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook.replace(/\n/g,'<br>')+'</div></div>';
     if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
     if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta+'</div></div>';
     if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
-    html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+',' + JSON.stringify('WTP Post')+')">⭐ Save</button><button class="btn-sm" onclick="resetWTP()">🔄 Start Over</button></div>';
+    html += '<div id="'+outputId+'" style="display:none;white-space:pre-wrap">'+escapeHtml(copyText)+'</div>';
+    html += '<div class="res-actions"><button class="btn-sm" onclick="copyPostOutput(this,\''+outputId+'\')">📋 Copy</button><button class="btn-sm" onclick=\'doSave('+jsArg(copyText)+',' + jsArg('WTP Post')+')\'>⭐ Save</button><button class="btn-sm" onclick="resetWTP()">🔄 Start Over</button></div>';
     html += refineHTML(copyText);
     html += '</div>';
     html += regenBtn('genWTP', 'Regenerate');
@@ -1220,6 +1307,7 @@ async function genCaption(){
   document.getElementById('cap-out').innerHTML = '';
   const prompt = `Expert ${p} copywriter. Write 3 complete post packages for: "${d}"
 Goal: ${goal} | Tone: ${tone}
+Tone direction: ${toneDirective(tone)}
 
 IMPORTANT WRITING RULES:
 - Use clear sentences with proper punctuation.
@@ -1244,12 +1332,14 @@ ${ht?'HASHTAGS: [8-10 hashtags]':''}
       const getField = (key) => { const l = lines.find(x => x.toUpperCase().startsWith(key.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
       const hook = getField('HOOK'); const cap = getField('CAPTION'); const cta = getField('CTA'); const htags = getField('HASHTAGS');
       const copyText = cleanCopyText(hook, cap, cta, htags);
+      const outputId = 'postOutput-caption-' + i;
       html += '<div class="res-card"><div class="res-tag">✦ Option '+(i+1)+' · '+p+'</div>';
       if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook+'</div></div>';
       if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
       if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta+'</div></div>';
       if(htags) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+htags+'</div></div>';
-      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button>'+(htags?'<button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(htags)+')">📋 Hashtags</button>':'')+'<button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+','+JSON.stringify(p)+')">⭐ Save</button></div>';
+      html += '<div id="'+outputId+'" style="display:none;white-space:pre-wrap">'+escapeHtml(copyText)+'</div>';
+      html += '<div class="res-actions"><button class="btn-sm" onclick="copyPostOutput(this,\''+outputId+'\')">📋 Copy</button>'+(htags?'<button class="btn-sm" onclick=\'doCopy(this,'+jsArg(htags)+')\'>📋 Hashtags</button>':'')+'<button class="btn-sm" onclick=\'doSave('+jsArg(copyText)+','+jsArg(p)+')\'>⭐ Save</button></div>';
       html += refineHTML(copyText);
       html += '</div>';
     });
@@ -1782,6 +1872,7 @@ async function checkCreatorCode(){
       if(status) status.innerHTML='<span style="color:var(--green)">✅ Creator Mode Unlocked!</span>';
       const sc=document.getElementById('set-creator'); if(sc){sc.textContent='Unlocked ✅';sc.style.color='var(--green)';}
       rLim();
+      renderAdBanner();
     } else {
       if(status) status.innerHTML='<span style="color:#ff5c5c">❌ Incorrect code</span>';
     }
@@ -1801,19 +1892,13 @@ function closeSheet(){ const m = document.getElementById('modal'); if(m) m.class
 function closeModal(e){ if(e.target===document.getElementById('modal')) closeSheet(); }
 function selPlan(el){ document.querySelectorAll('.plan').forEach(p=>p.classList.remove('sel')); el.classList.add('sel'); }
 
-// Stripe — add your payment links here
-const STRIPE_LINKS = {
-  starter: 'https://buy.stripe.com/YOUR_STARTER_LINK',
-  pro: 'https://buy.stripe.com/YOUR_PRO_LINK',
-  annual: 'https://buy.stripe.com/YOUR_ANNUAL_LINK'
-};
 function goToStripe(){
   const sel = document.querySelector('.plan.sel');
   const id = sel?.id || 'plan-pro';
   const key = id.replace('plan-','');
-  const link = STRIPE_LINKS[key];
-  if(link && !link.includes('YOUR_')) window.open(link,'_blank');
-  else alert('Payment coming soon! Contact us to upgrade.');
+  const link = _stripeLinks[key];
+  if(link) window.open(link,'_blank');
+  else alert('Payment link is not configured yet.');
   closeSheet();
 }
 </script>
