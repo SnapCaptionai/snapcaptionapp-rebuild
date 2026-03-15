@@ -854,12 +854,22 @@ function rLim(){
   const rem = Math.max(0, limit - uses);
   const bar = document.getElementById('lim-bar');
   const txt = document.getElementById('lim-text');
-  const wrap = document.getElementById('lim-wrap');
   if(bar) bar.style.width = (rem/limit*100) + '%';
   if(txt) txt.textContent = rem + ' of ' + limit + ' left today';
 }
 
-rHome(); rLim();
+function renderAdBanner(){
+  const ad = document.getElementById('ad-banner');
+  if(!ad) return;
+  if(creatorMode || !_admobId){
+    ad.style.display = 'none';
+    return;
+  }
+  ad.style.display = 'block';
+  ad.dataset.admobId = _admobId;
+}
+
+rHome(); rLim(); renderAdBanner();
 
 // ═══ NAVIGATION ═══
 function go(id){
