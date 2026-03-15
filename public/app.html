@@ -1319,16 +1319,19 @@ async function genCaption(){
   const goal = document.getElementById('cap-goal').value;
   const ht = document.getElementById('cap-ht').value === 'yes';
   const capLen = document.getElementById('cap-length').value;
+  const product = document.getElementById('cap-product').value.trim();
+  const link = document.getElementById('cap-link').value.trim();
   const lenInstructions = {
     short: 'CAPTION: [1-2 clear, punchy sentences. Keep it tight.]',
     medium: 'CAPTION: [One full paragraph, 3-5 sentences. Use clear sentences with proper punctuation. Avoid run-on sentences. Break longer thoughts into shorter sentences.]',
     long: 'CAPTION: [Story-style caption, 2-3 short paragraphs. Tell a mini story. Use clear sentences. Limit paragraphs to 2-4 sentences. No run-on sentences.]'
   };
+  const prodLine = product ? '\n\nPRODUCT INTEGRATION: Naturally mention "'+product+'" in the caption as a genuine recommendation — not an ad.'+( link ? ' Include a natural call to action directing people to: '+link : '') : '';
   setBtn('cap-btn', true, '<span>✍️</span> Build My Post');
   document.getElementById('cap-out').innerHTML = '';
   const prompt = `Expert ${p} copywriter. Write 3 complete post packages for: "${d}"
 Goal: ${goal} | Tone: ${tone}
-Tone direction: ${toneDirective(tone)}
+Tone direction: ${toneDirective(tone)}${prodLine}
 
 IMPORTANT WRITING RULES:
 - Use clear sentences with proper punctuation.
