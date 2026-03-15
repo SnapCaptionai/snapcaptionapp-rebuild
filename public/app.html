@@ -1079,32 +1079,31 @@ async function refinePost(btn, mode, text){
   if(!canGen()) return;
   const orig = btn.textContent; btn.textContent = '⏳...'; btn.disabled = true;
   const prompts = {
-    shorter: 'Make this shorter and punchier while keeping the core message:\n\n'+text,
-    rewrite: 'Completely rewrite this with a fresh angle, same goal and tone:\n\n'+text,
-    dramatic: 'Make this more dramatic and bold while keeping it authentic:\n\n'+text,
-    human: 'Rewrite this to sound more natural and conversational — less AI, more human. Use contractions, short sentences, and real talk:\n\n'+text
+    shorter: 'Make this shorter and punchier while keeping the core message. Return only the final post text:\n\n'+text,
+    rewrite: 'Completely rewrite this with a fresh angle while preserving intent. Return only the final post text:\n\n'+text,
+    dramatic: 'Make this bolder and more assertive. Tone direction: '+toneDirective('bold')+' Return only the final post text:\n\n'+text,
+    human: 'Make this sound more natural and conversational. Tone direction: '+toneDirective('natural')+' Return only the final post text:\n\n'+text
   };
   try{
     const result = await ai(prompts[mode], FAST_MODEL);
-    // Find the parent result card and update
     const card = btn.closest('.res-card') || btn.closest('.sblock');
     if(card){
       const body = card.querySelector('.res-body') || card.querySelector('.sblock-text');
       if(body) body.innerHTML = result.replace(/\n/g,'<br>');
     }
     rec();
-  }catch(e){ alert('Refine failed — try again'); }
+  }catch(e){ alert('Refine failed: ' + (e?.message || 'Please try again')); }
   btn.textContent = orig; btn.disabled = false;
 }
 
 // ═══ CLEAN COPY (no labels) ═══
 function cleanCopyText(hook, cap, cta, ht){
-  let parts = [];
+  const parts = [];
   if(hook) parts.push(hook);
   if(cap) parts.push(cap);
   if(cta) parts.push(cta);
   if(ht) parts.push(ht);
-  return parts.join('\n\n');
+  return normalizeCopyText(parts.join('\n\n'));
 }
 
 // ═══ QUICK CREATE ═══
