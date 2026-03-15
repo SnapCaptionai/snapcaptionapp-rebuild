@@ -1073,13 +1073,16 @@ function regenBtn(genName, label){
 }
 
 // ═══ REFINE BUTTONS ═══
+let _refineStore = {};
+let _refineId = 0;
 function refineHTML(text){
-  const enc = jsArg(text);
+  const rid = '_r' + (++_refineId);
+  _refineStore[rid] = text;
   return `<div class="refine-row">
-    <button class="rbtn" onclick='refinePost(this,"shorter",${enc})'>✂️ Shorten</button>
-    <button class="rbtn" onclick='refinePost(this,"rewrite",${enc})'>🔄 Try another version</button>
-    <button class="rbtn" onclick='refinePost(this,"dramatic",${enc})'>🔥 Make it more bold</button>
-    <button class="rbtn human" onclick='refinePost(this,"human",${enc})'>💬 Make it more natural</button>
+    <button class="rbtn" onclick="refinePost(this,'shorter','${rid}')">✂️ Shorten</button>
+    <button class="rbtn" onclick="refinePost(this,'rewrite','${rid}')">🔄 Try another version</button>
+    <button class="rbtn" onclick="refinePost(this,'dramatic','${rid}')">🔥 Make it more bold</button>
+    <button class="rbtn human" onclick="refinePost(this,'human','${rid}')">💬 Make it more natural</button>
   </div>`;
 }
 
