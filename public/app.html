@@ -988,7 +988,7 @@ function toneDirective(tone){
 }
 
 function jsArg(value){
-  return JSON.stringify(value ?? '').replace(/</g, '\\u003c');
+  return JSON.stringify(value ?? '').replace(/</g, '\\u003c').replace(/'/g, '&#39;');
 }
 
 function escapeHtml(value){
