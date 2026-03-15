@@ -543,8 +543,14 @@ select option{background:var(--card2);}
           </div>
         </div>
         <div class="field"><input type="text" id="cal-product" placeholder="Your product or brand (optional)"></div>
+        <span class="sl">How much to generate</span>
+        <div class="ppills" id="cal-scope">
+          <div class="ppill" data-v="1" onclick="pp(this)">1 Post</div>
+          <div class="ppill on" data-v="7" onclick="pp(this)">1 Week</div>
+          <div class="ppill" data-v="30" onclick="pp(this)">Full 30 Days</div>
+        </div>
       </div>
-      <button class="btn-gen" style="background:linear-gradient(135deg,#ffd600,#ff7a00)" id="cal-btn" onclick="genCalendar()"><span>🗓️</span> Generate My 30-Day Calendar</button>
+      <button class="btn-gen" style="background:linear-gradient(135deg,#ffd600,#ff7a00)" id="cal-btn" onclick="genCalendar()"><span>🗓️</span> Generate Calendar</button>
     </div>
     <div id="cal-progress" style="display:none;margin-top:12px">
       <div class="card" style="text-align:center;padding:20px">
