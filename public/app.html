@@ -345,6 +345,11 @@ select option{background:var(--card2);}
         <div class="chip" onclick="tc(this)">Professional</div>
       </div>
     </div>
+    <div class="card" style="border-color:rgba(255,180,0,0.2);background:rgba(255,180,0,0.03)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span>🛍️</span><span class="sl" style="margin-bottom:0;color:#ffb400">Product Mention (optional)</span></div>
+      <textarea id="cap-product" rows="2" placeholder="Describe your product — or leave blank to skip"></textarea>
+      <input type="text" id="cap-link" placeholder="Where to send them (optional)" style="margin-top:8px">
+    </div>
     <button class="btn-gen" id="cap-btn" onclick="genCaption()"><span>✍️</span> Build My Post</button>
     <div id="cap-out" style="margin-top:12px"></div>
   </div>
