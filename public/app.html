@@ -992,6 +992,15 @@ function jsArg(value){
   return JSON.stringify(value ?? '').replace(/</g, '\\u003c');
 }
 
+function escapeHtml(value){
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 async function ai(prompt, model){
   if(!_edgeFnUrl) throw new Error('App config missing. Refresh and try again.');
   const vc = getVoiceContext();
