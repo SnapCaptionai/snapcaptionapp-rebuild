@@ -1676,30 +1676,43 @@ async function genCalendar(){
   const freq = document.querySelector('#cal-freq .ppill.on')?.dataset.v || '1';
   const goal = gtones('cal-goal-chips');
   const product = document.getElementById('cal-product').value.trim();
+  const scope = parseInt(document.querySelector('#cal-scope .ppill.on')?.dataset.v || '7');
 
   document.getElementById('cal-btn').disabled = true;
   document.getElementById('cal-btn').innerHTML = '<div class="spin"></div> Building...';
   document.getElementById('cal-progress').style.display = 'block';
   document.getElementById('cal-out').innerHTML = '';
-  calendarData = [];
-  calStartDate = new Date();
+
+  const startDay = calendarData.length;
+  if(startDay === 0) calStartDate = new Date();
 
   const bar = document.getElementById('cal-prog-bar');
   const pt = document.getElementById('cal-prog-text');
-  pt.textContent = 'Generating all 30 days...';
+  const scopeLabel = scope === 1 ? '1 post' : scope === 7 ? '1 week' : '30 days';
+  pt.textContent = 'Generating ' + scopeLabel + '...';
   bar.style.width = '30%';
 
-  const weekPlan = THEMES.map((t,w) => 'Week '+(w+1)+' "'+t.name+'": '+t.days.map((d,i) => 'Day '+(w*7+i+1)+' '+d.t+' — '+d.d).join(', ')).join('\n');
-  const prodLine = product ? 'In Week 3, naturally mention this product: '+product+'.' : '';
+  const endDay = Math.min(startDay + scope, 30);
+  const count = endDay - startDay;
 
-  const prompt = `You are a content calendar expert. Create a 30-day content calendar for someone who posts about ${niche}${brand ? ' named "'+brand+'"' : ''}.
+  // Build plan for just the requested days
+  const dayPlans = [];
+  for(let i = startDay; i < endDay; i++){
+    const weekIdx = Math.floor(i / 7);
+    const dayInWeek = i % 7;
+    const theme = THEMES[weekIdx]?.days[dayInWeek];
+    if(theme) dayPlans.push('Day '+(i+1)+' (Week '+(weekIdx+1)+' "'+THEMES[weekIdx].name+'") '+theme.t+' — '+theme.d);
+  }
+  const prodLine = product && startDay < 21 && endDay > 14 ? 'Naturally mention this product: '+product+'.' : '';
+
+  const prompt = `You are a content calendar expert. Create ${count} days of content for someone who posts about ${niche}${brand ? ' named "'+brand+'"' : ''}.
 Platform: ${plat}. Goal: ${goal}. ${prodLine}
 
-Week plan:
-${weekPlan}
+Day plan:
+${dayPlans.join('\n')}
 
-Return ONLY a valid JSON array with exactly 30 objects. No markdown, no backticks, no extra text.
-Each object: {"day":1,"platform":"...","theme":"...","hook":"...","caption":"...","hashtags":"...","tip":"..."}
+Return ONLY a valid JSON array with exactly ${count} objects. No markdown, no backticks, no extra text.
+Each object: {"day":${startDay+1},"platform":"...","theme":"...","hook":"...","caption":"...","hashtags":"...","tip":"..."}
 
 Rules:
 - "hook" = 1-2 scroll-stopping lines
@@ -1710,27 +1723,23 @@ Rules:
 
   try{
     bar.style.width = '50%';
-    const txt = await ai(prompt, QUALITY_MODEL);
+    const useModel = count <= 7 ? FAST_MODEL : QUALITY_MODEL;
+    const txt = await ai(prompt, useModel);
 
-    // Extract JSON array from response
     let parsed;
-    try {
-      // Try direct parse first
-      parsed = JSON.parse(txt);
-    } catch(_) {
-      // Try extracting JSON from markdown code blocks or surrounding text
+    try { parsed = JSON.parse(txt); } catch(_) {
       const jsonMatch = txt.match(/\[[\s\S]*\]/);
       if(jsonMatch) parsed = JSON.parse(jsonMatch[0]);
       else throw new Error('Could not parse calendar data from AI response');
     }
 
-    if(!Array.isArray(parsed) || parsed.length < 20) throw new Error('AI returned incomplete calendar (' + (parsed?.length||0) + ' days). Please try again.');
+    if(!Array.isArray(parsed) || parsed.length < 1) throw new Error('AI returned empty calendar. Please try again.');
 
-    parsed.slice(0, 30).forEach((item, i) => {
-      const dayNum = i + 1;
-      const weekIdx = Math.floor(i / 7);
-      const dayInWeek = i % 7;
-      const d = new Date(calStartDate); d.setDate(d.getDate() + i);
+    parsed.slice(0, count).forEach((item, i) => {
+      const dayNum = startDay + i + 1;
+      const weekIdx = Math.floor((startDay + i) / 7);
+      const dayInWeek = (startDay + i) % 7;
+      const d = new Date(calStartDate); d.setDate(d.getDate() + startDay + i);
       calendarData.push({
         day: dayNum,
         week: weekIdx + 1,
@@ -1747,29 +1756,16 @@ Rules:
       });
     });
 
-    // Pad to 30 if AI returned fewer
-    while(calendarData.length < 30){
-      const i = calendarData.length;
-      const weekIdx = Math.floor(i / 7);
-      const dayInWeek = i % 7;
-      const d = new Date(calStartDate); d.setDate(d.getDate() + i);
-      calendarData.push({
-        day: i+1, week: weekIdx+1, weekName: THEMES[weekIdx]?.name||'',
-        platform: plat, theme: THEMES[weekIdx]?.days[dayInWeek]?.t||'', hook:'', caption:'', hashtags:'', tip:'',
-        done: false, date: d, freq: parseInt(freq)||1
-      });
-    }
-
     rec();
     bar.style.width = '100%';
-    pt.textContent = '✅ All 30 days ready!';
+    pt.textContent = '✅ ' + calendarData.length + ' days ready!';
     setTimeout(() => { document.getElementById('cal-progress').style.display = 'none'; renderCalendar(); syncCalendarToSupabase(); }, 600);
   }catch(e){
     document.getElementById('cal-out').innerHTML = '<div class="res-card" style="color:#ff5c5c">Error: '+e.message+'</div>';
     document.getElementById('cal-progress').style.display = 'none';
   }
   document.getElementById('cal-btn').disabled = false;
-  document.getElementById('cal-btn').innerHTML = '<span>🗓️</span> Regenerate Calendar';
+  document.getElementById('cal-btn').innerHTML = '<span>🗓️</span> Generate Calendar';
   document.getElementById('cal-setup').style.display = 'none';
 }
 
