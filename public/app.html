@@ -677,18 +677,30 @@ select option{background:var(--card2);}
 </div>
 
 <script>
-// ═══ SUPABASE CLIENT ═══
+// ═══ RUNTIME CONFIG FROM WRAPPER ═══
+const APP_ORIGIN = window.location.origin;
 let _sbUrl = '', _sbKey = '', _sbClient = null, _sbUser = null;
+let _edgeFnUrl = '';
+let _admobId = '';
+let _stripeLinks = { starter: '', pro: '', annual: '' };
 
-// Receive config from parent iframe
+function applyRuntimeConfig(payload){
+  if(!payload) return;
+  _sbUrl = payload.url || _sbUrl;
+  _sbKey = payload.key || _sbKey;
+  _admobId = payload.admobId || _admobId;
+  _stripeLinks = { ..._stripeLinks, ...(payload.stripeLinks || {}) };
+  _edgeFnUrl = _sbUrl ? `${_sbUrl}/functions/v1/ai-proxy` : '';
+  renderAdBanner();
+  initSupabase();
+}
+
 window.addEventListener('message', function(e){
-  if(e.data?.type === 'SUPABASE_CONFIG'){
-    _sbUrl = e.data.url;
-    _sbKey = e.data.key;
-    initSupabase();
-  }
+  if(e.origin !== APP_ORIGIN || e.source !== window.parent) return;
+  if(e.data?.type === 'APP_CONFIG') applyRuntimeConfig(e.data);
+  if(e.data?.type === 'SUPABASE_CONFIG') applyRuntimeConfig(e.data); // backward compatible
 });
-window.parent.postMessage({type:'GET_SUPABASE_CONFIG'},'*');
+window.parent.postMessage({type:'GET_APP_CONFIG'}, APP_ORIGIN);
 
 async function initSupabase(){
   if(!_sbUrl || !_sbKey) return;
