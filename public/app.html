@@ -1246,6 +1246,7 @@ async function genWTP(){
   const prompt = `Create a complete social media post for ${typeContext}.
 Post type: ${wtpState.type||'helpful tip'}
 Tone: ${wtpState.tone||'Real Talk'}
+Tone direction: ${toneDirective(wtpState.tone||'Real Talk')}
 ${isIndividual ? 'This is for a regular person — NOT a business or brand. Keep it personal, relatable, and genuine.' : ''}
 
 Format EXACTLY as:
@@ -1265,12 +1266,14 @@ HASHTAGS
     const get = (key) => { const m = txt.match(new RegExp(key+'[:\\s]*\\n([\\s\\S]*?)(?=\\n(?:HOOK|CAPTION|CTA|HASHTAGS)|$)','i')); return m ? m[1].trim() : ''; };
     const hook = get('HOOK'); const cap = get('CAPTION'); const cta = get('CTA'); const ht = get('HASHTAGS');
     const copyText = cleanCopyText(hook, cap, cta, ht);
+    const outputId = 'postOutput-wtp';
     let html = '<div class="res-card"><div class="res-tag">✦ Your Post — '+wtpState.type+'</div>';
     if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook.replace(/\n/g,'<br>')+'</div></div>';
     if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
     if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta+'</div></div>';
     if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
-    html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+',' + JSON.stringify('WTP Post')+')">⭐ Save</button><button class="btn-sm" onclick="resetWTP()">🔄 Start Over</button></div>';
+    html += '<div id="'+outputId+'" style="display:none;white-space:pre-wrap">'+escapeHtml(copyText)+'</div>';
+    html += '<div class="res-actions"><button class="btn-sm" onclick="copyPostOutput(this,\''+outputId+'\')">📋 Copy</button><button class="btn-sm" onclick=\'doSave('+jsArg(copyText)+',' + jsArg('WTP Post')+')\'>⭐ Save</button><button class="btn-sm" onclick="resetWTP()">🔄 Start Over</button></div>';
     html += refineHTML(copyText);
     html += '</div>';
     html += regenBtn('genWTP', 'Regenerate');
