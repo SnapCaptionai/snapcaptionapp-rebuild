@@ -1872,6 +1872,7 @@ async function checkCreatorCode(){
       if(status) status.innerHTML='<span style="color:var(--green)">✅ Creator Mode Unlocked!</span>';
       const sc=document.getElementById('set-creator'); if(sc){sc.textContent='Unlocked ✅';sc.style.color='var(--green)';}
       rLim();
+      renderAdBanner();
     } else {
       if(status) status.innerHTML='<span style="color:#ff5c5c">❌ Incorrect code</span>';
     }
@@ -1891,19 +1892,13 @@ function closeSheet(){ const m = document.getElementById('modal'); if(m) m.class
 function closeModal(e){ if(e.target===document.getElementById('modal')) closeSheet(); }
 function selPlan(el){ document.querySelectorAll('.plan').forEach(p=>p.classList.remove('sel')); el.classList.add('sel'); }
 
-// Stripe — add your payment links here
-const STRIPE_LINKS = {
-  starter: 'https://buy.stripe.com/YOUR_STARTER_LINK',
-  pro: 'https://buy.stripe.com/YOUR_PRO_LINK',
-  annual: 'https://buy.stripe.com/YOUR_ANNUAL_LINK'
-};
 function goToStripe(){
   const sel = document.querySelector('.plan.sel');
   const id = sel?.id || 'plan-pro';
   const key = id.replace('plan-','');
-  const link = STRIPE_LINKS[key];
-  if(link && !link.includes('YOUR_')) window.open(link,'_blank');
-  else alert('Payment coming soon! Contact us to upgrade.');
+  const link = _stripeLinks[key];
+  if(link) window.open(link,'_blank');
+  else alert('Payment link is not configured yet.');
   closeSheet();
 }
 </script>
