@@ -1308,6 +1308,7 @@ async function genCaption(){
   document.getElementById('cap-out').innerHTML = '';
   const prompt = `Expert ${p} copywriter. Write 3 complete post packages for: "${d}"
 Goal: ${goal} | Tone: ${tone}
+Tone direction: ${toneDirective(tone)}
 
 IMPORTANT WRITING RULES:
 - Use clear sentences with proper punctuation.
@@ -1332,12 +1333,14 @@ ${ht?'HASHTAGS: [8-10 hashtags]':''}
       const getField = (key) => { const l = lines.find(x => x.toUpperCase().startsWith(key.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
       const hook = getField('HOOK'); const cap = getField('CAPTION'); const cta = getField('CTA'); const htags = getField('HASHTAGS');
       const copyText = cleanCopyText(hook, cap, cta, htags);
+      const outputId = 'postOutput-caption-' + i;
       html += '<div class="res-card"><div class="res-tag">✦ Option '+(i+1)+' · '+p+'</div>';
       if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook+'</div></div>';
       if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
       if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta+'</div></div>';
       if(htags) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+htags+'</div></div>';
-      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button>'+(htags?'<button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(htags)+')">📋 Hashtags</button>':'')+'<button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+','+JSON.stringify(p)+')">⭐ Save</button></div>';
+      html += '<div id="'+outputId+'" style="display:none;white-space:pre-wrap">'+escapeHtml(copyText)+'</div>';
+      html += '<div class="res-actions"><button class="btn-sm" onclick="copyPostOutput(this,\''+outputId+'\')">📋 Copy</button>'+(htags?'<button class="btn-sm" onclick=\'doCopy(this,'+jsArg(htags)+')\'>📋 Hashtags</button>':'')+'<button class="btn-sm" onclick=\'doSave('+jsArg(copyText)+','+jsArg(p)+')\'>⭐ Save</button></div>';
       html += refineHTML(copyText);
       html += '</div>';
     });
