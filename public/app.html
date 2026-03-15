@@ -1192,12 +1192,14 @@ Write naturally like a real person. No corporate speak. Each post should feel co
       const getField = (key) => { const l = lines.find(x => x.toUpperCase().startsWith(key.toUpperCase()+':')); return l ? l.substring(l.indexOf(':')+1).trim() : ''; };
       const hook = getField('HOOK'); const cap = getField('CAPTION'); const cta = getField('CTA'); const ht = getField('HASHTAGS');
       const copyText = cleanCopyText(hook, cap, cta, ht);
+      const outputId = 'postOutput-batch-' + i;
       html += '<div class="res-card"><div class="res-tag">✦ Post '+(i+1)+' of 8</div>';
       if(hook) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--pink)">🎣 Hook</div><div class="res-section-text" style="font-weight:600;color:var(--text)">'+hook+'</div></div>';
       if(cap) html += '<div class="res-section"><div class="res-section-lbl">✍️ Caption</div><div class="res-section-text">'+cap.replace(/\n/g,'<br>')+'</div></div>';
       if(cta) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--orange)">📣 CTA</div><div class="res-section-text">'+cta+'</div></div>';
       if(ht) html += '<div class="res-section"><div class="res-section-lbl" style="color:var(--cyan)">#️⃣ Hashtags</div><div class="res-section-text" style="color:var(--cyan)">'+ht+'</div></div>';
-      html += '<div class="res-actions"><button class="btn-sm" onclick="doCopy(this,'+JSON.stringify(copyText)+')">📋 Copy</button><button class="btn-sm" onclick="doSave('+JSON.stringify(copyText)+',\'Batch Post\')">⭐ Save</button></div>';
+      html += '<div id="'+outputId+'" style="display:none;white-space:pre-wrap">'+escapeHtml(copyText)+'</div>';
+      html += '<div class="res-actions"><button class="btn-sm" onclick="copyPostOutput(this,\''+outputId+'\')">📋 Copy</button><button class="btn-sm" onclick=\'doSave('+jsArg(copyText)+','+jsArg('Batch Post')+')\'>⭐ Save</button></div>';
       html += '</div>';
     });
     html += regenBtn('genBatch', 'Regenerate All 8');
