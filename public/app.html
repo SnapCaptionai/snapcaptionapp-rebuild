@@ -1031,8 +1031,22 @@ async function ai(prompt, model){
 }
 
 // ═══ COPY & SAVE ═══
+function normalizeCopyText(text){
+  return String(text || '')
+    .replace(/^\s*(HOOK|CAPTION|CTA|HASHTAGS)\s*:\s*/gim, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function copyPostOutput(btn, outputId){
+  const output = document.getElementById(outputId);
+  doCopy(btn, output ? output.innerText : '');
+}
+
 function doCopy(btn, text){
-  navigator.clipboard.writeText(text).catch(()=>{});
+  const finalText = normalizeCopyText(text);
+  if(!finalText){ alert('Nothing to copy yet.'); return; }
+  navigator.clipboard.writeText(finalText).catch(()=>{});
   const orig = btn.textContent; btn.textContent = '✅ Copied!';
   setTimeout(() => btn.textContent = orig, 2000);
 }
@@ -1051,13 +1065,13 @@ function regenBtn(genName, label){
 }
 
 // ═══ REFINE BUTTONS ═══
-function refineHTML(text, context){
-  const enc = JSON.stringify(text);
+function refineHTML(text){
+  const enc = jsArg(text);
   return `<div class="refine-row">
-    <button class="rbtn" onclick="refinePost(this,'shorter',${enc})">✂️ Shorten</button>
-    <button class="rbtn" onclick="refinePost(this,'rewrite',${enc})">🔄 Try another version</button>
-    <button class="rbtn" onclick="refinePost(this,'dramatic',${enc})">🔥 Make it more bold</button>
-    <button class="rbtn human" onclick="refinePost(this,'human',${enc})">💬 Make it more natural</button>
+    <button class="rbtn" onclick='refinePost(this,"shorter",${enc})'>✂️ Shorten</button>
+    <button class="rbtn" onclick='refinePost(this,"rewrite",${enc})'>🔄 Try another version</button>
+    <button class="rbtn" onclick='refinePost(this,"dramatic",${enc})'>🔥 Make it more bold</button>
+    <button class="rbtn human" onclick='refinePost(this,"human",${enc})'>💬 Make it more natural</button>
   </div>`;
 }
 
