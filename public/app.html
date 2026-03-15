@@ -1603,10 +1603,13 @@ async function genIdeas(){
   const niche = document.getElementById('id-niche').value.trim() || 'social media';
   const plat = document.getElementById('id-plat').value;
   const fmt = document.getElementById('id-fmt').value;
+  const product = document.getElementById('id-product').value.trim();
+  const link = document.getElementById('id-link').value.trim();
+  const prodLine = product ? '\nSome ideas should naturally incorporate this product/service: "'+product+'".'+(link ? ' When relevant, suggest directing people to: '+link : '') : '';
   setBtn('id-btn', true, '<span>💡</span> Give Me 10 Ideas');
   document.getElementById('id-out').innerHTML = '';
   const prompt = `Generate 10 creative ${fmt} content ideas for someone who posts about ${niche} on ${plat}.
-Each idea should be specific, actionable, and scroll-stopping.
+Each idea should be specific, actionable, and scroll-stopping.${prodLine}
 Format as numbered list: 1. [idea]`;
   try{
     const txt = await ai(prompt, FAST_MODEL);
