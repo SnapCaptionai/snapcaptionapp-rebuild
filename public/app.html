@@ -1086,7 +1086,9 @@ function refineHTML(text){
   </div>`;
 }
 
-async function refinePost(btn, mode, text){
+async function refinePost(btn, mode, rid){
+  const text = _refineStore[rid];
+  if(!text){ alert('Nothing to refine.'); return; }
   if(!canGen()) return;
   const orig = btn.textContent; btn.textContent = '⏳...'; btn.disabled = true;
   const prompts = {
@@ -1097,10 +1099,16 @@ async function refinePost(btn, mode, text){
   };
   try{
     const result = await ai(prompts[mode], FAST_MODEL);
+    // Update stored text for subsequent refines
+    _refineStore[rid] = result;
     const card = btn.closest('.res-card') || btn.closest('.sblock');
     if(card){
+      // Update all visible text sections
       const body = card.querySelector('.res-body') || card.querySelector('.sblock-text');
       if(body) body.innerHTML = result.replace(/\n/g,'<br>');
+      // Also update sections if present
+      const sections = card.querySelectorAll('.res-section-text');
+      if(sections.length === 1) sections[0].innerHTML = result.replace(/\n/g,'<br>');
     }
     rec();
   }catch(e){ alert('Refine failed: ' + (e?.message || 'Please try again')); }
