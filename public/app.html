@@ -1809,7 +1809,91 @@ function renderCalendar(){
   document.getElementById('cal-out').innerHTML = html;
 }
 
-async function remixDay(idx){
+async function genCalendarMore(count){
+  // Temporarily set scope and trigger generation for next batch
+  const scopePills = document.querySelectorAll('#cal-scope .ppill');
+  scopePills.forEach(p => p.classList.remove('on'));
+  // Find closest scope pill or just set it programmatically
+  const scopeVal = count <= 1 ? '1' : count <= 7 ? '7' : '30';
+  // We call genCalendar directly but override scope
+  if(!canGen()) return;
+  const niche = document.getElementById('cal-niche').value.trim() || 'social media';
+  const brand = document.getElementById('cal-brand').value.trim() || '';
+  const plat = gplat('cal-prow');
+  const freq = document.querySelector('#cal-freq .ppill.on')?.dataset.v || '1';
+  const goal = gtones('cal-goal-chips');
+  const product = document.getElementById('cal-product').value.trim();
+
+  document.getElementById('cal-progress').style.display = 'block';
+  const bar = document.getElementById('cal-prog-bar');
+  const pt = document.getElementById('cal-prog-text');
+  pt.textContent = 'Generating ' + count + ' more days...';
+  bar.style.width = '30%';
+
+  const startDay = calendarData.length;
+  const endDay = Math.min(startDay + count, 30);
+  const actualCount = endDay - startDay;
+
+  const dayPlans = [];
+  for(let i = startDay; i < endDay; i++){
+    const weekIdx = Math.floor(i / 7);
+    const dayInWeek = i % 7;
+    const theme = THEMES[weekIdx]?.days[dayInWeek];
+    if(theme) dayPlans.push('Day '+(i+1)+' (Week '+(weekIdx+1)+' "'+THEMES[weekIdx].name+'") '+theme.t+' — '+theme.d);
+  }
+  const prodLine = product && startDay < 21 && endDay > 14 ? 'Naturally mention this product: '+product+'.' : '';
+
+  const prompt = `You are a content calendar expert. Create ${actualCount} days of content for someone who posts about ${niche}${brand ? ' named "'+brand+'"' : ''}.
+Platform: ${plat}. Goal: ${goal}. ${prodLine}
+
+Day plan:
+${dayPlans.join('\n')}
+
+Return ONLY a valid JSON array with exactly ${actualCount} objects. No markdown, no backticks, no extra text.
+Each object: {"day":${startDay+1},"platform":"...","theme":"...","hook":"...","caption":"...","hashtags":"...","tip":"..."}
+
+Rules:
+- "hook" = 1-2 scroll-stopping lines
+- "caption" = 4-5 sentence engaging caption
+- "hashtags" = 8 relevant hashtags with # prefix
+- "tip" = one short posting tip
+- Write like a real human. No corporate speak.`;
+
+  try{
+    bar.style.width = '50%';
+    const useModel = actualCount <= 7 ? FAST_MODEL : QUALITY_MODEL;
+    const txt = await ai(prompt, useModel);
+    let parsed;
+    try { parsed = JSON.parse(txt); } catch(_) {
+      const jsonMatch = txt.match(/\[[\s\S]*\]/);
+      if(jsonMatch) parsed = JSON.parse(jsonMatch[0]);
+      else throw new Error('Could not parse calendar data');
+    }
+    if(!Array.isArray(parsed) || parsed.length < 1) throw new Error('AI returned empty data. Try again.');
+
+    parsed.slice(0, actualCount).forEach((item, i) => {
+      const dayNum = startDay + i + 1;
+      const weekIdx = Math.floor((startDay + i) / 7);
+      const dayInWeek = (startDay + i) % 7;
+      const d = new Date(calStartDate); d.setDate(d.getDate() + startDay + i);
+      calendarData.push({
+        day: dayNum, week: weekIdx + 1, weekName: THEMES[weekIdx]?.name || '',
+        platform: item.platform || plat, theme: item.theme || THEMES[weekIdx]?.days[dayInWeek]?.t || '',
+        hook: item.hook || '', caption: item.caption || '', hashtags: item.hashtags || '', tip: item.tip || '',
+        done: false, date: d, freq: parseInt(freq) || 1
+      });
+    });
+    rec();
+    bar.style.width = '100%';
+    pt.textContent = '✅ ' + calendarData.length + ' days ready!';
+    setTimeout(() => { document.getElementById('cal-progress').style.display = 'none'; renderCalendar(); syncCalendarToSupabase(); }, 600);
+  }catch(e){
+    document.getElementById('cal-progress').style.display = 'none';
+    alert('Error: ' + e.message);
+  }
+}
+
+
   const d = calendarData[idx]; if(!d) return;
   try{
     const txt = await ai('Remix this content with a completely new angle, hook, and story. Same theme, brand new content.\n\nTheme: '+d.theme+'\nOriginal hook: '+d.hook+'\nPlatform: '+d.platform+'\n\nHOOK: [new hook]\nCAPTION: [new caption]\nHASHTAGS: [hashtags]', FAST_MODEL);
