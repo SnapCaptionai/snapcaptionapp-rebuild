@@ -468,6 +468,11 @@ select option{background:var(--card2);}
         <div><span class="sl">Format</span><select id="id-fmt"><option>Mixed</option><option>Short Video</option><option>Long Video</option><option>Post/Caption</option></select></div>
       </div>
     </div>
+    <div class="card" style="border-color:rgba(255,180,0,0.2);background:rgba(255,180,0,0.03)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px"><span>🛍️</span><span class="sl" style="margin-bottom:0;color:#ffb400">Product Mention (optional)</span></div>
+      <textarea id="id-product" rows="2" placeholder="Describe your product — or leave blank to skip"></textarea>
+      <input type="text" id="id-link" placeholder="Where to send them (optional)" style="margin-top:8px">
+    </div>
     <button class="btn-gen" style="background:linear-gradient(135deg,#ffd600,#ff7a00)" id="id-btn" onclick="genIdeas()"><span>💡</span> Give Me 10 Ideas</button>
     <div id="id-out" style="margin-top:12px"></div>
   </div>
