@@ -968,30 +968,67 @@ function forceHideLoader(){
 }
 
 // ═══ AI ENGINE (backend proxy) ═══
-const EDGE_FN_URL = 'https://thjspqiuuzwvniddubtw.supabase.co/functions/v1/ai-proxy';
+const FAST_MODEL = 'google/gemini-2.5-flash-lite';
+const QUALITY_MODEL = 'google/gemini-3-flash-preview';
+const FAST_TIMEOUT_MS = 18000;
+const QUALITY_TIMEOUT_MS = 35000;
+
+function withTimeout(ms){
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  return { controller, timer };
+}
+
+function toneDirective(tone){
+  const t = (tone || '').toLowerCase();
+  if(t.includes('bold') || t.includes('dramatic')) return 'Use decisive language, strong opinions, and high energy while staying authentic.';
+  if(t.includes('natural') || t.includes('casual') || t.includes('real talk')) return 'Use conversational wording, contractions, and simple sentence rhythm.';
+  if(t.includes('story')) return 'Lean into storytelling with concrete details and a clear emotional arc.';
+  if(t.includes('funny')) return 'Use light humor and playful phrasing without sounding forced.';
+  return 'Keep the writing clear, direct, and human.';
+}
+
+function jsArg(value){
+  return JSON.stringify(value ?? '').replace(/</g, '\\u003c');
+}
 
 async function ai(prompt, model){
+  if(!_edgeFnUrl) throw new Error('App config missing. Refresh and try again.');
   const vc = getVoiceContext();
   const fullPrompt = vc ? vc + '\n\n' + prompt : prompt;
+  const selectedModel = model || FAST_MODEL;
+  const timeoutMs = selectedModel === FAST_MODEL ? FAST_TIMEOUT_MS : QUALITY_TIMEOUT_MS;
+  const { controller, timer } = withTimeout(timeoutMs);
+
   showLoader();
   try{
-    const body = { prompt: fullPrompt };
-    if (model) body.model = model;
-    const r = await fetch(EDGE_FN_URL, {
+    const body = { prompt: fullPrompt, model: selectedModel };
+    const headers = { 'Content-Type': 'application/json' };
+
+    if(_sbClient){
+      const { data: { session } } = await _sbClient.auth.getSession();
+      if(session?.access_token) headers.Authorization = 'Bearer ' + session.access_token;
+    }
+
+    const r = await fetch(_edgeFnUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      headers,
+      body: JSON.stringify(body),
+      signal: controller.signal,
     });
-    const d = await r.json();
-    if (!r.ok || d.error) throw new Error(d.error || 'AI request failed');
+
+    let d = {};
+    try { d = await r.json(); } catch(_) {}
+    if (!r.ok || d.error) throw new Error(d.error || 'AI request failed. Please try again.');
     return d.result || '';
+  } catch (error) {
+    if(error?.name === 'AbortError') throw new Error('Request timed out. Please try again.');
+    throw error;
   } finally {
+    clearTimeout(timer);
     hideLoader();
   }
 }
-
-const FAST_MODEL = 'google/gemini-2.5-flash-lite';
-const QUALITY_MODEL = 'google/gemini-3-flash-preview';
 
 // ═══ COPY & SAVE ═══
 function doCopy(btn, text){
