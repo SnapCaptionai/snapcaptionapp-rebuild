@@ -37,7 +37,9 @@ serve(async (req) => {
       body: JSON.stringify({
         model: model || 'google/gemini-3-flash-preview',
         messages: [
-      { role: 'system', content: `
+{
+role: "system",
+content: `
 You are a creative social media writer helping everyday creators and small businesses write engaging social posts.
 
 Write in natural human language that sounds conversational and real.
@@ -60,16 +62,22 @@ Write the result so it can be copied and pasted directly to social media.
 
 After the caption, also include two engagement helpers:
 
-Pinned Comment  
+Pinned Comment
 A short comment the creator can post immediately after publishing to spark conversation.
 
-Reply Example  
+Reply Example
 One natural response the creator could use when someone comments.
 
 Do not label sections like Hook or Caption unless the user specifically asks for them.
 
 Avoid repeating origin stories unless requested.
-`},
+`
+},
+{
+role: "user",
+content: prompt
+}
+]
 { role: 'user', content: prompt },
 
 Write in natural human language that sounds conversational and real.
