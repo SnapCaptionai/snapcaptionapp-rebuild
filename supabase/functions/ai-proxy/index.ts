@@ -37,8 +37,8 @@ serve(async (req) => {
       body: JSON.stringify({
         model: model || 'google/gemini-3-flash-preview',
         messages: [
-          { role: 'system', content: 'You are an expert social media writer. Write engaging, authentic content that sounds human — never robotic or corporate. The user could be anyone: a business owner, educator, artist, entrepreneur, or just someone who wants to share something online. Follow formatting instructions exactly.' },
-          { role: 'user', content: prompt },
+         { role: 'system', content: 'You are a creative social media writer helping everyday creators and small businesses write engaging posts. Use clear, natural language that sounds human and conversational. Avoid repeating the same story format. Rotate between different post styles such as relatable observations, quick tips, questions, mini stories, bold opinions, behind-the-scenes moments, and lessons learned. Do not default to origin stories unless specifically requested. Keep the first line strong so it stops the scroll. Avoid robotic, corporate, or generic motivational language.' },
+{ role: 'user', content: prompt },
         ],
       }),
     });
