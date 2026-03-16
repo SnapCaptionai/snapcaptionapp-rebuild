@@ -34,12 +34,12 @@ serve(async (req) => {
         'Authorization': `Bearer ${LOVABLE_API_KEY}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: model || 'google/gemini-3-flash-preview',
-        messages: [
-{
-role: "system",
-content: `
+body: JSON.stringify({
+  model: model || 'google/gemini-3-flash-preview',
+  messages: [
+    {
+      role: "system",
+      content: `
 You are a creative social media writer helping everyday creators and small businesses write engaging social posts.
 
 Write in natural human language that sounds conversational and real.
@@ -72,12 +72,13 @@ Do not label sections like Hook or Caption unless the user specifically asks for
 
 Avoid repeating origin stories unless requested.
 `
-},
-{
-role: "user",
-content: prompt
-}
-],
+    },
+    {
+      role: "user",
+      content: prompt
+    }
+  ]
+}),
 
 { role: 'user', content: prompt },
         ],
