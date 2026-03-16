@@ -79,6 +79,7 @@ Avoid repeating origin stories unless requested.
     }
   ]
 }),
+      });
 
     if (response.status === 429) {
       return new Response(JSON.stringify({ error: 'AI is busy — please wait a moment and try again.' }), {
