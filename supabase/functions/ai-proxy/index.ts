@@ -77,7 +77,7 @@ Avoid repeating origin stories unless requested.
 role: "user",
 content: prompt
 }
-]
+],
 { role: 'user', content: prompt },
 
 Write in natural human language that sounds conversational and real.
