@@ -1925,21 +1925,26 @@ async function genCalendarMore(count){
   }
   const prodLine = product && startDay < 21 && endDay > 14 ? 'Naturally mention this product: '+product+'.' : '';
 
-  const prompt = `You are a content calendar expert. Create ${actualCount} days of content for someone who posts about ${niche}${brand ? ' named "'+brand+'"' : ''}.
-Platform: ${plat}. Goal: ${goal}. ${prodLine}
+  const prompt = `Act as a high-performing viral social media strategist. Generate relatable, human, scroll-stopping content ideas. Avoid generic phrases. Keep it natural and easy to execute.
 
-Day plan:
-${dayPlans.join('\n')}
-
-Return ONLY a valid JSON array with exactly ${actualCount} objects. No markdown, no backticks, no extra text.
-Each object: {"day":${startDay+1},"platform":"...","theme":"...","hook":"...","caption":"...","hashtags":"...","tip":"..."}
+Generate a ${actualCount}-day content plan.
+Topic: ${niche}
+Platform: ${plat}
+Goal: ${goal}
+Brand/Product: ${product || brand || 'none'}
 
 Rules:
-- "hook" = 1-2 scroll-stopping lines
-- "caption" = 4-5 sentence engaging caption
-- "hashtags" = 8 relevant hashtags with # prefix
-- "tip" = one short posting tip
-- Write like a real human. No corporate speak.`;
+- Output ONLY valid JSON (no text before or after, no markdown backticks)
+- EXACTLY ${actualCount} items
+- Each item must include: day, type, icon, idea, hook, caption, hashtags, tip, clean
+- Day numbers start at ${startDay+1}
+- Use content buckets: Relatable 😅, Tip 💡, Question ❓, Humor 😂, Story 🎬, Promotion 🛍️
+- Every 3rd day should include a soft promotion if product exists
+
+JSON format:
+[{"day":${startDay+1},"type":"Relatable","icon":"😅","idea":"...","hook":"...","caption":"...","hashtags":"...","tip":"...","clean":"..."}]
+
+Do not include explanations or extra text.`;
 
   try{
     bar.style.width = '50%';
@@ -1956,12 +1961,11 @@ Rules:
     parsed.slice(0, actualCount).forEach((item, i) => {
       const dayNum = startDay + i + 1;
       const weekIdx = Math.floor((startDay + i) / 7);
-      const dayInWeek = (startDay + i) % 7;
       const d = new Date(calStartDate); d.setDate(d.getDate() + startDay + i);
       calendarData.push({
         day: dayNum, week: weekIdx + 1, weekName: THEMES[weekIdx]?.name || '',
-        platform: item.platform || plat, theme: item.theme || THEMES[weekIdx]?.days[dayInWeek]?.t || '',
-        hook: item.hook || '', caption: item.caption || '', hashtags: item.hashtags || '', tip: item.tip || '',
+        platform: item.platform || plat, theme: (item.icon || '') + ' ' + (item.type || ''),
+        hook: item.hook || item.idea || '', caption: item.caption || item.clean || '', hashtags: item.hashtags || '', tip: item.tip || '',
         done: false, date: d, freq: parseInt(freq) || 1
       });
     });
