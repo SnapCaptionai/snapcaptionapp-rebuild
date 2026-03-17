@@ -1170,7 +1170,7 @@ function refineHTML(text){
 
 async function refinePost(btn, mode, rid){
   const text = _refineStore[rid];
-  if(!text){ alert('Nothing to refine.'); return; }
+  if(!text){ showToast('Nothing to refine.', 'warn'); return; }
   if(!canGen()) return;
   const orig = btn.textContent; btn.textContent = '⏳...'; btn.disabled = true;
   const prompts = {
