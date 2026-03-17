@@ -1969,7 +1969,7 @@ async function remixDay(idx){
     calendarData[idx].caption = get('CAPTION')||d.caption;
     calendarData[idx].hashtags = get('HASHTAGS')||d.hashtags;
     rec(); renderCalendar();
-  }catch(e){ alert('Remix failed — try again'); }
+  }catch(e){ showToast('Remix failed — try again', 'error'); }
 }
 
 async function catchUpDay(idx){
