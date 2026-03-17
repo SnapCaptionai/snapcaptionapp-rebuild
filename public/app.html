@@ -1771,21 +1771,38 @@ async function genCalendar(){
   }
   const prodLine = product && startDay < 21 && endDay > 14 ? 'Naturally mention this product: '+product+'.' : '';
 
-  const prompt = `You are a content calendar expert. Create ${count} days of content for someone who posts about ${niche}${brand ? ' named "'+brand+'"' : ''}.
-Platform: ${plat}. Goal: ${goal}. ${prodLine}
+  const prompt = `Act as a high-performing viral social media strategist. Generate relatable, human, scroll-stopping content ideas. Avoid generic phrases. Keep it natural and easy to execute.
 
-Day plan:
-${dayPlans.join('\n')}
+Generate a ${count}-day content plan.
+Topic: ${niche}
+Platform: ${plat}
+Goal: ${goal}
+Brand/Product: ${product || brand || 'none'}
 
-Return ONLY a valid JSON array with exactly ${count} objects. No markdown, no backticks, no extra text.
-Each object: {"day":${startDay+1},"platform":"...","theme":"...","hook":"...","caption":"...","hashtags":"...","tip":"..."}
+Follow this style:
+😅 Relatable – Coffee is doing the heavy lifting today
+💡 Tip – Stop overthinking. Start posting
+❓ Question – What's something you keep putting off right now?
+😂 Humor – Me acting productive after one small task
+🛍️ Promotion – My skin has been different ever since I started using this balm
 
 Rules:
-- "hook" = 1-2 scroll-stopping lines
+- Output ONLY valid JSON (no text before or after, no markdown backticks)
+- EXACTLY ${count} items
+- Each item must include: day, type, icon, idea, hook, caption, hashtags, tip, clean
+- "clean" = same idea but WITHOUT icon, label, or formatting
+- "hook" = 1-2 scroll-stopping opening lines
 - "caption" = 4-5 sentence engaging caption
 - "hashtags" = 8 relevant hashtags with # prefix
 - "tip" = one short posting tip
-- Write like a real human. No corporate speak.`;
+- Use content buckets: Relatable 😅, Tip 💡, Question ❓, Humor 😂, Story 🎬, Promotion 🛍️
+- Every 3rd day should include a soft promotion if product exists
+- Day numbers start at ${startDay+1}
+
+JSON format:
+[{"day":${startDay+1},"type":"Relatable","icon":"😅","idea":"...","hook":"...","caption":"...","hashtags":"...","tip":"...","clean":"..."}]
+
+Do not include explanations or extra text.`;
 
   try{
     bar.style.width = '50%';
