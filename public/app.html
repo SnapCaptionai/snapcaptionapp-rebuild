@@ -1993,7 +1993,7 @@ async function catchUpAll(){
 function copyAll30(){
   const txt = calendarData.map(d=>'DAY '+d.day+' — '+d.platform+'\nHOOK: '+d.hook+'\nCAPTION: '+d.caption+'\nHASHTAGS: '+d.hashtags+'\n').join('\n---\n\n');
   navigator.clipboard.writeText(txt).catch(()=>{});
-  alert('✅ All 30 days copied!');
+  showToast('All ' + calendarData.length + ' days copied!', 'success');
 }
 
 // ═══ SAVED ═══
