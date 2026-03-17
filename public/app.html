@@ -832,6 +832,10 @@ let calPostsPerDay = 1;
 let calView = 'grid';
 let calWeekFilter = 0;
 let wtpState = {step:1, type:'', creator:'', tone:''};
+let aiMode = 'fast'; // 'fast' or 'deep'
+let deepUses = +localStorage.getItem('sc2-deep-uses') || 0;
+let deepUsesDate = localStorage.getItem('sc2-deep-date') || '';
+let _configReady = false;
 
 // ═══ INIT ═══
 const today = new Date().toDateString();
