@@ -1630,7 +1630,7 @@ Just the hashtags, no extra text.`;
 async function genRepurpose(){
   if(!canGen()) return;
   const d = document.getElementById('rep-in').value.trim();
-  if(!d){ alert('Paste some content first!'); return; }
+  if(!d){ showToast('Paste some content first!', 'warn'); return; }
   setBtn('rep-btn', true, '<span>🔁</span> Multiply My Content');
   document.getElementById('rep-out').innerHTML = '';
   const platforms = ['Facebook','Instagram','TikTok','YouTube','LinkedIn','Twitter'];
