@@ -728,6 +728,7 @@ function applyRuntimeConfig(payload){
   _admobId = payload.admobId || _admobId;
   _stripeLinks = { ..._stripeLinks, ...(payload.stripeLinks || {}) };
   _edgeFnUrl = _sbUrl ? `${_sbUrl}/functions/v1/ai-proxy` : '';
+  _configReady = !!_edgeFnUrl;
   renderAdBanner();
   initSupabase();
 }
