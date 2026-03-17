@@ -1981,7 +1981,7 @@ async function catchUpDay(idx){
     calendarData[idx].hook = get('HOOK')||d.hook;
     calendarData[idx].caption = get('CAPTION')||d.caption;
     rec(); renderCalendar();
-  }catch(e){ alert('Catch-up failed — try again'); }
+  }catch(e){ showToast('Catch-up failed — try again', 'error'); }
 }
 
 async function catchUpAll(){
