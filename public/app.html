@@ -1821,16 +1821,15 @@ Do not include explanations or extra text.`;
     parsed.slice(0, count).forEach((item, i) => {
       const dayNum = startDay + i + 1;
       const weekIdx = Math.floor((startDay + i) / 7);
-      const dayInWeek = (startDay + i) % 7;
       const d = new Date(calStartDate); d.setDate(d.getDate() + startDay + i);
       calendarData.push({
         day: dayNum,
         week: weekIdx + 1,
         weekName: THEMES[weekIdx]?.name || '',
         platform: item.platform || plat,
-        theme: item.theme || THEMES[weekIdx]?.days[dayInWeek]?.t || '',
-        hook: item.hook || '',
-        caption: item.caption || '',
+        theme: (item.icon || '') + ' ' + (item.type || item.theme || ''),
+        hook: item.hook || item.idea || '',
+        caption: item.caption || item.clean || '',
         hashtags: item.hashtags || '',
         tip: item.tip || '',
         done: false,
