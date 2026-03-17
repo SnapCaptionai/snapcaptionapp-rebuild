@@ -1,0 +1,9 @@
+{
+  "appId": "app.lovable.215d230d165043b1b94f76a4580f4913",
+  "appName": "SnapCaption",
+  "webDir": "dist",
+  "server": {
+    "url": "https://215d230d-1650-43b1-b94f-76a4580f4913.lovableproject.com?forceHideBadge=true",
+    "cleartext": true
+  }
+}
