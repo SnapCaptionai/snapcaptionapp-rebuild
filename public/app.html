@@ -1259,7 +1259,7 @@ Write naturally. Real human voice. No corporate speak.`;
 async function genBatch(){
   if(!canGen()) return;
   const idea = document.getElementById('batch-idea').value.trim();
-  if(!idea){ alert('Type an idea first!'); return; }
+  if(!idea){ showToast('Type an idea first!', 'warn'); return; }
   setBtn('batch-btn', true, '<span>🚀</span> Create 8 Posts');
   document.getElementById('batch-out').innerHTML = '';
   const prompt = `Create 8 completely different social media posts all based on this one idea: "${idea}"
