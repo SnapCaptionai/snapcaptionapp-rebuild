@@ -1193,7 +1193,7 @@ async function refinePost(btn, mode, rid){
       if(sections.length === 1) sections[0].innerHTML = result.replace(/\n/g,'<br>');
     }
     rec();
-  }catch(e){ alert('Refine failed: ' + (e?.message || 'Please try again')); }
+  }catch(e){ showToast('Refine failed: ' + (e?.message || 'Please try again'), 'error'); }
   btn.textContent = orig; btn.disabled = false;
 }
 
