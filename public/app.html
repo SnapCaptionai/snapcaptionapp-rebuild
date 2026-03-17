@@ -1955,7 +1955,7 @@ Rules:
     setTimeout(() => { document.getElementById('cal-progress').style.display = 'none'; renderCalendar(); syncCalendarToSupabase(); }, 600);
   }catch(e){
     document.getElementById('cal-progress').style.display = 'none';
-    alert('Error: ' + e.message);
+    showToast(e.message, 'error');
   }
 }
 
