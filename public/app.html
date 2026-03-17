@@ -2088,7 +2088,7 @@ function goToStripe(){
   const key = id.replace('plan-','');
   const link = _stripeLinks[key];
   if(link) window.open(link,'_blank');
-  else alert('Payment link is not configured yet.');
+  else showToast('Payment link is not configured yet.', 'warn');
   closeSheet();
 }
 </script>
