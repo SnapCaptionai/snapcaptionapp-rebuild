@@ -1135,7 +1135,7 @@ function copyPostOutput(btn, outputId){
 
 function doCopy(btn, text){
   const finalText = normalizeCopyText(text);
-  if(!finalText){ alert('Nothing to copy yet.'); return; }
+  if(!finalText){ showToast('Nothing to copy yet.', 'warn'); return; }
   navigator.clipboard.writeText(finalText).catch(()=>{});
   const orig = btn.textContent; btn.textContent = '✅ Copied!';
   setTimeout(() => btn.textContent = orig, 2000);
