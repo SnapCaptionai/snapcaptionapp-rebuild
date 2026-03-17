@@ -1072,14 +1072,15 @@ function escapeHtml(value){
 }
 
 async function ai(prompt, model){
-  if(!_edgeFnUrl) throw new Error('App config missing. Refresh and try again.');
+  if(!_edgeFnUrl) throw new Error('Still loading — please wait a moment and try again.');
   const vc = getVoiceContext();
   const fullPrompt = vc ? vc + '\n\n' + prompt : prompt;
-  const selectedModel = model || FAST_MODEL;
-  const timeoutMs = selectedModel === FAST_MODEL ? FAST_TIMEOUT_MS : QUALITY_TIMEOUT_MS;
+  const selectedModel = getActiveModel(model || FAST_MODEL);
+  const isDeep = aiMode === 'deep';
+  const timeoutMs = isDeep ? QUALITY_TIMEOUT_MS : (selectedModel === FAST_MODEL ? FAST_TIMEOUT_MS : QUALITY_TIMEOUT_MS);
   const { controller, timer } = withTimeout(timeoutMs);
 
-  showLoader();
+  showLoader(isDeep ? 'Deep Mode — generating high-quality content...' : undefined);
   try{
     const body = { prompt: fullPrompt, model: selectedModel };
     const headers = { 'Content-Type': 'application/json' };
@@ -1098,7 +1099,17 @@ async function ai(prompt, model){
 
     let d = {};
     try { d = await r.json(); } catch(_) {}
-    if (!r.ok || d.error) throw new Error(d.error || 'AI request failed. Please try again.');
+    if (!r.ok || d.error) {
+      if(r.status === 429) throw new Error('AI is busy — please wait a moment and try again.');
+      if(r.status === 402) throw new Error('Usage limit reached. Please try again later.');
+      throw new Error(d.error || 'AI request failed. Please try again.');
+    }
+    // Track deep mode usage
+    if(isDeep){
+      deepUses++;
+      localStorage.setItem('sc2-deep-uses', deepUses);
+      localStorage.setItem('sc2-deep-date', new Date().toDateString());
+    }
     return d.result || '';
   } catch (error) {
     if(error?.name === 'AbortError') throw new Error('Request timed out. Please try again.');
