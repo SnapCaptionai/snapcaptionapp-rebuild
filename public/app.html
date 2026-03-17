@@ -864,10 +864,13 @@ function rec(){
 }
 
 function canGen(){
-  if(creatorMode && uses >= 200){ alert('Daily limit reached (200). Try again tomorrow.'); return false; }
+  if(!_configReady){ showToast('⏳ Still loading — please wait a moment.', 'warn'); return false; }
+  if(creatorMode && uses >= 200){ showToast('Daily limit reached (200). Try again tomorrow.', 'warn'); return false; }
   if(!creatorMode && uses >= FREE_LIMIT){ openUpgrade(); return false; }
   const now = Date.now();
-  if(now - _lastGenTime < COOLDOWN_MS){ alert('Please wait a moment before generating again.'); return false; }
+  if(now - _lastGenTime < COOLDOWN_MS){ showToast('Please wait a moment before generating again.', 'warn'); return false; }
+  if(aiMode === 'deep' && !creatorMode && deepUses >= 2){ showToast('Deep Mode limit reached (2/day). Switch to Fast or upgrade.', 'warn'); return false; }
+  _lastGenTime = now;
   _lastGenTime = now;
   return true;
 }
