@@ -840,6 +840,7 @@ let _configReady = false;
 // ═══ INIT ═══
 const today = new Date().toDateString();
 if(usesDate !== today){ uses = 0; usesDate = today; sv(); }
+if(deepUsesDate !== today){ deepUses = 0; deepUsesDate = today; localStorage.setItem('sc2-deep-uses', 0); localStorage.setItem('sc2-deep-date', today); }
 if(lastDay !== today){
   const yd = new Date(); yd.setDate(yd.getDate()-1);
   if(lastDay === yd.toDateString()) streak++;
