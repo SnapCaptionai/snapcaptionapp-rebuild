@@ -916,7 +916,31 @@ function renderAdBanner(){
 
 rHome(); rLim(); renderAdBanner();
 
-// ═══ NAVIGATION ═══
+// ═══ TOAST NOTIFICATIONS ═══
+function showToast(msg, type){
+  type = type || 'info';
+  const container = document.getElementById('toast-container');
+  if(!container) return;
+  const el = document.createElement('div');
+  el.className = 'toast-msg' + (type === 'error' ? ' error' : type === 'success' ? ' success' : type === 'warn' ? ' warn' : '');
+  const icons = {error:'❌', success:'✅', warn:'⚠️', info:'ℹ️'};
+  el.innerHTML = '<span>'+(icons[type]||'ℹ️')+'</span><span>'+msg+'</span>';
+  container.appendChild(el);
+  setTimeout(() => { el.style.animation = 'toastOut 0.3s ease forwards'; setTimeout(() => el.remove(), 300); }, 3500);
+}
+
+// ═══ AI MODE TOGGLE ═══
+function setAIMode(mode){
+  aiMode = mode;
+  document.getElementById('mode-fast').classList.toggle('active', mode==='fast');
+  document.getElementById('mode-deep').classList.toggle('active', mode==='deep');
+  if(mode==='deep' && !creatorMode && deepUses >= 2) showToast('Deep Mode: '+deepUses+'/2 uses today', 'warn');
+}
+function getActiveModel(fallbackModel){
+  if(aiMode === 'deep') return 'openai/gpt-5-mini';
+  return fallbackModel || FAST_MODEL;
+}
+
 function go(id){
   // Close upgrade modal
   closeSheet();
