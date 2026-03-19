@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SnapCaption com.snapcaption.app</string>
+    <string name="title_activity_main">SnapCaption com.snapcaption.app</string>
+    <string name="package_name">com.snapcaption.app</string>
+    <string name="custom_url_scheme">com.snapcaption.app</string>
+</resources>
