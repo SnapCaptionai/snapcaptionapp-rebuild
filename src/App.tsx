@@ -18,7 +18,6 @@ const App = () => (
   }}>
     <Index />
   </div>
-=======
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
