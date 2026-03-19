@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound.tsx";
 const queryClient = new QueryClient();
 
 const App = () => (
+<<<<<<< HEAD
   <div style={{
     width: "100%",
     height: "100vh",
@@ -17,6 +18,21 @@ const App = () => (
   }}>
     <Index />
   </div>
+=======
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+>>>>>>> d39ee8bb6ceea7edab19179109fa96784303e567
 );
 
 export default App;
