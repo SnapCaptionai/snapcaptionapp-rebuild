@@ -1,59 +1,58 @@
-import { useEffect, useRef, useCallback } from 'react';
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-const ADMOB_ID = import.meta.env.VITE_ADMOB_ID || '';
-const STRIPE_STARTER_URL = import.meta.env.VITE_STRIPE_STARTER_URL || '';
-const STRIPE_PRO_URL = import.meta.env.VITE_STRIPE_PRO_URL || '';
-const STRIPE_ANNUAL_URL = import.meta.env.VITE_STRIPE_ANNUAL_URL || '';
+import React, { useState } from "react";
 
 const Index = () => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [prompt, setPrompt] = useState("");
+  const [result, setResult] = useState("");
 
-  const sendConfig = useCallback(() => {
-    const targetOrigin = window.location.origin;
-    iframeRef.current?.contentWindow?.postMessage(
-      {
-        type: 'APP_CONFIG',
-        url: SUPABASE_URL,
-        key: SUPABASE_KEY,
-        admobId: ADMOB_ID,
-        stripeLinks: {
-          starter: STRIPE_STARTER_URL,
-          pro: STRIPE_PRO_URL,
-          annual: STRIPE_ANNUAL_URL,
-        },
-      },
-      targetOrigin,
-    );
-  }, []);
+  const generateCaption = async (modelType) => {
+  const res = await fetch("/api/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      prompt: prompt,
+      model: modelType,
+    }),
+  });
 
-  useEffect(() => {
-    const handler = (e: MessageEvent) => {
-      if (e.origin !== window.location.origin) return;
-      if (e.data?.type === 'GET_APP_CONFIG' || e.data?.type === 'GET_SUPABASE_CONFIG') {
-        sendConfig();
-      }
-    };
-    window.addEventListener('message', handler);
-    return () => window.removeEventListener('message', handler);
-  }, [sendConfig]);
+  const data = await res.json();
+
+  const text =
+    data?.candidates?.[0]?.content?.parts?.[0]?.text || // gemini
+    data?.choices?.[0]?.message?.content || // openai
+    JSON.stringify(data);
+
+  setResult(text);
+};
 
   return (
-    <iframe
-      ref={iframeRef}
-      src="/app.html"
-      title="SnapCaption"
-      onLoad={sendConfig}
-      style={{
-        width: '100vw',
-        height: '100vh',
-        border: 'none',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-      }}
-    />
+    <div style={{ padding: 20 }}>
+      <h1>SnapCaption</h1>
+
+      <textarea
+        placeholder="Enter your idea..."
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        style={{ width: "100%", height: 100 }}
+      />
+
+      <br /><br />
+
+      <button onClick={() => generateCaption("gemini")}>
+  Fast Caption (Gemini)
+</button>
+
+<br /><br />
+
+<button onClick={() => generateCaption("openai")}>
+  Deep Caption (OpenAI)
+</button>
+
+      <pre style={{ marginTop: 20 }}>
+        {result}
+      </pre>
+    </div>
   );
 };
 
