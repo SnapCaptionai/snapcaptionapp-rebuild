@@ -1,4 +1,15 @@
+import { useState } from "react";
+
 export default function Index() {
+  const [idea, setIdea] = useState("");
+  const [result, setResult] = useState("");
+
+  const generateCaption = () => {
+    setResult(`🔥 Here's your caption:
+
+"${idea} — This is your moment. Stop waiting and start building."`);
+  };
+
   return (
     <div style={{
       minHeight: "100vh",
@@ -24,6 +35,8 @@ export default function Index() {
 
         <textarea
           placeholder="Enter your idea..."
+          value={idea}
+          onChange={(e) => setIdea(e.target.value)}
           style={{
             width: "100%",
             height: "100px",
@@ -34,6 +47,50 @@ export default function Index() {
           }}
         />
 
+        <button
+          onClick={generateCaption}
+          style={{
+            width: "100%",
+            padding: "12px",
+            marginBottom: "10px",
+            background: "black",
+            color: "white",
+            borderRadius: "8px",
+            border: "none"
+          }}
+        >
+          Fast Caption (Gemini)
+        </button>
+
+        <button
+          onClick={generateCaption}
+          style={{
+            width: "100%",
+            padding: "12px",
+            background: "#444",
+            color: "white",
+            borderRadius: "8px",
+            border: "none"
+          }}
+        >
+          Deep Caption (OpenAI)
+        </button>
+
+        {result && (
+          <div style={{
+            marginTop: "20px",
+            padding: "10px",
+            background: "#f0f0f0",
+            borderRadius: "8px"
+          }}>
+            {result}
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
         <button style={{
           width: "100%",
           padding: "12px",
