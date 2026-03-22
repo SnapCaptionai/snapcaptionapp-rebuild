@@ -11,24 +11,26 @@ export default function Index() {
   };
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "#f5f5f5",
-      padding: "20px"
-    }}>
-      
-      <div style={{
-        width: "100%",
-        maxWidth: "400px",
-        background: "#fff",
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#f5f5f5",
         padding: "20px",
-        borderRadius: "12px",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.1)"
-      }}>
-        
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "400px",
+          background: "#fff",
+          padding: "20px",
+          borderRadius: "12px",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+        }}
+      >
         <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
           SnapCaption
         </h1>
@@ -43,7 +45,7 @@ export default function Index() {
             padding: "10px",
             borderRadius: "8px",
             border: "1px solid #ccc",
-            marginBottom: "15px"
+            marginBottom: "15px",
           }}
         />
 
@@ -56,7 +58,7 @@ export default function Index() {
             background: "black",
             color: "white",
             borderRadius: "8px",
-            border: "none"
+            border: "none",
           }}
         >
           Fast Caption (Gemini)
@@ -70,50 +72,24 @@ export default function Index() {
             background: "#444",
             color: "white",
             borderRadius: "8px",
-            border: "none"
+            border: "none",
           }}
         >
           Deep Caption (OpenAI)
         </button>
 
         {result && (
-          <div style={{
-            marginTop: "20px",
-            padding: "10px",
-            background: "#f0f0f0",
-            borderRadius: "8px"
-          }}>
+          <div
+            style={{
+              marginTop: "20px",
+              padding: "10px",
+              background: "#f0f0f0",
+              borderRadius: "8px",
+            }}
+          >
             {result}
           </div>
         )}
-
-      </div>
-    </div>
-  );
-}
-        <button style={{
-          width: "100%",
-          padding: "12px",
-          marginBottom: "10px",
-          background: "black",
-          color: "white",
-          borderRadius: "8px",
-          border: "none"
-        }}>
-          Fast Caption (Gemini)
-        </button>
-
-        <button style={{
-          width: "100%",
-          padding: "12px",
-          background: "#444",
-          color: "white",
-          borderRadius: "8px",
-          border: "none"
-        }}>
-          Deep Caption (OpenAI)
-        </button>
-
       </div>
     </div>
   );
