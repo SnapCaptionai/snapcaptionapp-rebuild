@@ -1,61 +1,75 @@
-import OpenAI from "openai";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-export default async function handler(req, res) {
-  // Only allow POST
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
-
+serve(async (req) => {
   try {
-    const { idea, type } = req.body;
+    // Parse request
+    const { idea, type } = await req.json();
 
-    // Validate input
     if (!idea) {
-      return res.status(400).json({ error: "Missing idea" });
+      return new Response(
+        JSON.stringify({ error: "Missing idea" }),
+        { status: 400 }
+      );
     }
 
-    // Check API key
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({
-        error: "Missing OPENAI_API_KEY in environment",
-      });
+    // Get Gemini key
+    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+
+    if (!geminiKey) {
+      return new Response(
+        JSON.stringify({ error: "Missing GEMINI_API_KEY" }),
+        { status: 500 }
+      );
     }
 
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    // Build prompt
+    const prompt =
+      type === "fast"
+        ? `Write a short, punchy caption: ${idea}`
+        : `Write a deeper, emotional caption for creators over 40: ${idea}`;
 
-    // Prompt logic
-    let prompt = "";
-
-    if (type === "fast") {
-      prompt = `Write a short, punchy social media caption for: ${idea}`;
-    } else {
-      prompt = `Write a deep, emotional caption for creators over 40 about: ${idea}`;
-    }
-
-    // Call OpenAI
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "user",
-          content: prompt,
+    // Call Gemini
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      ],
-    });
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt,
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
 
-    // Return clean JSON
-    return res.status(200).json({
-      caption: response.choices[0].message.content,
-    });
+    const data = await response.json();
 
-  } catch (error) {
-    console.error("FULL ERROR:", error);
+    // Extract caption safely
+    const caption =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No response from Gemini";
 
-    return res.status(500).json({
-      error: "Server failed",
-      details: error.message,
-    });
+    return new Response(
+      JSON.stringify({ caption }),
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  } catch (err) {
+    return new Response(
+      JSON.stringify({
+        error: "Server failed",
+        details: err.message,
+      }),
+      { status: 500 }
+    );
   }
-}
+});
