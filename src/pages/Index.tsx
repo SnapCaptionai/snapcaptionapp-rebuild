@@ -21,9 +21,16 @@ export default function Index() {
 
       const data = await res.json();
 
-      setResult(`🔥 Here's your caption:\n\n"${data.caption}"`);
-    } catch (error) {
-      setResult("Something went wrong. Check your connection.");
+      // 🔥 show real backend errors
+      if (!res.ok) {
+        setResult("Error: " + data.error + " " + (data.details || ""));
+        return;
+      }
+
+      setResult(`🔥 Here's your caption:\n\n${data.caption}`);
+    } catch (error: any) {
+      console.log(error);
+      setResult("Error: " + error.message);
     }
   };
 
@@ -53,16 +60,16 @@ export default function Index() {
         </h1>
 
         <textarea
-          placeholder="Enter your idea..."
           value={idea}
           onChange={(e) => setIdea(e.target.value)}
+          placeholder="Enter your idea..."
           style={{
             width: "100%",
-            height: "100px",
             padding: "10px",
+            marginBottom: "15px",
             borderRadius: "8px",
             border: "1px solid #ccc",
-            marginBottom: "15px",
+            minHeight: "80px",
           }}
         />
 
@@ -70,29 +77,31 @@ export default function Index() {
           onClick={() => generateCaption("fast")}
           style={{
             width: "100%",
-            padding: "12px",
+            padding: "10px",
             marginBottom: "10px",
-            background: "black",
-            color: "white",
-            borderRadius: "8px",
+            background: "#000",
+            color: "#fff",
             border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
           }}
         >
-          Fast Caption (Gemini)
+          Fast Caption
         </button>
 
         <button
           onClick={() => generateCaption("deep")}
           style={{
             width: "100%",
-            padding: "12px",
+            padding: "10px",
             background: "#444",
-            color: "white",
-            borderRadius: "8px",
+            color: "#fff",
             border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
           }}
         >
-          Deep Caption (OpenAI)
+          Deep Caption
         </button>
 
         {result && (
@@ -102,7 +111,7 @@ export default function Index() {
               padding: "10px",
               background: "#f0f0f0",
               borderRadius: "8px",
-              whiteSpace: "pre-line",
+              whiteSpace: "pre-wrap",
             }}
           >
             {result}
