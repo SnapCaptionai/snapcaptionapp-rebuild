@@ -4,10 +4,27 @@ export default function Index() {
   const [idea, setIdea] = useState("");
   const [result, setResult] = useState("");
 
-  const generateCaption = () => {
-    setResult(`🔥 Here's your caption:
+  const generateCaption = async (type: "fast" | "deep") => {
+    try {
+      setResult("Generating...");
 
-"${idea} — This is your moment. Stop waiting and start building."`);
+      const res = await fetch("https://snapcaptionapp-rebuild-yxkx.vercel.app/api/caption", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          idea,
+          type,
+        }),
+      });
+
+      const data = await res.json();
+
+      setResult(`🔥 Here's your caption:\n\n"${data.caption}"`);
+    } catch (error) {
+      setResult("Something went wrong. Check your connection.");
+    }
   };
 
   return (
@@ -50,7 +67,7 @@ export default function Index() {
         />
 
         <button
-          onClick={generateCaption}
+          onClick={() => generateCaption("fast")}
           style={{
             width: "100%",
             padding: "12px",
@@ -65,7 +82,7 @@ export default function Index() {
         </button>
 
         <button
-          onClick={generateCaption}
+          onClick={() => generateCaption("deep")}
           style={{
             width: "100%",
             padding: "12px",
@@ -85,6 +102,7 @@ export default function Index() {
               padding: "10px",
               background: "#f0f0f0",
               borderRadius: "8px",
+              whiteSpace: "pre-line",
             }}
           >
             {result}
