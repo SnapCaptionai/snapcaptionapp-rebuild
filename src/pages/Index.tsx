@@ -8,16 +8,19 @@ export default function Index() {
     try {
       setResult("Generating...");
 
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          idea,
-          type,
-        }),
-      });
+      const res = await fetch(
+        "https://thjspqiuuzwvniddubtw.supabase.co/functions/v1/ai-proxy",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            idea,
+            type,
+          }),
+        }
+      );
 
       const text = await res.text();
 
