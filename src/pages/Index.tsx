@@ -8,7 +8,7 @@ export default function Index() {
     try {
       setResult("Generating...");
 
-      const res = await fetch("https://snapcaptionapp-rebuild-yxkx.vercel.app/api/caption", {
+      const res = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
