@@ -19,15 +19,23 @@ export default function Index() {
         }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
 
-      // 🔥 show real backend errors
-      if (!res.ok) {
-        setResult("Error: " + data.error + " " + (data.details || ""));
+      let data;
+
+      try {
+        data = JSON.parse(text);
+      } catch {
+        setResult("Server error:\n" + text);
         return;
       }
 
-      setResult(`🔥 Here's your caption:\n\n${data.caption}`);
+      if (!res.ok) {
+        setResult("Error: " + data.error + "\n" + (data.details || ""));
+        return;
+      }
+
+      setResult("🔥 Here’s your caption:\n\n" + data.caption);
     } catch (error: any) {
       console.log(error);
       setResult("Error: " + error.message);
@@ -47,17 +55,15 @@ export default function Index() {
     >
       <div
         style={{
-          width: "100%",
-          maxWidth: "400px",
           background: "#fff",
           padding: "20px",
-          borderRadius: "12px",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+          borderRadius: "10px",
+          width: "100%",
+          maxWidth: "400px",
+          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
         }}
       >
-        <h1 style={{ textAlign: "center", marginBottom: "20px" }}>
-          SnapCaption
-        </h1>
+        <h2 style={{ textAlign: "center" }}>SnapCaption</h2>
 
         <textarea
           value={idea}
@@ -65,11 +71,9 @@ export default function Index() {
           placeholder="Enter your idea..."
           style={{
             width: "100%",
-            padding: "10px",
+            height: "100px",
             marginBottom: "15px",
-            borderRadius: "8px",
-            border: "1px solid #ccc",
-            minHeight: "80px",
+            padding: "10px",
           }}
         />
 
@@ -79,11 +83,9 @@ export default function Index() {
             width: "100%",
             padding: "10px",
             marginBottom: "10px",
-            background: "#000",
+            background: "#333",
             color: "#fff",
             border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
           }}
         >
           Fast Caption
@@ -94,29 +96,18 @@ export default function Index() {
           style={{
             width: "100%",
             padding: "10px",
-            background: "#444",
+            marginBottom: "10px",
+            background: "#555",
             color: "#fff",
             border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
           }}
         >
           Deep Caption
         </button>
 
-        {result && (
-          <div
-            style={{
-              marginTop: "20px",
-              padding: "10px",
-              background: "#f0f0f0",
-              borderRadius: "8px",
-              whiteSpace: "pre-wrap",
-            }}
-          >
-            {result}
-          </div>
-        )}
+        <p style={{ whiteSpace: "pre-wrap", marginTop: "10px" }}>
+          {result}
+        </p>
       </div>
     </div>
   );
