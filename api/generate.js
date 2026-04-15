@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   try {
-    const { idea, type } = req.body || {};
+    const { idea, type } = req.body;
 
     if (!idea) {
       return res.status(400).json({ error: "Missing idea" });
@@ -12,39 +12,10 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: "Missing GEMINI_API_KEY" });
     }
 
-    let prompt;
-
-    if (type === "fast") {
-      prompt = `
-Create a bold, short caption.
-
-Topic: ${idea}
-
-Rules:
-- 1–2 sentences only
-- No clichés
-- No generic motivation
-- No "this is your moment"
-- Make it sound real, direct, and slightly edgy
-
-Return ONLY the caption.
-`;
-    } else {
-      prompt = `
-Create a deep caption for someone over 40 rebuilding their life.
-
-Topic: ${idea}
-
-Rules:
-- 4–6 sentences
-- Real tone, not inspirational poster
-- No repeated phrases
-- No generic lines
-- Make it feel personal and grounded
-
-Return ONLY the caption.
-`;
-    }
+    let prompt =
+      type === "fast"
+        ? `Create a bold short caption about: ${idea}`
+        : `Create a deep caption about: ${idea}`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
@@ -60,12 +31,6 @@ Return ONLY the caption.
               parts: [{ text: prompt }],
             },
           ],
-          generationConfig: {
-            temperature: 0.9,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 300,
-          },
         }),
       }
     );
