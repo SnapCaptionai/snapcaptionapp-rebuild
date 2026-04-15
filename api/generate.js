@@ -1,27 +1,17 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-serve(async (req) => {
+export default async function handler(req, res) {
   try {
-    const { idea, type } = await req.json();
+    const { idea, type } = req.body || {};
 
     if (!idea) {
-      return new Response(
-        JSON.stringify({ error: "Missing idea" }),
-        { status: 400 }
-      );
+      return res.status(400).json({ error: "Missing idea" });
     }
 
-    // ✅ Get Gemini key
-    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    const geminiKey = process.env.GEMINI_API_KEY;
 
     if (!geminiKey) {
-      return new Response(
-        JSON.stringify({ error: "Missing GEMINI_API_KEY" }),
-        { status: 500 }
-      );
+      return res.status(500).json({ error: "Missing GEMINI_API_KEY" });
     }
 
-    // 🔥 FULL PROMPT SYSTEM (THIS WAS YOUR MAIN PROBLEM)
     let prompt;
 
     if (type === "fast") {
@@ -56,7 +46,6 @@ Return ONLY the caption.
 `;
     }
 
-    // 🔥 UPDATED MODEL + SETTINGS (THIS FIXES REPETITION)
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiKey}`,
       {
@@ -83,24 +72,15 @@ Return ONLY the caption.
 
     const data = await response.json();
 
-    // ✅ SAFE EXTRACTION (PREVENTS FALLBACK LOOPS)
     const caption =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       "No caption generated";
 
-    return new Response(
-      JSON.stringify({ caption }),
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return res.status(200).json({ caption });
   } catch (err) {
-    return new Response(
-      JSON.stringify({
-        error: "Server failed",
-        details: err.message,
-      }),
-      { status: 500 }
-    );
+    return res.status(500).json({
+      error: "Server failed",
+      details: err.message,
+    });
   }
-});
+}
