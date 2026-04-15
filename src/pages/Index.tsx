@@ -9,7 +9,7 @@ export default function Index() {
       setResult("Generating...");
 
       const res = await fetch(
-        "https://thjspqiuuzwvniddubtw.supabase.co/functions/v1/ai-proxy",
+        "/api/generate",
         {
           method: "POST",
           headers: {
