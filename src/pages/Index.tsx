@@ -10,7 +10,8 @@ export default function Index() {
 
       const res = await fetch(
         "https://whbelwknbtnqaimluvcv.supabase.co/functions/v1/smart-api",
-        {
+        "Authorization":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoYmVsd2tuYnRucWFpbWx1dmN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQyNzUyMTgsImV4cCI6MjA4OTg1MTIxOH0.aFSW7EICcMEi4y8QITuVzoHv1bOdlZsHjsAun-aC11o"
+      {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
